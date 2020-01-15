@@ -4,8 +4,8 @@
 }
 
 .border {
-	border: 1px solid black;
-	border-radius: 5px;
+	border: 1.5px solid black;
+	border-radius: 7.5px;
 }
 
 .outline{
@@ -50,6 +50,15 @@ min-height:100%;
   border:1px solid white;
   /*max-width: 200px;*/
   background-color: rgba(255, 0, 0, 0.75);
+  padding:10px;
+  border-radius: 5px;
+  max-width: 1000px
+}
+
+.blueBox {
+  border:1px solid white;
+  /*max-width: 200px;*/
+  background-color: rgba(0, 0, 255, 0.25);
   padding:10px;
   border-radius: 5px;
   max-width: 1000px
