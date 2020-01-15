@@ -25,13 +25,19 @@ h1 {
 	margin: 0px;
 }
 
-h2, p, a{
+h2, p, a {
 	font-family: roboto;
 	font-style: normal;
 	color: white;
 }
 
-
+th, td {
+  font-family: roboto;
+  font-style: normal;
+  color: white;
+  background-color: rgba(0,0,0,0.25);
+  padding: 5px
+}
 
 .background {
 position: fixed;
