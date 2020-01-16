@@ -31,12 +31,17 @@ h2, p, a {
 	color: white;
 }
 
+.levelTable {
+  border: 1px;
+  border-radius: 5px;
+}
+
 th, td {
   font-family: roboto;
   font-style: normal;
   color: white;
   background-color: rgba(0,0,0,0.25);
-  padding: 5px
+  padding: 10px;
 }
 
 .background {
@@ -55,7 +60,7 @@ min-height:100%;
 .box {
   border:1px solid white;
   /*max-width: 200px;*/
-  background-color: rgba(255, 0, 0, 0.75);
+  background-color: rgba(255, 0, 0, 0.60);
   padding:10px;
   border-radius: 5px;
   max-width: 1000px
