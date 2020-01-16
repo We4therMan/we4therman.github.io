@@ -77,3 +77,8 @@ min-height:100%;
   vertical-align: top;
   border-radius: 5px;
 }
+
+.levelTable {
+  border: 2px black;
+  
+}
