@@ -1,11 +1,11 @@
-console.log("This is my first JavaScript string!")
-//I will now math it up.
-console.log(5)
+$(function() {
 
-let testThing = 'Hello'
 
-if (testThing == 'Hello') {
-  console.log('HOw you doin')
-} else {
-  console.log('HO')
+})
+
+function darkMode() {
+  $(".background").css({"background": "none", "background-color": "black"})
+  $(".box").css({"background-color": "rgba(255,25,0,0.25)"})
+  $(".darkModeToggle span").text("Normal Mode")
+  $("this .onclick").function()
 }

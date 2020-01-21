@@ -4,6 +4,7 @@
 		<title>We4therman's Website - Home</title>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="https://static-cdn.jtvnw.net/jtv_user_pictures/a468349c-0c4e-4805-9fdc-09679005a0fc-profile_image-70x70.png" type="image/x-icon">
+		<script src="jquery-3.4.1.min.js"></script>
 		<script src="app.js"></script>
 		<meta name="description" content="A page made by a person learning how to code. He has a Twitch channel.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,12 @@
 		<div class="background"></div>
 		<h1 class="outline"><br>We4therMan's Test Website</h1>
 		<h2>Welcome!</h2>
+
+		<button class="darkModeToggle" onclick="darkMode()">
+			<span>Dark Mode (under construction)</span>
+			</button>
+
+		<br><br>
 
 		<div class="boxcontainer">
 			<div class="box">
@@ -33,7 +40,7 @@
 
 		<div class="boxcontainer">
 			<div class="box">
-				<p>This website's purpose is mostly to test my ability to
+				<p id="thing">This website's purpose is mostly to test my ability to
 					create a website with a purpose, and definitely will
 					<b>not</b> be something I really commit to working on
 					in the future.
@@ -97,7 +104,6 @@
 					</p>
 				</div>
 			</div>
-
 	</body>
 
 </html>
