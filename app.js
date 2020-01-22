@@ -1,12 +1,9 @@
 $(function() {
-
-
+  $("#darkMode").click(function(){
+    $(".background").css({"background": "none", "background-color": "black"})
+    $(".box").css({"background-color": "rgba(255,0,0,0.1)"})
+    $(".blueBox").css({"background-color": "rgba(0,0,255,0.1)"})
+    $("#darkMode").css({"background-color": "black", "color": "white"})
+    $("#darkMode span").text("Light mode (under construction, refresh the page)")
+  })
 })
-
-function darkMode() {
-  $(".background").css({"background": "none", "background-color": "black"})
-  $(".box").css({"background-color": "rgba(255,25,0,0.10)"})
-  $(".blueBox").css({"background-color": "rgba(0,0,255,0.1)"})
-  $(".darkModeToggle span").text("Normal Mode (broken rn)")
-  $("this .onclick").function()
-}
