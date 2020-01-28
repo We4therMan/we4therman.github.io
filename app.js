@@ -4,9 +4,6 @@ $(function() {
     refreshColors()
   })
 
-  $.getJSON( "https://pointercrate.com/api/v1/demons/?name=Sunset%20Sandstorm", function(data) {
-    console.log(data[0].position)
-  })
 })
 
 var darkMode = false
