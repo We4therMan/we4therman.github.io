@@ -45,3 +45,5 @@ function easterEgg() {
     $("#darkMode").hide
   }
 }
+
+//To-do, use switch instead of if else statements to fix the easter egg messages.
