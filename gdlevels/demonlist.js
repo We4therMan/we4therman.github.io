@@ -8,7 +8,7 @@ $(async function() {
 
 })
 
-var demonlist = ["Sunset Sandstorm", "Black Blizzard", "Epsilon"]
+var demonlist = ["xo", "Sunset Sandstorm", "Black Blizzard", "Epsilon"]
 
 console.log("Secret 2: I dream of being a GD Mod.")
 console.log("Hey, you're not doing too bad! Keep looking for more secrets! You'll keep finding interesting stuff.")
