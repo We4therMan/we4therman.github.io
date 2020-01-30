@@ -11,6 +11,7 @@ $(function() {
 })
 
 var darkMode = (getCookie("darkMode") == "true") ? true : false
+refreshColors()
 
 var count = 0
 
