@@ -84,11 +84,6 @@ min-height:100%;
   border-radius: 5px;
 }
 
-.quiz-intro {
-  position: relative;
-  text-align: center
-}
-
 #darkMode {
   background-color: rgba(255,0,0,0.5);
   color: white;
@@ -96,10 +91,4 @@ min-height:100%;
 }
 
 #demonlink {
-}
-
-#start-button{
-  text-align: center
-  padding: 50px
-  font-size: 10px
 }
