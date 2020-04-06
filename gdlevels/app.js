@@ -4,16 +4,11 @@ $(function() {
     darkMode = !darkMode
     setCookie("darkMode", darkMode)
     refreshColors()
-    count++
-    console.log(count)
-    easterEgg()
   })
 
 })
 
 var darkMode = (getCookie("darkMode") == "true") ? true : false
-
-var count = 0
 
 function refreshColors() {
   if (darkMode == true) {
@@ -31,31 +26,6 @@ function refreshColors() {
   }
 }
 
-function easterEgg() {
-  switch (count) {
-    case 69:
-    $("#easterEgg").html("Good job! You found the third secret added to this website.<br><br>Secret 3: ")
-    break;
-    case 90:
-    $("#easterEgg").html("You've reached my website. For now, this place is an empty desolate land that only allows you to stare at text endlessly as you await for secrets to be revealed. <i>It seems like you've already revealed this secret though, good job!</i>")
-    break;
-    case 110:
-    $("#easterEgg").html("You can stop clicking now, that was the only secret here...")
-    break;
-    case 130:
-    $("#easterEgg").html("I'm not lying, that was the only secret, go look elsewhere.")
-    break;
-    case 150:
-    $("#easterEgg").html("You can't possibly like pressing the button <i>that</i> much...")
-    break;
-    case 170:
-    $("#easterEgg").html("You can't be trusted with the dark mode button, I'll just remove it.")
-    break;
-    case 180:
-    $("#easterEgg").html("haha rekt")
-    $("#darkMode").hide()
-  }
-}
 
 function setCookie(cname, cvalue) {
   var d = new Date();
