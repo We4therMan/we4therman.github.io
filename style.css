@@ -76,6 +76,11 @@ min-height:100%;
   max-width: 1000px
 }
 
+.linkBox {
+  align-content: right;
+  padding-right: 20px;
+}
+
 .boxcontainer {
   /*float: left;*/
   display: inline-block;
@@ -83,6 +88,7 @@ min-height:100%;
   vertical-align: top;
   border-radius: 5px;
 }
+
 
 #darkMode {
   background-color: rgba(255,0,0,0.5);
