@@ -5,10 +5,24 @@ $(function() {
     setCookie("darkMode", darkMode)
     refreshColors()
   })
-
+  $("#hideEmbed").click(function(){
+    embedsOn = !embedsOn
+    hideEmbeds()
+  })
 })
 
 var darkMode = (getCookie("darkMode") == "true") ? true : false
+var embedsOn = true
+
+function hideEmbeds() {
+  if (embedsOn == false){
+    $(".embed").hide()
+    $("#hideEmbed span").text("Show video embeds")
+  } else {
+    $(".embed").show()
+    $("#hideEmbed span").text("Hide video embeds")
+  }
+}
 
 function refreshColors() {
   if (darkMode == true) {
