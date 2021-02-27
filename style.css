@@ -111,3 +111,13 @@ min-height:100%;
 
 #demonlink {
 }
+
+#hideEmbed {
+  position: fixed;
+  right: 75px;
+  top: 300px;
+  border-radius: 5px;
+  padding: 10px;
+  color: white;
+  background-color: rgba(255,0,0,0.5);
+}
