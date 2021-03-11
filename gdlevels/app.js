@@ -32,7 +32,7 @@ function refreshColors() {
     $("#darkMode").css({"background-color": "black", "color": "white"})
     $("#darkMode span").text("Light Mode")
   } else {
-    $(".background").css({"background": "url('https://htmlcolorcodes.com/assets/images/html-color-codes-color-tutorials-hero-00e10b1f.jpg') ", "background-color": "black"})
+    $(".background").css({"background": "url('https://static1.e621.net/data/76/58/7658abd738e70e4947453b09f7d95524.png') ", "background-color": "black"})
     $(".box").css({"background-color": "rgba(255,0,0,0.6)"})
     $(".blueBox").css({"background-color": "rgba(0,0,255,0.25)"})
     $("#darkMode").css({"background-color": "rgba(255,0,0,0.5)", "color": "white"})
