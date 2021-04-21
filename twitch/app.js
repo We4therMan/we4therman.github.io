@@ -18,7 +18,7 @@ function refreshColors() {
     $("#darkMode").css({"background-color": "black", "color": "white"})
     $("#darkMode span").text("Light Mode")
   } else {
-    $(".background").css({"background": "url('https://static1.e621.net/data/76/58/7658abd738e70e4947453b09f7d95524.png') ", "background-color": "black"})
+    $(".background").css({"background": "url('https://lh3.googleusercontent.com/pw/ACtC-3fblOlX2Air5h9xTgnPzTEEQbl7L_aUWpmQFoofDg2DYzrCg7t5rxAeqFS19Bw7E-eG86qj0ss6yJRWmrQgsIObkURLd5apBbfcQZP7NYzkRicstaObo5Z8eZWQv0agpahWIoPeB_TYtogyQ_a9l0SwVdCC0kLTTGNHzl-VUIyJxBfRckzkBuNREQPzNWmDeEdiF4U-uALTeXm3DdB_yJpuljIlKIApO2zebQx-LxwKxIK-N9Yqs-1NsH5NNy6Ai842TkIDzb-BEygNGEpyBvxX0pazxqV3EdKIqyfNz812ZRuaOQ4vA6iM055mlczPjHkLE-q9ylBsn9aZgxL--S9okHdqqanKoqO6cm3khOsz6iKKj7-jniNB8l3G5ubQEL-il_XhYzMAbOfM9cEeNyT03_ILeVB78PsMVAXwcyzoEp0xt_rBn73cFTPK3EygfK9SnH4hqTuJx5CNKsJRtjFMAqeKFFYIDrs9-hA4YpZi5qdMKmcNLOhw1Ho9zlrHNXmUvch2I0jZUd57BU3IuoCaCuY-6eC3_aN1X5xf3euY2hOJQYyEnW6h2jv7QRM7SLBMKauaSr4uC0vI8-qFNC8RVDw25qTtDsEeAmMznzlhTSbv_1be8cYfyn08CQvgPhI-6QVNHQsG0h2UNYK679e3X_lr4LMj9PjwDkUhzN5_Umtv3os9LqdiEjl9FJv51tlg8Bom7b4DfaYDsfwkuXqCf_W-FEkgrD1C4Hu13N1IZWVS=w548-h220-no?authuser=0') ", "background-color": "black"})
     $(".box").css({"background-color": "rgba(255,0,0,0.6)"})
     $(".blueBox").css({"background-color": "rgba(0,0,255,0.25)"})
     $("#darkMode").css({"background-color": "rgba(255,0,0,0.5)", "color": "white"})
