@@ -51,13 +51,19 @@ left: 0;
 right: 0;
 z-index: -1;
 display: block;
-filter: brightness(0.5);
+filter: brightness(0.3);
 background: url("./img/bg.png");
 background-size: auto;
 background-repeat: no-repeat;
 min-width:100%;
 min-height:100%;
-animation: scroll 30s linear infinite;
+animation: scroll 60s linear infinite;
+}
+
+@keyframes scroll {
+  to { 
+    background-position: +100% -100%; 
+  }
 }
 
 .box {
@@ -113,7 +119,7 @@ animation: scroll 30s linear infinite;
 
 #darkMode {
   position: fixed;
-  right: 100px;
+  right: 60px;
   top: 50px;
   padding: 10px;
   background-color: rgba(255,0,0,0.5);
@@ -123,10 +129,11 @@ animation: scroll 30s linear infinite;
 
 #hideEmbed {
   position: fixed;
-  right: 75px;
-  top: 300px;
+  right: 60px;
+  bottom: 20px;
   border-radius: 5px;
   padding: 10px;
   color: white;
   background-color: rgba(255,0,0,0.5);
+  border-color: white;
 }

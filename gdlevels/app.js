@@ -12,7 +12,8 @@ $(function() {
 })
 
 var darkMode = (getCookie("darkMode") == "true") ? true : false
-var embedsOn = true
+var embedsOn = (getCookie("embedsOn") == "true") ? true : false
+// var embedsOn = true
 
 function hideEmbeds() {
   if (embedsOn == false){
@@ -30,13 +31,13 @@ function refreshColors() {
     $(".box").css({"background-color": "rgba(255,0,0,0.1)"})
     $(".blueBox").css({"background-color": "rgba(0,0,255,0.1)"})
     $("#darkMode").css({"background-color": "black", "color": "white"})
-    $("#darkMode span").text("Light Mode")
+    $("#darkMode span").text("View light mode")
   } else {
-    $(".background").css({"background": "url('./img/bg.png') ", "background-color": "black"})
+    $(".background").css({"background": "url('../img/bg.png') ", "background-color": "black"})
     $(".box").css({"background-color": "rgba(255,0,0,0.6)"})
     $(".blueBox").css({"background-color": "rgba(0,0,255,0.25)"})
     $("#darkMode").css({"background-color": "rgba(255,0,0,0.5)", "color": "white"})
-    $("#darkMode span").text("Dark Mode")
+    $("#darkMode span").text("View dark mode")
   }
 }
 
