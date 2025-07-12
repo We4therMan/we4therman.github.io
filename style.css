@@ -51,11 +51,13 @@ left: 0;
 right: 0;
 z-index: -1;
 display: block;
-background: url("");
+filter: brightness(0.5);
+background: url("./img/bg.png");
 background-size: auto;
 background-repeat: no-repeat;
 min-width:100%;
 min-height:100%;
+animation: scroll 30s linear infinite;
 }
 
 .box {
