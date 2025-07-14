@@ -25,6 +25,7 @@ function refreshColors() {
   } else {
     $(".background").css({"background": "url('./img/bg.png')"})
     $(".blueBox").css({"background-color": "rgba(0,0,255,0.25)"})
+    $(".box").css({"background-color": "rgba(255,0,0,0.6)"})
     $("#darkMode").css({"background-color": "rgba(255,0,0,0.5)", "color": "white"})
     $("#darkMode span").text("Dark Mode")
   }
