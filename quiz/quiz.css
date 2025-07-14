@@ -1,0 +1,90 @@
+body {
+	margin-top:0px;
+}
+
+h1 {
+	font-family: roboto;
+	font-style: normal;
+	color: white;
+  text-align: center;
+	font-size: 42px;
+	margin: 0px;
+}
+
+h6, h4, h2, p, a {
+	font-family: roboto;
+	font-style: normal;
+	color: white;
+	text-align: center;
+}
+
+th, td {
+  font-family: roboto;
+  font-style: normal;
+  color: white;
+  background-color: rgba(0,0,0,0.25);
+  text-align: center;
+  padding: 5px;
+}
+
+/* .quizWelcome {
+  display: flex;
+} */
+
+#startButton {
+  position: fixed;
+  left: 50%;
+  color: white;
+  background-color: #880808;
+  font-size: 56px;
+  text-align: center;
+  border: none;
+}
+
+#startButton:hover {
+  position: fixed;
+  left: 50%;
+  color: white;
+  background-color: #EE4B2B;
+  font-size: 56px;
+  text-align: center;
+  border: none;
+}
+
+.quiz-intro {
+  position: relative;
+  text-align: center
+}
+
+.quizQ {
+  text-align: center;
+	font-weight: bold;
+}
+
+.quizAns {
+	text-align: center;
+}
+
+.background {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  display: block;
+  background-color: black;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-width:100%;
+  min-height:100%;
+}
+
+@font-face {
+    font-family: 'roboto';
+    src: url("../Roboto.ttf");
+}
+
+#studioTag {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+}

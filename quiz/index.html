@@ -2,25 +2,39 @@
 <html>
   <head>
     <title>We4therman's Website - We4therMan's Quiz</title>
-		<link rel="stylesheet" href="../quiz.css">
+		<link rel="stylesheet" href="quiz.css">
 		<link rel="shortcut icon" href="./img/pfp.png" type="image/x-icon">
 		<script src="../jquery-3.4.1.min.js"></script>
 		<script src="quiz.js"></script>
+    <script src="questions.js"></script>
 		<meta name="description" content="The official We4therMan quiz!.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="keywords" content="we4therman">
 		<meta property="og:image" href="./img/pfp.png">
   </head>
 
-  <body class="blackground">
-      <p class="quizQ">1. What is my real name?</p>
-      <p class="quizAns">Alex</p>
-      <p class="quizAns">Jackson</p>
-      <p id="ans1">An unpronounceable combination of four letters</p>
-      <p class="quizAns">Simon</p>
-
+  <body class="background">
     <br><br>
+    <div class="quizWelcome">
 
-      <p class="correctText">Nice! You got the right answer. The next questions won't be as easy though...</p>
+      <h1>Welcome to</h1>
+      <p>the</p>
+      <p>We4therMan Quiz!</p>
+      <button id="startButton">START</button>
+
+      <div id="quizContainer" style="display:none;">
+        <div id="question"></div>
+        <div id="options"></div>
+        <button id="nextButton" style="display:none;">Next</button>
+      </div>
+
+      <div id="result" style="display:none;"></div>
+    </div>
+
+
+
+  <footer id="studioTag">
+    <p>&copy; 2025 We4therMan Studios.</p>
+  </footer>
   </body>
 </html>
