@@ -56,13 +56,22 @@ th, td {
   text-align: center
 }
 
-.quizQ {
-  text-align: center;
-	font-weight: bold;
+.quizContainer {
+  position: absolute;
+  margin: 0 auto;
+  display: flex;
+	justify-content: center;
+  align-items: center;
 }
 
 .quizAns {
 	text-align: center;
+}
+
+.multChoice {
+  font-family: "Lucida Console";
+  padding: 30px;
+
 }
 
 .background {
