@@ -46,8 +46,8 @@ var questions = [
         "correctAnswer": 1,
         "timeLim": 10.0,
 
-        "checkReopen": True,
-        "hasReopened": False
+        "checkReopen": true,
+        "hasReopened": false
     },
 
     {   //3
@@ -73,8 +73,8 @@ var questions = [
         "correctAnswer": 2,
         "timeLim": 20.0,
 
-        "checkReopen": True,
-        "hasReopened": False
+        "checkReopen": true,
+        "hasReopened": false
     },
 
     {   //4
@@ -129,8 +129,8 @@ var questions = [
         "timeLim": 40.0,
         "cumAnswer": 2,
 
-        "suspense": True, //variable for louder ticks, drum roll, extra wait for tension
-        "fixedOrder": True
+        "suspense": true, //variable for louder ticks, drum roll, extra wait for tension
+        "fixedOrder": true
     }
     //Interlude 1
 
@@ -166,3 +166,33 @@ var interludes = [
         "mainTxt": "Nice job there bucko"//joke about lacking a save progress function because I am not good at coding
     }
 ]
+
+console.log(questions[0]["answers"])
+
+//print all questions
+// for (let qDict of questions){
+//     console.log(qDict["question"])
+//     for (let i = 0; i < qDict["answers"].length; i++) {
+//         ans = qDict["answers"][i]
+//         ang = qDict["anger"][i]
+//         console.log(ans, ang)
+//     }
+// }
+
+//print one question
+var questionInd = 3
+var answers = questions[questionInd]["answers"]
+var anger = questions[questionInd]["anger"]
+let correctValues = questions[questionInd]["correctAnswer"]
+
+console.log(answers, anger);
+answers.forEach((ans,ind) => {
+    let ang = anger[ind];
+    console.log(`answer ${ind + 1}: ${ans}, ${ang}`);
+    if (correctValues.includes(ind)){
+        console.log('(correct)');
+    } else {
+        console.log("(wrong)") 
+    }
+});
+//TODO: find different method for detecting special answers like 'burger' and 'cum'

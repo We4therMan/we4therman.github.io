@@ -1,26 +1,38 @@
+$.getScript("questions.js", function(){
+  console.log("fetching questinos data..");
+  console.log(questions[0]);
+  console.log("question data fetched..");
+})
+
 $(function() {
-  $("#correctText").hide
-
-  $(".quizAns").click(function(){
-    incorrectAnswer()
-    console.log(answer)
-  })
-
-  $("#ans1").click(function(){
-    correctAnswer()
-    console.log(answer)
+  $("#startButton").on("click", function() {
+    console.log("start button pressed");
+    $("#startButton").hide();
+    initQuiz();
   })
 })
 
-var answer = false
-var lives = 3
+var correctAnswers = 0;
+var currentQuestion = 0;
 
 
 function correctAnswer() {
-  answer = true
-  $(".blackground").css("background-color", "gray")
-  $(".correctText").show
+  answer = true;
+  $(".blackground").css("background-color", "gray");
+  $(".correctText").show();
 }
+
+function initQuiz() {
+  correctAnswers = 0
+  $("#quizContainer").show();
+  $("#quizContainer").append("<p>ok let's go</p>");
+}
+
+function loadQuestion(qInd){
+  $("#quizContainer").append("hold on a second")
+}
+
+console.log()
 
 
 console.log("Do NOT read the answers if you know how to read code. I don't like cheaters...")
