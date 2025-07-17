@@ -56,12 +56,18 @@ th, td {
   text-align: center
 }
 
-.quizContainer {
+#quizContainer {
   position: absolute;
   margin: 0 auto;
   display: flex;
 	justify-content: center;
   align-items: center;
+}
+
+#question {
+  font-size: 64px;
+  color: white;
+  
 }
 
 .quizAns {

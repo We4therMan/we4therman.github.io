@@ -1,9 +1,3 @@
-$.getScript("questions.js", function(){
-  console.log("fetching questinos data..");
-  console.log(questions[0]);
-  console.log("question data fetched..");
-})
-
 $(function() {
   $("#startButton").on("click", function() {
     console.log("start button pressed");
@@ -12,12 +6,7 @@ $(function() {
   })
 })
 
-const specialKeys = [
-  {
-    'burgerAnswer': false,
-    'cumAnswer': false
-  }
-]
+const specialKeys = ['burgerAnswer', 'cumAnswer']
 
 var currentQInd = 0;
 var currQuestion = "";
@@ -34,7 +23,7 @@ var saidCum = false;
 
 function correctAnswer() {
   answer = true;
-  $(".blackground").css("background-color", "gray");
+  $(".blackground").css("background-color", "green");
   $(".correctText").show();
 }
 
@@ -45,21 +34,19 @@ function initQuiz() {
   correctAnswers = 0;
   currentQInd = 0;
   $("#quizContainer").show();
-  $("#quizContainer").append("<p>ok let's go</p>");
   $("#quizContainer").append(`<button class='multChoice'>${test}</button>`)
-  $("#quizContainer").append("<button class='multChoice'>test2 2 2 2 </button>")
-  $("#quizContainer").append("<button class='multChoice'>test3</button>")
-  $("#quizContainer").append("<button class='multChoice'>test4</button>")
-  setTimeout(() => {
-    console.log("waiting")
-  }, 2000);
+  $("#quizContainer").append(`<button class='multChoice'>${test}, ${test}, ${test}</button>`)
+  $("#quizContainer").append(`<button class='multChoice'>${test}</button>`)
+  $("#quizContainer").append(`<button class='multChoice'>${test}</button>`)
   loadQuestion(currentQInd);
 }
 
 //setTimeout(() => {}, 2000);
 
 function loadQuestion(currentQInd){
-  $("#quizContainer").append("hold on a second");
+  console.log(`initializing question ${currentQInd+1}`)
+  $("#quizContainer").append("if you see this text the quiz broke :(");
+  $("#quizContainer").empty();
   currQuestion = questions[currentQInd]["question"]; //question
   currAnsSet = questions[currentQInd]["answers"]; //answers
   currAngSet = questions[currentQInd]["anger"];
@@ -79,19 +66,11 @@ function loadQuestion(currentQInd){
     resetSpecials();
     var currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
     var currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
-    setSpecials(currSpecKeys);
-    // switch (currSpecKeys) {
-    //   case "burgerAnswer":
-    //     giveBurger = true;
-    //     currBurgAns = questions[currentQInd]["burgerAnswer"]
-    //   case "cumAnswer":
-    //     saidCum = true;
-    //     currCumAns = questions[currentQInd]["cumAnswer"]
-    //   default:
-    //     console.log("question has no special events")
-    // }
+    setSpecials(currentQInd,currSpecKeys);
 
-    $("#quizContainer").append("")
+    $quizCon
+
+  $("#question").text(currQuestion)
     
 
   });
@@ -115,7 +94,7 @@ function resetSpecials(){
   });
 }
 
-function setSpecials(keys){
+function setSpecials(qInd,keys){
   switch (keys) {
       case "burgerAnswer":
         giveBurger = true;
@@ -124,7 +103,7 @@ function setSpecials(keys){
         saidCum = true;
         currCumAns = questions[currentQInd]["cumAnswer"];
       default:
-        console.log("question has no special events");
+        console.log(`question ${qInd+1} has no special events`);
     }
 }
 
@@ -137,6 +116,12 @@ function generateAns(isCorrect,ans,rep){
   });
   return r;
 }
+
+//TEST CODE HERE IF U NEED
+
+var specialAnsSet = Object.entries(checkGetSpecial(4,specialKeys))
+console.log('HELLO I AM HERE');
+console.log(specialAnsSet);
 
 console.log("Do NOT read the answers if you know how to read code. I don't like cheaters...")
 //The quiz! Do NOT read the answers if you know how to read code. I don't like cheaters...

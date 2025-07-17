@@ -167,49 +167,4 @@ var interludes = [
     }
 ]
 
-// console.log(questions[0]["answers"])
-
-//print all questions
-// for (let qDict of questions){
-//     console.log(qDict["question"])
-//     for (let i = 0; i < qDict["answers"].length; i++) {
-//         ans = qDict["answers"][i]
-//         ang = qDict["anger"][i]
-//         console.log(ans, ang)
-//     }
-// }
-
-//print one question
-// var questionInd = 3
-// var answers = questions[questionInd]["answers"]
-// var anger = questions[questionInd]["anger"]
-// let correctValues = questions[questionInd]["correctAnswer"]
-
-// console.log(answers, anger);
-// answers.forEach((ans,ind) => {
-//     let ang = anger[ind];
-//     console.log(`answer ${ind + 1}: ${ans}, ${ang}`);
-//     if (correctValues.includes(ind)){
-//         console.log('(correct)');
-//     } else {
-//         console.log("(wrong)") 
-//     }
-// });
 //TODO: find different method for detecting special answers like 'burger' and 'cum'
-const specialKeys = ['burgerAnswer', 'cumAnswer']
-
-console.log("cum check")
-console.log(questions[4].hasOwnProperty('cumAnswer'))
-
-function checkGetSpecial(ind,spKeys){
-  return spKeys
-    .filter(spKey => questions[ind].hasOwnProperty(spKey))
-    .reduce((result, spKey) => {
-      result[spKey] = questions[ind][spKey];
-      return result;
-    }, {});
-}
-
-var specialAnsSet = Object.entries(checkGetSpecial(2,specialKeys))
-console.log('HELLO I AM HERE');
-console.log(specialAnsSet);
