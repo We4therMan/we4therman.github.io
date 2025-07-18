@@ -6,7 +6,13 @@ $(function() {
   })
 })
 
-const specialKeys = ['burgerAnswer', 'cumAnswer']
+const specialKeys = [
+  {
+    'burgerAnswer': false, 
+    'cumAnswer': false
+
+  }
+]
 
 var currentQInd = 0;
 var currQuestion = "";
@@ -16,6 +22,9 @@ var currRepSet = "";
 var currBurgAns = "";
 var currCumAns = "";
 var correctAnswers = [];
+
+var correctScore = 0
+var angScore = 0
 
 var isCorrect = false;
 var giveBurger = false;
@@ -34,10 +43,7 @@ function initQuiz() {
   correctAnswers = 0;
   currentQInd = 0;
   $("#quizContainer").show();
-  $("#quizContainer").append(`<button class='multChoice'>${test}</button>`)
-  $("#quizContainer").append(`<button class='multChoice'>${test}, ${test}, ${test}</button>`)
-  $("#quizContainer").append(`<button class='multChoice'>${test}</button>`)
-  $("#quizContainer").append(`<button class='multChoice'>${test}</button>`)
+  resetSpecials();
   loadQuestion(currentQInd);
 }
 
@@ -45,35 +51,39 @@ function initQuiz() {
 
 function loadQuestion(currentQInd){
   console.log(`initializing question ${currentQInd+1}`)
-  $("#quizContainer").append("if you see this text the quiz broke :(");
-  $("#quizContainer").empty();
+  // $("#quizContainer").append("if you see this text the quiz broke :(");
+  // $("#quizContainer").empty();
   currQuestion = questions[currentQInd]["question"]; //question
   currAnsSet = questions[currentQInd]["answers"]; //answers
   currAngSet = questions[currentQInd]["anger"];
   currRepSet = questions[currentQInd]["replies"];
   currCorrAns = questions[currentQInd]["correctAnswer"]
+  console.log(currQuestion)
 
   currAnsSet.forEach((currAns,ansInd) => {
     let currAng = currAngSet[ansInd] //anger values
-    let currRep = currAngSet[ansInd] //replies
+    let currRep = currRepSet[ansInd] //replies
+    console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}"`);
     
     if (currCorrAns.includes(ansInd)){
       isCorrect = true;
     } else {
       isCorrect = false;
     };
+    
+    console.log(`iscorrect ${isCorrect}`);
+    // $("#quizContainer").append(`<button class="multChoice">${currAns}</button>`)
+    generateAns(isCorrect,currAns,currAng,currRep);
+  });
 
-    resetSpecials();
-    var currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
-    var currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
-    setSpecials(currentQInd,currSpecKeys);
+  let currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
+  let currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
+  setSpecials(currentQInd,currSpecKeys);
 
-    $quizCon
 
   $("#question").text(currQuestion)
     
 
-  });
 
 }
 
@@ -89,9 +99,9 @@ function checkGetSpecial(ind,spKeys){
 function resetSpecials(){
   specialKeys.forEach((key,ind) => {
     specialKeys[ind] = false;
-    console.log("special keys reset")
     console.log(specialKeys)
   });
+  console.log("special keys reset")
 }
 
 function setSpecials(qInd,keys){
@@ -107,16 +117,58 @@ function setSpecials(qInd,keys){
     }
 }
 
-function generateAns(isCorrect,ans,rep){
-  var r = $('<input />').attr({
-    type: "button", 
-    class: "multChoice",
-    value: ans,
-    onclick: result(isCorrect)
-  });
-  return r;
+function generateAns(isCorrect,ans,ang,rep){
+  console.log("generating answer button");
+
+  var button = $('<button />') 
+    .addClass("multChoice")
+    .text(ans)
+    .data({isCorrect,ang,rep})
+    .on("click", function(){
+      let data = $(this).data();
+      result(data.isCorrect,data.ang,data.rep);
+    });
+
+  $("#quizContainer").append(button);
 }
 
+function result(isCorrect,ang,rep) {
+  console.log("genius")
+  angScore += ang;
+  if (isCorrect === true) {
+    correctScore++;
+  } else {
+    //wrong answer event
+  }
+  $("#result").text(rep)
+  console.log(angScore);
+  console.log(correctScore);
+  checkAnger(angScore);
+}
+
+function checkAnger(ang) {
+  switch (true) {
+    case ang < -100:
+      console.log("happy stage2");
+      break;
+    case ang >= -100 && ang < -50:
+      console.log("happy stage1");
+      break;
+    case ang >= -50 && ang <= 50:
+      console.log("neutral");
+      break;
+    case ang > 50 && ang <= 100:
+      console.log("angry stage 1");
+      break;
+    case ang > 100 && ang < 150:
+      console.log("angry stage2");
+      break;
+    case ang >= 150:
+      console.log("anger final");
+      break;
+  }
+  
+};
 //TEST CODE HERE IF U NEED
 
 var specialAnsSet = Object.entries(checkGetSpecial(4,specialKeys))
