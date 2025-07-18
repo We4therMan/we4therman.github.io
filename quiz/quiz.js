@@ -23,8 +23,9 @@ var currBurgAns = "";
 var currCumAns = "";
 var correctAnswers = [];
 
-var correctScore = 0
-var angScore = 0
+var correctScore = 0;
+var angScore = 0;
+var angStage = 0;
 
 var isCorrect = false;
 var giveBurger = false;
@@ -133,10 +134,12 @@ function generateAns(isCorrect,ans,ang,rep){
 }
 
 function result(isCorrect,ang,rep) {
-  console.log("genius")
   angScore += ang;
   if (isCorrect === true) {
     correctScore++;
+    $(".background").animate({backgroundColor: "green"}, 10);
+    $(".background").animate({backgroundColor: "black"}, 500);
+
   } else {
     //wrong answer event
   }
@@ -150,21 +153,27 @@ function checkAnger(ang) {
   switch (true) {
     case ang < -100:
       console.log("happy stage2");
+      angStage = -2
       break;
     case ang >= -100 && ang < -50:
       console.log("happy stage1");
+      angStage = -1
       break;
     case ang >= -50 && ang <= 50:
       console.log("neutral");
+      angStage = 0
       break;
     case ang > 50 && ang <= 100:
       console.log("angry stage 1");
+      angStage = 1
       break;
     case ang > 100 && ang < 150:
       console.log("angry stage2");
+      angStage = -2
       break;
     case ang >= 150:
       console.log("anger final");
+      angStage = -3
       break;
   }
   
