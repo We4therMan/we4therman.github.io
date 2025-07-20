@@ -43,7 +43,7 @@ var questions = [
             10e+99,
             5,
         ],
-        "correctAnswer": 1,
+        "correctAnswer": [1],
         "timeLim": 10.0,
 
         "checkReopen": true,
@@ -62,15 +62,15 @@ var questions = [
             "no but damn if you actually know this level then you're kinda OG (orinigal gangster)",
             "nah but it might as well be tbh",
             "how do you know this????? did you have to look it up? Please tell me... haha, just kidding. I know. Trust me.",
-            "christ no that was way into it fuck off",
+            "christ no that was way into it.. get it together",
         ],
          "anger": [
             -5,
             0,
             0,
-            50,
+            40,
         ],
-        "correctAnswer": 2,
+        "correctAnswer": [2],
         "timeLim": 20.0,
 
         "checkReopen": true,
@@ -130,41 +130,38 @@ var questions = [
         "cumAnswer": 2,
 
         "suspense": true, //variable for louder ticks, drum roll, extra wait for tension
-        "fixedOrder": true
-    }
+        "fixedOrder": true,
+        "nextEvent": "interlude"
+    },
     //Interlude 1
 
-]
-
-//route texts appear in **REVERSE PRIORITY ORDER** (first option is checked first, so lowest option that is 'True' remains)
-//maybe an option could allow some to appear together? complicated..
-/* dicts organized as
-{
-    restTxts (tell player it's the interlude)
-
-    varyingTexts (extras depending on things player has done)
-
-    readyTxts (tell player the next question will follow)
-}
-*/
-
-var interludes = [
-    {
-        "restTxtReg": "that was a tough question! You've done well so far... You should take a short rest.",
-        "restTxtFail": "that was a tough question! You're... not doing so great with these, though.\
-            Take a breather, you want your brain sharp for these next ones!.",
-
-        "burgerTxt": "hey, smells pretty nice in here..",
-        "cumTxt": "...holy shit I can't believe you actually said that HAHAHAHA",
-        "angryTxt": "hmm, I can't lie, some of your answers are making me wonder if you know me TOO well...",
-
-        "readyTxtReg": "OK, let's see how you fare after these ones. They are much tougher.",
-        "readyTxtAng": "Well, whatever, here are the next questions."
-    },
-
-    {
-        "mainTxt": "Nice job there bucko"//joke about lacking a save progress function because I am not good at coding
+    {   //6
+        "question": "What game is the reason I wanted to start streaming?",
+        "answers": [
+            "Geometry Dash",
+            "Overwatch",
+            "Minecraft",
+            "Mario Kart 9"
+        ],
+        "replies": [
+            "NO! I'm SO insulted goddamnit",
+            "That's right! Ironically I didn't stream this game much because I had a lot of latency spikes",
+            "Nope.",
+            "I honestly don't think this game is interesting enough to make a streaming personality out of",
+        ],
+        "anger": [
+            100,
+            0,
+            10,
+            0,
+        ],
+        "correctAnswer": [1],
+        "timeLim": 15.0,
+        "gdAnswer": [0],
     }
+
 ]
 
-//TODO: find different method for detecting special answers like 'burger' and 'cum'
+/* If nextEvent is none, assume it is equivalent to "question" */
+
+console.log(!questions[5]["eventType"])

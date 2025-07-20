@@ -51,6 +51,17 @@ th, td {
   border: none;
 }
 
+#nextButton {
+  position: sticky;
+  left: 10px;
+  bottom: 10%;
+  color: white;
+  background-color: #880808;
+  font-size: 56px;
+  text-align: center;
+  border: none;
+}
+
 .quiz-intro {
   position: relative;
   text-align: center
@@ -65,13 +76,13 @@ th, td {
 }
 
 #question {
-  font-size: 64px;
+  font-size: 48px;
   color: white;
   
 }
 
 #result {
-  font-size: 64px;
+  font-size: 48px;
   color: white;
 }
 
@@ -86,6 +97,7 @@ th, td {
 }
 
 .background {
+  transition: background-color 0.5s ease;
   position: fixed;
   left: 0;
   right: 0;

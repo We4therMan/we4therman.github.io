@@ -4,67 +4,71 @@ $(function() {
     $("#startButton").hide();
     initQuiz();
   })
+  $("#nextButton").on("click", function(){
+    console.log("next button pressed")
+    nextEvent(); //todo: handle when it needs to confirm if no answer is selected, text is still scrolling, or if we are at an interlude
+  })
 })
 
 const specialKeys = [
   {
     'burgerAnswer': false, 
     'cumAnswer': false
-
   }
 ]
 
+//question variables
 var currentQInd = 0;
 var currQuestion = "";
 var currAnsSet = "";
 var currAngSet = "";
 var currRepSet = "";
+var currCorrAns = [];
 var currBurgAns = "";
 var currCumAns = "";
-var correctAnswers = [];
+var isCorrect = false;
 
+//score variables
 var correctScore = 0;
 var angScore = 0;
 var angStage = 0;
 
-var isCorrect = false;
+//route variables
 var giveBurger = false;
 var saidCum = false;
 
-function correctAnswer() {
-  answer = true;
-  $(".blackground").css("background-color", "green");
-  $(".correctText").show();
-}
-
-const test = "this is a really long test. SO long in fact, that I made it a separate variabble"
+//UI variables
+var eventType = "intro";
 
 function initQuiz() {
   console.log("Initializing quiz");
   correctAnswers = 0;
   currentQInd = 0;
+  $(".quizWelcome").hide();
   $("#quizContainer").show();
   resetSpecials();
   loadQuestion(currentQInd);
+  eventType = "question"
 }
 
 //setTimeout(() => {}, 2000);
 
 function loadQuestion(currentQInd){
-  console.log(`initializing question ${currentQInd+1}`)
-  // $("#quizContainer").append("if you see this text the quiz broke :(");
-  // $("#quizContainer").empty();
+  console.log(`initializing question ${currentQInd+1}`);
+  $("#result").empty();
+  $("#nextButton").hide();
+  $("#quizContainer").empty();
   currQuestion = questions[currentQInd]["question"]; //question
   currAnsSet = questions[currentQInd]["answers"]; //answers
   currAngSet = questions[currentQInd]["anger"];
   currRepSet = questions[currentQInd]["replies"];
-  currCorrAns = questions[currentQInd]["correctAnswer"]
+  currCorrAns = questions[currentQInd]["correctAnswer"];
   console.log(currQuestion)
 
   currAnsSet.forEach((currAns,ansInd) => {
     let currAng = currAngSet[ansInd] //anger values
     let currRep = currRepSet[ansInd] //replies
-    console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}"`);
+    console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
     
     if (currCorrAns.includes(ansInd)){
       isCorrect = true;
@@ -81,10 +85,7 @@ function loadQuestion(currentQInd){
   let currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
   setSpecials(currentQInd,currSpecKeys);
 
-
   $("#question").text(currQuestion)
-    
-
 
 }
 
@@ -135,54 +136,72 @@ function generateAns(isCorrect,ans,ang,rep){
 
 function result(isCorrect,ang,rep) {
   angScore += ang;
-  if (isCorrect === true) {
+  if (isCorrect) {
     correctScore++;
-    $(".background").animate({backgroundColor: "green"}, 10);
-    $(".background").animate({backgroundColor: "black"}, 500);
-
+    console.log("pulsing green")
+    pulseBG("#3eff35");
   } else {
-    //wrong answer event
+    console.log("pulsing red");
+    pulseBG("#fa2323");
   }
   $("#result").text(rep)
   console.log(angScore);
   console.log(correctScore);
   checkAnger(angScore);
+  $("#nextButton").show();
+}
+
+function pulseBG(color) {
+  const bg = $(".background")
+  bg.css("transition", "none")
+  bg.css("background-color", color);
+  setTimeout(() => {
+    bg.css("transition", "background-color 2s ease")
+    bg.css("background-color", "black")
+  }, 5);
 }
 
 function checkAnger(ang) {
   switch (true) {
     case ang < -100:
-      console.log("happy stage2");
+      // console.log("happy stage2");
       angStage = -2
       break;
     case ang >= -100 && ang < -50:
-      console.log("happy stage1");
+      // console.log("happy stage1");
       angStage = -1
       break;
     case ang >= -50 && ang <= 50:
-      console.log("neutral");
+      // console.log("neutral");
       angStage = 0
       break;
     case ang > 50 && ang <= 100:
-      console.log("angry stage 1");
+      // console.log("angry stage 1");
       angStage = 1
       break;
     case ang > 100 && ang < 150:
-      console.log("angry stage2");
+      // console.log("angry stage2");
       angStage = -2
       break;
     case ang >= 150:
-      console.log("anger final");
+      // console.log("anger final");
       angStage = -3
       break;
   }
   
 };
-//TEST CODE HERE IF U NEED
 
-var specialAnsSet = Object.entries(checkGetSpecial(4,specialKeys))
-console.log('HELLO I AM HERE');
-console.log(specialAnsSet);
+function nextEvent() {
+  e = questions[currentQInd]["nextEvent"]
+  if (!e) {
+    currentQInd++;
+    loadQuestion(currentQInd);
+  } else if (e === "interlude") {
+    console.log("start interlude")
+  }
+
+}
+//TEST CODE HERE IF U NEED
 
 console.log("Do NOT read the answers if you know how to read code. I don't like cheaters...")
 //The quiz! Do NOT read the answers if you know how to read code. I don't like cheaters...
