@@ -115,6 +115,30 @@ th, td {
     src: url("../Roboto.ttf");
 }
 
+#musVolume {
+  position: absolute;
+  bottom: 0;
+  right: 15px;
+  width: 200px;
+  height: 8px;
+  background: #333;
+  border-radius: 5px;
+  outline: none;
+  margin: 10px 0;
+}
+
+label[for="musVolume"] {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  color: white;
+  font-family: roboto;
+  font-size: 20px;
+  padding-bottom: 5px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
 #studioTag {
   position: absolute;
   bottom: 0;

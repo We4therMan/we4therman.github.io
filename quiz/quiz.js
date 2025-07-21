@@ -1,21 +1,10 @@
-$(function() {
-  $("#startButton").on("click", function() {
-    console.log("start button pressed");
-    $("#startButton").hide();
-    initQuiz();
-  })
-  $("#nextButton").on("click", function(){
-    console.log("next button pressed")
-    nextEvent(); //todo: handle when it needs to confirm if no answer is selected, text is still scrolling, or if we are at an interlude
-  })
-})
-
-const specialKeys = [
-  {
-    'burgerAnswer': false, 
-    'cumAnswer': false
-  }
-]
+//TODO maybe move audio setup to another js file? probably don't need em here
+const correctSnd = new Audio('quiz-aud/snd_correct.ogg');
+const wrongSnd = new Audio('quiz-aud/snd_wrong.ogg');
+const tic = new Audio('quiz-aud/snd_tic.ogg')
+// const ambSnd = new Audio('quiz-snd/snd_ambivalent.ogg') //TODO make this sound
+var bgMusic = new Audio('quiz-aud/mus_thefirstfew_0.ogg');
+bgMusic.loop = true;
 
 //question variables
 var currentQInd = 0;
@@ -39,6 +28,29 @@ var saidCum = false;
 
 //UI variables
 var eventType = "intro";
+var ticRate = 200;
+
+$(function() {
+  $("#startButton").on("click", function() {
+    console.log("start button pressed");
+    $("#startButton").hide();
+    initQuiz();
+  });
+  $("#nextButton").on("click", function(){
+    console.log("next button pressed")
+    nextEvent(); //todo: handle when it needs to confirm if no answer is selected, text is still scrolling, or if we are at an interlude
+  });
+  $("#musVolume").on("input", function() {
+    bgMusic.volume = parseFloat(this.value);
+  })
+})
+
+const specialKeys = [
+  {
+    'burgerAnswer': false, 
+    'cumAnswer': false
+  }
+]
 
 function initQuiz() {
   console.log("Initializing quiz");
@@ -47,6 +59,7 @@ function initQuiz() {
   $(".quizWelcome").hide();
   $("#quizContainer").show();
   resetSpecials();
+  bgMusic.play();
   loadQuestion(currentQInd);
   eventType = "question"
 }
@@ -58,28 +71,28 @@ function loadQuestion(currentQInd){
   $("#result").empty();
   $("#nextButton").hide();
   $("#quizContainer").empty();
-  currQuestion = questions[currentQInd]["question"]; //question
-  currAnsSet = questions[currentQInd]["answers"]; //answers
-  currAngSet = questions[currentQInd]["anger"];
-  currRepSet = questions[currentQInd]["replies"];
-  currCorrAns = questions[currentQInd]["correctAnswer"];
+  currQuestion = questions[currentQInd].question; //question
+  currAnsSet = questions[currentQInd].answers; //answers
+  currAngSet = questions[currentQInd].anger;
+  currRepSet = questions[currentQInd].replies;
+  currCorrAns = questions[currentQInd].correctAnswer;
   console.log(currQuestion)
+  sus = questions[currentQInd].suspense
+  ticRate = (sus) ? 1000 : 200;
 
   currAnsSet.forEach((currAns,ansInd) => {
     let currAng = currAngSet[ansInd] //anger values
     let currRep = currRepSet[ansInd] //replies
     console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
+    let isCorrect = currCorrAns.includes(ansInd);
     
-    if (currCorrAns.includes(ansInd)){
-      isCorrect = true;
-    } else {
-      isCorrect = false;
-    };
-    
-    console.log(`iscorrect ${isCorrect}`);
-    // $("#quizContainer").append(`<button class="multChoice">${currAns}</button>`)
-    generateAns(isCorrect,currAns,currAng,currRep);
+    setTimeout(() => {
+      generateAns(isCorrect, currAns, currAng, currRep);
+      new Audio('quiz-aud/snd_tic.ogg').play();
+    }, (ansInd + 1) * ticRate);
   });
+
+  bgMusic.playbackRate = sus ? 1 : 1.25;
 
   let currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
   let currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
@@ -110,10 +123,10 @@ function setSpecials(qInd,keys){
   switch (keys) {
       case "burgerAnswer":
         giveBurger = true;
-        currBurgAns = questions[currentQInd]["burgerAnswer"];
+        currBurgAns = questions[currentQInd].burgerAnswer;
       case "cumAnswer":
         saidCum = true;
-        currCumAns = questions[currentQInd]["cumAnswer"];
+        currCumAns = questions[currentQInd].cumAnswer;
       default:
         console.log(`question ${qInd+1} has no special events`);
     }
@@ -138,11 +151,13 @@ function result(isCorrect,ang,rep) {
   angScore += ang;
   if (isCorrect) {
     correctScore++;
-    console.log("pulsing green")
+    console.log("pulsing green");
     pulseBG("#3eff35");
+    new Audio('quiz-aud/snd_correct.ogg').play();
   } else {
     console.log("pulsing red");
     pulseBG("#fa2323");
+    new Audio('quiz-aud/snd_wrong.ogg').play();
   }
   $("#result").text(rep)
   console.log(angScore);
@@ -172,7 +187,7 @@ function checkAnger(ang) {
       angStage = -1
       break;
     case ang >= -50 && ang <= 50:
-      // console.log("neutral");
+      // console.log("neutral (stage 0)");
       angStage = 0
       break;
     case ang > 50 && ang <= 100:
@@ -192,8 +207,9 @@ function checkAnger(ang) {
 };
 
 function nextEvent() {
-  e = questions[currentQInd]["nextEvent"]
+  e = questions[currentQInd].nextEvent //check nextEvent label
   if (!e) {
+    //if no label, next event is assumed to be a question
     currentQInd++;
     loadQuestion(currentQInd);
   } else if (e === "interlude") {

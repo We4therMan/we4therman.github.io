@@ -164,4 +164,7 @@ var questions = [
 
 /* If nextEvent is none, assume it is equivalent to "question" */
 
-console.log(!questions[5]["eventType"])
+console.log("ARE THESE THE SAME QUESTION MARK")
+
+console.log(questions[0]["question"])
+console.log(questions[0].question)
