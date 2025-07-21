@@ -92,7 +92,7 @@ function loadQuestion(currentQInd){
     }, (ansInd + 1) * ticRate);
   });
 
-  bgMusic.playbackRate = sus ? 1 : 1.25;
+  bgMusic.playbackRate = sus ? 0.9 : 1.1;
 
   let currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
   let currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
