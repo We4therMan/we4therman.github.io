@@ -4,10 +4,12 @@
     <title>We4therman's Website - We4therMan's Quiz</title>
 		<link rel="stylesheet" href="quiz.css">
 		<link rel="shortcut icon" href="../img/pfp.png" type="image/x-icon">
+    <script src="tone.js"></script>
 		<script src="../jquery-3.4.1.min.js"></script>
     <script src="interludes.js"></script>
     <script src="questions.js"></script>
 		<script src="quiz.js"></script>
+    <script src="debug.js"></script>
 		<meta name="description" content="The official We4therMan quiz!.">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="keywords" content="we4therman">
@@ -32,7 +34,7 @@
     <button id="nextButton" style="display:none;">Next</button>
 
     <label for="musVolume">Music volume</label>
-    <input type="range" id="musVolume" min="0" max="1" step="0.01" value="0.5">
+    <input type="range" id="musVolume" min="-30" max="4" step="0.5" value="-15">
     <footer id="studioTag">
       <p>&copy; 2025 We4therMan Studios.</p>
     </footer>

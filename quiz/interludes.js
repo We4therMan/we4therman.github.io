@@ -3,6 +3,8 @@
 /* dicts organized as
 {
     restTxts (tell player it's the interlude)
+    [for "fail" texts, there must be a "failReq" that triggers fail texts if not met]
+    TODO: maybe make the pass req a certain percentage and score/qindex
 
     varyingTexts (extras depending on things player has done)
 
@@ -11,10 +13,10 @@
 */
 
 var interludes = [
-    {
+    {   //1
         "restTxtReg": "that was a tough question! You've done well so far... You should take a short rest.",
         "restTxtFail": "that was a tough question! You're... not doing so great with these, though.\
-            Take a breather, you want your brain sharp for these next ones!.",
+        Take a breather, you want your brain sharp for these next ones!.",
 
         "burgerTxt": "hey, smells pretty nice in here..",
         "cumTxt": "...holy shit I can't believe you actually said that HAHAHAHA",
@@ -24,10 +26,10 @@ var interludes = [
         "readyTxtAng": "Well, whatever, here are the next questions."
     },
 
-    {
+    {   //2
         "mainTxt": "Nice job there bucko"//joke about lacking a save progress function because I am not good at coding
     }
 ]
 
 //TODO: find different method for detecting special answers like 'burger' and 'cum'
-console.log(interludes[0])
+console.log(interludes[0].angryTxt)

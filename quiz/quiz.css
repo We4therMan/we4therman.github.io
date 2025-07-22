@@ -139,6 +139,17 @@ label[for="musVolume"] {
   vertical-align: middle;
 }
 
+#mute {
+  position: absolute;
+  bottom: 0;
+  right: 30px;
+  color: white;
+  font-family: roboto;
+  font-size: 20px;
+  padding-bottom: 5px;
+  margin-right: 10px;
+}
+
 #studioTag {
   position: absolute;
   bottom: 0;

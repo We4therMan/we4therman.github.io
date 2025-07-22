@@ -1,6 +1,17 @@
+/* ALL questions MUST have the following variables:
+question: the prompt given to the player. Does not always have to be a question (like a challenge), but it should be labeled as such
+answers: the player's options. TODO try a different kind of input?
+replies: the dialogue that appears after an answer is picked
+anger: the 'anger' value of the question
+correctAnswer: which answers add to the final score. MUST be an array. If none are correct the array can be empty, as such: []
+timeLim: the player's time limit to answer the question. If the timer runs out, it counts as an incorrect answer
+*/
+
+/* If nextEvent is none, code assumes it is equivalent to it being "question" */
+
 var questions = [
     {   //1
-        "question": "What is my name?", //add an easter egg that changes every option to "Jonas" and plays the Weezer song. Then restart the quiz with a twist...
+        "question": "What is my name?", //TODO add an easter egg that changes every option to "Jonas" and plays the Weezer song. Then restart the quiz with a twist...
         "answers": [
             "We4therMan",
             "we4therman",
@@ -161,10 +172,3 @@ var questions = [
     }
 
 ]
-
-/* If nextEvent is none, assume it is equivalent to "question" */
-
-console.log("ARE THESE THE SAME QUESTION MARK")
-
-console.log(questions[0]["question"])
-console.log(questions[0].question)

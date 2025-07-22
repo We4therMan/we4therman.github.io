@@ -3,11 +3,14 @@ const correctSnd = new Audio('quiz-aud/snd_correct.ogg');
 const wrongSnd = new Audio('quiz-aud/snd_wrong.ogg');
 const tic = new Audio('quiz-aud/snd_tic.ogg')
 // const ambSnd = new Audio('quiz-snd/snd_ambivalent.ogg') //TODO make this sound
-var bgMusic = new Audio('quiz-aud/mus_thefirstfew_0.ogg');
+const pitchShift = new Tone.PitchShift();
+var bgMusic = new Tone.Player('quiz-aud/mus_thefirstfew_0.ogg').toDestination();
+bgMusic.connect(pitchShift);
 bgMusic.loop = true;
 
 //question variables
 var currentQInd = 0;
+var currentIntInd = 0;
 var currQuestion = "";
 var currAnsSet = "";
 var currAngSet = "";
@@ -21,36 +24,41 @@ var isCorrect = false;
 var correctScore = 0;
 var angScore = 0;
 var angStage = 0;
+var failing = false;
 
 //route variables
 var giveBurger = false;
 var saidCum = false;
-
-//UI variables
-var eventType = "intro";
-var ticRate = 200;
-
-$(function() {
-  $("#startButton").on("click", function() {
-    console.log("start button pressed");
-    $("#startButton").hide();
-    initQuiz();
-  });
-  $("#nextButton").on("click", function(){
-    console.log("next button pressed")
-    nextEvent(); //todo: handle when it needs to confirm if no answer is selected, text is still scrolling, or if we are at an interlude
-  });
-  $("#musVolume").on("input", function() {
-    bgMusic.volume = parseFloat(this.value);
-  })
-})
-
-const specialKeys = [
+const specialKeys = [ //add future keys to this
   {
     'burgerAnswer': false, 
     'cumAnswer': false
   }
-]
+];
+
+//UI variables
+var eventType = "intro";
+var ticRate = 200;
+var buttonTimer;
+var speedUp = false;
+
+$(function() {
+  $("#startButton").on("click", function() {
+    console.log("start button pressed");
+    bgMusic.start();
+    $("#startButton").hide();
+    initQuiz();
+  });
+  $("#nextButton").on("click", function(){
+    clearTimeout(buttonTimer);
+    console.log("next button pressed")
+    nextEvent(); //todo: handle when it needs to confirm if no answer is selected, text is still scrolling, or if we are at an interlude
+  });
+  $("#musVolume").on("input", function() {
+    bgMusic.volume.value = parseFloat(this.value);
+    bgMusic.mute = (this.value <= -30.0) ? true : false;
+  })
+})
 
 function initQuiz() {
   console.log("Initializing quiz");
@@ -59,7 +67,6 @@ function initQuiz() {
   $(".quizWelcome").hide();
   $("#quizContainer").show();
   resetSpecials();
-  bgMusic.play();
   loadQuestion(currentQInd);
   eventType = "question"
 }
@@ -72,27 +79,27 @@ function loadQuestion(currentQInd){
   $("#nextButton").hide();
   $("#quizContainer").empty();
   currQuestion = questions[currentQInd].question; //question
-  currAnsSet = questions[currentQInd].answers; //answers
+  currAnsSet = questions[currentQInd].answers;
   currAngSet = questions[currentQInd].anger;
-  currRepSet = questions[currentQInd].replies;
+  currRepSet = questions[currentQInd].replies; 
   currCorrAns = questions[currentQInd].correctAnswer;
   console.log(currQuestion)
-  sus = questions[currentQInd].suspense
+  sus = questions[currentQInd].suspense //suspense value
   ticRate = (sus) ? 1000 : 200;
 
-  currAnsSet.forEach((currAns,ansInd) => {
+  currAnsSet.forEach((currAns,ansInd) => { //answer options and indices
     let currAng = currAngSet[ansInd] //anger values
     let currRep = currRepSet[ansInd] //replies
     console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
     let isCorrect = currCorrAns.includes(ansInd);
     
-    setTimeout(() => {
+    var buttonTimer = setTimeout(() => {
       generateAns(isCorrect, currAns, currAng, currRep);
       new Audio('quiz-aud/snd_tic.ogg').play();
-    }, (ansInd + 1) * ticRate);
+    }, (speedUp ? ((ansInd + 1) * 50) : ((ansInd + 1) * ticRate))); //todo: make timeout 0 if skip option is true
   });
 
-  bgMusic.playbackRate = sus ? 0.9 : 1.1;
+  bgMusic.playbackRate = sus ? 0.90 : 1.0;
 
   let currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
   let currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
@@ -100,7 +107,39 @@ function loadQuestion(currentQInd){
 
   $("#question").text(currQuestion)
 
-}
+};
+
+function loadInterlude(currentIntInd) {
+  console.log("deep voice male");
+  $("#result").empty();
+  $("#quizContainer").empty();
+  $("#question").empty();
+  $("#nextButton").hide();
+
+  failing = (correctScore/currentQInd < 0.5) ? true : false;
+
+  selectedTexts(currentIntInd,failing,angStage).forEach((intTxt,txtInd) => {
+    var intTimer = setTimeout(() => {
+      generateIntTxt(intTxt);
+      new Audio('quiz-aud/snd_tic.ogg').play();
+    }, 500)
+  })
+
+  $("quizContainer").text("test for now hello me");
+};
+
+//save texts to be displayed in an array to be shown
+function selectedTexts(intInd, failing, angStage) {
+  const intSet = interludes[intInd];
+  console.log(intSet);
+  return [
+    failing ? intSet.restTxtFail : intSet.restTxtPass,
+    giveBurger ? intSet.burgerTxt : null,
+    saidCum ? intSet.cumTxt : null,
+    angStage >= 1 ? intSet.angryTxt : null,
+    angStage >= 1 ? intSet.readyTxtAng : intSet.readyTxtReg
+  ].filter(item => typeof item === 'string');
+};
 
 function checkGetSpecial(ind,spKeys){
   return spKeys
@@ -109,7 +148,7 @@ function checkGetSpecial(ind,spKeys){
       result[spKey] = questions[ind][spKey];
       return result;
     }, {});
-}
+};
 
 function resetSpecials(){
   specialKeys.forEach((key,ind) => {
@@ -119,7 +158,7 @@ function resetSpecials(){
   console.log("special keys reset")
 }
 
-function setSpecials(qInd,keys){
+function setSpecials(qInd,keys){ //add future routes to this. The rest should handle itself
   switch (keys) {
       case "burgerAnswer":
         giveBurger = true;
@@ -147,6 +186,16 @@ function generateAns(isCorrect,ans,ang,rep){
   $("#quizContainer").append(button);
 }
 
+function generateIntTxt(txt) {
+  console.log("generating text");
+
+  var t = $('<p />')
+  .addClass("intTxt")
+  .text(txt);
+
+  $("#quizContainer").append(t);
+};
+
 function result(isCorrect,ang,rep) {
   angScore += ang;
   if (isCorrect) {
@@ -163,6 +212,7 @@ function result(isCorrect,ang,rep) {
   console.log(angScore);
   console.log(correctScore);
   checkAnger(angScore);
+  bgMusic.playbackRate = 1.0
   $("#nextButton").show();
 }
 
@@ -196,11 +246,11 @@ function checkAnger(ang) {
       break;
     case ang > 100 && ang < 150:
       // console.log("angry stage2");
-      angStage = -2
+      angStage = 2
       break;
     case ang >= 150:
       // console.log("anger final");
-      angStage = -3
+      angStage = 3
       break;
   }
   
@@ -213,7 +263,7 @@ function nextEvent() {
     currentQInd++;
     loadQuestion(currentQInd);
   } else if (e === "interlude") {
-    console.log("start interlude")
+    loadInterlude();
   }
 
 }
