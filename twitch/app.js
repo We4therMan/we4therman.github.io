@@ -43,7 +43,7 @@ fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${userID}&first=20`, {
 function randomClip() {
   const randID = clipIDs[Math.floor(Math.random() * clipIDs.length)];
   console.log(`playing random clip: ${randID}`)
-  const src = `https://clips.twitch.tv/embed?clip=${randID}&parent=we4therman.github.io&autoplay=true`;
+  const src = `https://clips.twitch.tv/embed?clip=${randID}&parent=we4therman.github.io/twitch/&autoplay=true`;
   $("#clip-player").attr("src", src);
 }
 
