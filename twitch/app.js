@@ -35,7 +35,7 @@ fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${userID}&first=20`, {
 })
 .then(res => res.json())
 .then(data => {
-  const clipIds = data.data.map(clip => clip.id);
+  const clipIDs = data.data.map(clip => clip.id);
   console.log(clipIDs);
 });
 
