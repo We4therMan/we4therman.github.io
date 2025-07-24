@@ -44,6 +44,7 @@ function randomClip() {
   console.log(`playing random clip: ${randID}`)
   const src = `https://clips.twitch.tv/embed?clip=${randID}&parent=we4therman.github.io/twitch/&autoplay=true`;
   $("#clip-player").attr("src", src);
+  $("#auth-text").text("If that button doesn't work you probably need to click this link first")
 }
 
 function refreshColors() {
