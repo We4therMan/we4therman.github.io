@@ -17,7 +17,7 @@ const clipIDs = [
   "CallousZanyTigerDuDudu"
 ];
 const clientID = "hybxycfqunpq57mgsvydiczvgfvuxo";
-const userID = 267427959;
+const userID = "267427959";
 
 function getAccessTokenFromUrl() {
   const hash = window.location.hash.substring(1); // Remove the '#'
