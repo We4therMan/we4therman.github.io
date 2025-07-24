@@ -6,9 +6,27 @@ $(function() {
     refreshColors()
   })
 
+  randomClip();
+  $("#next-clip").on("click", randomClip);
 })
 
-var darkMode = (getCookie("darkMode") == "true") ? true : false
+var darkMode = (getCookie("darkMode") == "true") ? true : false;
+const clipIDs = [
+  "DarlingOnerousGalagoOSfrog-awCHwGHpmnxIL652",
+  "ElegantScrumptiousTitanFunRun",
+  "CallousZanyTigerDuDudu"
+];
+
+let url = window.location.href;
+console.log(url);
+console.log('twf does this do')
+
+function randomClip() {
+  const randID = clipIDs[Math.floor(Math.random() * clipIDs.length)];
+  console.log(`playing random clip: ${randID}`)
+  const src = `https://clips.twitch.tv/embed?clip=${randID}&parent=we4therman.github.io&autoplay=true`;
+  $("#clip-player").attr("src", src);
+}
 
 function refreshColors() {
   if (darkMode == true) {
