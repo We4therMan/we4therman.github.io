@@ -6,10 +6,11 @@ $(function() {
     refreshColors()
   })
 
-  $("#next-clip").on("click", randomClip);
+  $("#next-clip").on("click", randomClip(clipIDs));
 })
 
 var darkMode = (getCookie("darkMode") == "true") ? true : false;
+var clipIDs = [];
 // const clipIDs = [
 //   "DarlingOnerousGalagoOSfrog-awCHwGHpmnxIL652",
 //   "ElegantScrumptiousTitanFunRun",
@@ -39,8 +40,8 @@ fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${userID}&first=20`, {
   console.log(clipIDs);
 });
 
-function randomClip() {
-  const randID = clipIDs[Math.floor(Math.random() * clipIDs.length)];
+function randomClip(idList) {
+  const randID = idList[Math.floor(Math.random() * idList.length)];
   console.log(`playing random clip: ${randID}`)
   const src = `https://clips.twitch.tv/embed?clip=${randID}&parent=we4therman.github.io/twitch/&autoplay=true`;
   $("#clip-player").attr("src", src);
