@@ -6,16 +6,15 @@ $(function() {
     refreshColors()
   })
 
-  randomClip();
   $("#next-clip").on("click", randomClip);
 })
 
 var darkMode = (getCookie("darkMode") == "true") ? true : false;
-const clipIDs = [
-  "DarlingOnerousGalagoOSfrog-awCHwGHpmnxIL652",
-  "ElegantScrumptiousTitanFunRun",
-  "CallousZanyTigerDuDudu"
-];
+// const clipIDs = [
+//   "DarlingOnerousGalagoOSfrog-awCHwGHpmnxIL652",
+//   "ElegantScrumptiousTitanFunRun",
+//   "CallousZanyTigerDuDudu"
+// ];
 const clientID = "hybxycfqunpq57mgsvydiczvgfvuxo";
 const userID = "267427959";
 
@@ -37,7 +36,7 @@ fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${userID}&first=20`, {
 .then(res => res.json())
 .then(data => {
   const clipIds = data.data.map(clip => clip.id);
-  console.log(clipIds);
+  console.log(clipIDs);
 });
 
 function randomClip() {
