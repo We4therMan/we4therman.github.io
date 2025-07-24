@@ -17,6 +17,7 @@ const clipIDs = [
   "CallousZanyTigerDuDudu"
 ];
 const clientID = "hybxycfqunpq57mgsvydiczvgfvuxo";
+const userID = 267427959;
 
 function getAccessTokenFromUrl() {
   const hash = window.location.hash.substring(1); // Remove the '#'
@@ -27,7 +28,7 @@ function getAccessTokenFromUrl() {
 const accessToken = getAccessTokenFromUrl();
 console.log(accessToken); 
 
-fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${userId}&first=20`, {
+fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${userID}&first=20`, {
   headers: {
     'client-ID': clientID,
     'Authorization': `Bearer ${accessToken}`
