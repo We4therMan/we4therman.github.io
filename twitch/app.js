@@ -16,10 +16,28 @@ const clipIDs = [
   "ElegantScrumptiousTitanFunRun",
   "CallousZanyTigerDuDudu"
 ];
+const clientID = "hybxycfqunpq57mgsvydiczvgfvuxo";
 
-let url = window.location.href;
-console.log(url);
-console.log('twf does this do')
+function getAccessTokenFromUrl() {
+  const hash = window.location.hash.substring(1); // Remove the '#'
+  const params = new URLSearchParams(hash);
+  return params.get('access_token');
+}
+
+const accessToken = getAccessTokenFromUrl();
+console.log(accessToken); 
+
+fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${userId}&first=20`, {
+  headers: {
+    'client-ID': clientID,
+    'Authorization': `Bearer ${accessToken}`
+  }
+})
+.then(res => res.json())
+.then(data => {
+  const clipIds = data.data.map(clip => clip.id);
+  console.log(clipIds);
+});
 
 function randomClip() {
   const randID = clipIDs[Math.floor(Math.random() * clipIDs.length)];
