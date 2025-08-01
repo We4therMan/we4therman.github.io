@@ -133,7 +133,7 @@ function selectedTexts(intInd, failing, angStage) {
   const intSet = interludes[intInd];
   console.log(intSet);
   return [
-    failing ? intSet.restTxtFail : intSet.restTxtPass,
+    failing ? intSet.restTxtFail : intSet.restTxtReg,
     giveBurger ? intSet.burgerTxt : null,
     saidCum ? intSet.cumTxt : null,
     angStage >= 1 ? intSet.angryTxt : null,
@@ -257,7 +257,7 @@ function checkAnger(ang) {
 };
 
 function nextEvent() {
-  e = questions[currentQInd].nextEvent //check nextEvent label
+  let e = questions[currentQInd].nextEvent //check nextEvent label
   if (!e) {
     //if no label, next event is assumed to be a question
     currentQInd++;

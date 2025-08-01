@@ -11,9 +11,19 @@ $(function() {
 
 })
 
+const sfx = new Tone.ToneAudioBuffers({
+  urls: {
+    wrong: "./quiz/quiz-aud/snd_wrong.ogg",
+    correct: "./quiz/quiz-aud/snd_correct.ogg",
+  },
+  onload: () => {
+    console.log("buffers loaded")
+    console.log(sfxPlayer)
+  }
+})
+
 var darkMode = (getCookie("darkMode") == "true") ? true : false
 var count = 0
-const pitchShift = new Tone.PitchShift();
 
 function refreshColors() {
   if (darkMode == true) {
@@ -32,7 +42,6 @@ function refreshColors() {
 }
 
 let qHandler;
-let enterSnd = null;
 
 function easterEgg() {
   switch (count) {
@@ -40,16 +49,27 @@ function easterEgg() {
     qHandler = function(e){
       if (e.code === "KeyQ") {
         console.log("Q requirements met. Launching quiz...")
-        enterSnd = new Tone.Player('./quiz/quiz-aud/snd_correct.ogg');
-        enterSnd.start();
-        enterSnd.connect(pitchShift);
-        enterSnd.playbackRate = 0.1;
+        // enterSnd = new Tone.Player('./quiz/quiz-aud/snd_correct.ogg');
+        // const enterSnd = new Tone.Player('./quiz/quiz-aud/snd_correct.ogg');
+        const sfxPlayer = new Tone.Player().toDestination();
+        sfxPlayer.buffer = sfx.get("correct")
+        const feedbackDelay = new Tone.FeedbackDelay("3n", 0.5).toDestination();
+        sfxPlayer.connect(feedbackDelay);
+        sfxPlayer.playbackRate = 0.14;
+        console.log(sfxPlayer)
+        sfxPlayer.start();
 
-        $("#easterEgg").html("Welcome")
         $(".box").empty();
+        $(".blueBox").empty();
+        $(".linkBox").hide();
+        $("#darkMode").hide();
+        $(".background").css({"color": "black"});
+        $(".outline").text("WELCOME");
+        $("#welcome").text("WELCOME");
+        $("#easterEgg").text("WELCOME");
         setTimeout(() => {
           window.location.href = "./quiz/index.html"
-        }, 4500)
+        }, 5000)
       }
     };
     $(document).on("keydown", qHandler);
