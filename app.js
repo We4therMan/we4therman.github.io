@@ -12,8 +12,8 @@ $(function() {
 })
 
 var darkMode = (getCookie("darkMode") == "true") ? true : false
-
 var count = 0
+const pitchShift = new Tone.PitchShift();
 
 function refreshColors() {
   if (darkMode == true) {
@@ -31,8 +31,46 @@ function refreshColors() {
   }
 }
 
+let qHandler;
+let enterSnd = null;
+
 function easterEgg() {
   switch (count) {
+    case 4:
+    qHandler = function(e){
+      if (e.code === "KeyQ") {
+        console.log("Q requirements met. Launching quiz...")
+        enterSnd = new Tone.Player('./quiz/quiz-aud/snd_correct.ogg');
+        enterSnd.start();
+        enterSnd.connect(pitchShift);
+        enterSnd.playbackRate = 0.1;
+
+        $("#easterEgg").html("Welcome")
+        $(".box").empty();
+        setTimeout(() => {
+          window.location.href = "./quiz/index.html"
+        }, 4500)
+      }
+    };
+    $(document).on("keydown", qHandler);
+    $("#easterEgg").css({"color": "#d0f5ea"})
+    break;
+    case 5:
+      if (qHandler) {
+        $(document).off("keydown", qHandler);
+      }
+      $(document).on("keydown", function(e){
+      if (e.code === "KeyQ") {
+        new Audio('./quiz/quiz-aud/snd_wrong.ogg').play();
+        $("#easterEgg").html("You were too late!!!!!!!!!!")
+        $("#easterEgg").css({"font-size": 76})
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+      }
+    });
+    $("#easterEgg").css({"color": "white"})
+    break;
     case 69:
     $("#easterEgg").html("Good job! You found the third secret added to this website.<br><br>Secret 3: I've just added this secret after 5 years of not touching this website at all! <i>Your patience rewards you greatly, my friend!</i>")
     break;
