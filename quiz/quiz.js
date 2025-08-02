@@ -311,7 +311,7 @@ function result(isCorrect,ang,rep) {
         break;
       case 100:
         gameOver();
-        $("#question").text("OK, I don't know what you're trying to achieve here. DON'T DO IT AGAIN.");
+        $("#question").html("OK, I don't know what you're trying to achieve here. I'm making you start over. DON'T DO IT AGAIN.<br><br>GAME OVER");
         break;
     }
   })
