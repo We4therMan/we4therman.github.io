@@ -27,13 +27,12 @@ th, td {
   padding: 5px;
 }
 
-/* .quizWelcome {
-  display: flex;
-} */
+.quizWelcome {
+  margin-top: 50px;
+  text-align: center;
+}
 
 #startButton {
-  position: fixed;
-  left: 50%;
   color: white;
   background-color: #880808;
   font-size: 56px;
@@ -42,8 +41,6 @@ th, td {
 }
 
 #startButton:hover {
-  position: fixed;
-  left: 50%;
   color: white;
   background-color: #EE4B2B;
   font-size: 56px;
@@ -62,38 +59,50 @@ th, td {
   border: none;
 }
 
+#contButton {
+  position: sticky;
+  left: 10px;
+  bottom: 10%;
+  color: white;
+  background-color: #880808;
+  font-size: 56px;
+  text-align: center;
+  border: none;
+}
+
 .quiz-intro {
   position: relative;
   text-align: center
 }
 
 #quizContainer {
-  position: absolute;
-  margin: 0 auto;
+  margin: 10px 50px 10px;
   display: flex;
 	justify-content: center;
   align-items: center;
+  max-width: 100%;
 }
 
 #question {
+  font-family: "Lucida Console";
   font-size: 48px;
   color: white;
-  
+  margin: 10px auto 10px;
 }
 
 #result {
+  font-family: "Lucida Console";
   font-size: 48px;
   color: white;
+  margin: 10px auto 10px;
 }
 
-.quizAns {
-	text-align: center;
-}
-
+/* answer buttons */
 .multChoice {
   font-family: "Lucida Console";
-  padding: 30px;
-
+  font-size: 30px;
+  padding: 20px;
+  margin: auto 15px;
 }
 
 .background {
@@ -115,6 +124,30 @@ th, td {
     src: url("../Roboto.ttf");
 }
 
+#sfxVolume {
+  position: absolute;
+  bottom: 35px;
+  right: 15px;
+  width: 200px;
+  height: 8px;
+  background: #333;
+  border-radius: 5px;
+  outline: none;
+  margin: 10px 0;
+}
+
+label[for="sfxVolume"] {
+  position: absolute;
+  bottom: 50px;
+  right: 15px;
+  color: white;
+  font-family: roboto;
+  font-size: 15px;
+  padding-bottom: 5px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
 #musVolume {
   position: absolute;
   bottom: 0;
@@ -133,25 +166,14 @@ label[for="musVolume"] {
   right: 15px;
   color: white;
   font-family: roboto;
-  font-size: 20px;
+  font-size: 15px;
   padding-bottom: 5px;
   margin-right: 10px;
   vertical-align: middle;
 }
 
-#mute {
-  position: absolute;
-  bottom: 0;
-  right: 30px;
-  color: white;
-  font-family: roboto;
-  font-size: 20px;
-  padding-bottom: 5px;
-  margin-right: 10px;
-}
-
 #studioTag {
   position: absolute;
   bottom: 0;
-  text-align: center;
+  padding-bottom: 5px;
 }

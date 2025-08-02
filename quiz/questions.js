@@ -169,6 +169,29 @@ var questions = [
         "correctAnswer": [1],
         "timeLim": 15.0,
         "gdAnswer": [0],
-    }
+    },
 
+    {   //6
+        "question": "How far is Haiti from Louisville?",
+        "answers": [
+            "fuck",
+            "a night of drinking",
+            "drive by the Jack in the Box",
+            "Mfuck her Stupid mouth"
+        ],
+        "replies": [
+            "we do silly things with food in thius coutnyrt",
+            "translover",
+            "bye.",
+            "Puke of ",
+        ],
+        "anger": [
+            5,
+            5,
+            10,
+            5,
+        ],
+        "correctAnswer": [1],
+        "timeLim": 15.0,
+    }
 ]

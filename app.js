@@ -13,12 +13,11 @@ $(function() {
 
 const sfx = new Tone.ToneAudioBuffers({
   urls: {
-    wrong: "./quiz/quiz-aud/snd_wrong.ogg",
-    correct: "./quiz/quiz-aud/snd_correct.ogg",
+    wrong: "./quiz/aud/snd_wrong.ogg",
+    correct: "./quiz/aud/snd_correct.ogg",
   },
   onload: () => {
-    console.log("buffers loaded")
-    console.log(sfxPlayer)
+    console.log("sfx buffers loaded")
   }
 })
 
@@ -33,7 +32,7 @@ function refreshColors() {
     $("#darkMode").css({"background-color": "black", "color": "white"})
     $("#darkMode span").text("Light Mode")
   } else {
-    $(".background").css({"background": "url('./img/bg.png')"})
+    $(".background").css({"background": "url('./img/bg.png')", "background-color": "black"})
     $(".blueBox").css({"background-color": "rgba(0,0,255,0.25)"})
     $(".box").css({"background-color": "rgba(255,0,0,0.6)"})
     $("#darkMode").css({"background-color": "rgba(255,0,0,0.5)", "color": "white"})
@@ -49,8 +48,6 @@ function easterEgg() {
     qHandler = function(e){
       if (e.code === "KeyQ") {
         console.log("Q requirements met. Launching quiz...")
-        // enterSnd = new Tone.Player('./quiz/quiz-aud/snd_correct.ogg');
-        // const enterSnd = new Tone.Player('./quiz/quiz-aud/snd_correct.ogg');
         const sfxPlayer = new Tone.Player().toDestination();
         sfxPlayer.buffer = sfx.get("correct")
         const feedbackDelay = new Tone.FeedbackDelay("3n", 0.5).toDestination();
@@ -58,15 +55,11 @@ function easterEgg() {
         sfxPlayer.playbackRate = 0.14;
         console.log(sfxPlayer)
         sfxPlayer.start();
-
-        $(".box").empty();
-        $(".blueBox").empty();
-        $(".linkBox").hide();
-        $("#darkMode").hide();
-        $(".background").css({"color": "black"});
-        $(".outline").text("WELCOME");
-        $("#welcome").text("WELCOME");
-        $("#easterEgg").text("WELCOME");
+        
+        $(".box, .blueBox").empty();
+        $(".linkBox, #darkMode").hide();
+        $(".background").css({"background": "none", "background-color": "black"});
+        $(".outline, #welcome").text("WELCOME");
         setTimeout(() => {
           window.location.href = "./quiz/index.html"
         }, 5000)
@@ -74,6 +67,7 @@ function easterEgg() {
     };
     $(document).on("keydown", qHandler);
     $("#easterEgg").css({"color": "#d0f5ea"})
+    $("#clue").text("01010100 01101000 01100101 01110010 01100101 00100111 01110011 00100000 01100001 00100000 01001011 01000101 01011001 00100000 01110100 01101111 00100000 01100001 01100011 01100011 01100101 01110011 01110011 00100000 01110100 01101000 01100101 00100000 01010001 01110101 01101001 01111010 00100000 01101110 01101111 01110111 00101110 00101110 00101110")
     break;
     case 5:
       if (qHandler) {
@@ -81,7 +75,7 @@ function easterEgg() {
       }
       $(document).on("keydown", function(e){
       if (e.code === "KeyQ") {
-        new Audio('./quiz/quiz-aud/snd_wrong.ogg').play();
+        new Audio('./quiz/aud/snd_wrong.ogg').play();
         $("#easterEgg").html("You were too late!!!!!!!!!!")
         $("#easterEgg").css({"font-size": 76})
         setTimeout(() => {
@@ -90,6 +84,7 @@ function easterEgg() {
       }
     });
     $("#easterEgg").css({"color": "white"})
+    $("#clue").hide()
     break;
     case 69:
     $("#easterEgg").html("Good job! You found the third secret added to this website.<br><br>Secret 3: I've just added this secret after 5 years of not touching this website at all! <i>Your patience rewards you greatly, my friend!</i>")

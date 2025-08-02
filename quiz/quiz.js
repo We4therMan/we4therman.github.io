@@ -1,23 +1,51 @@
 //TODO maybe move audio setup to another js file? probably don't need em here
-const correctSnd = new Audio('quiz-aud/snd_correct.ogg');
-const wrongSnd = new Audio('quiz-aud/snd_wrong.ogg');
-const tic = new Audio('quiz-aud/snd_tic.ogg')
-// const ambSnd = new Audio('quiz-snd/snd_ambivalent.ogg') //TODO make this sound
-const pitchShift = new Tone.PitchShift();
-var bgMusic = new Tone.Player('quiz-aud/mus_thefirstfew_0.ogg').toDestination();
-bgMusic.connect(pitchShift);
-bgMusic.loop = true;
+// const correctSnd = new Audio('quiz-aud/snd_correct.ogg');
+// const wrongSnd = new Audio('aud/snd_wrong.ogg');
+// const tic = new Audio('aud/snd_tic.ogg')
+// const ambSnd = new Audio('snd/snd_ambivalent.ogg') //TODO make this sound
+// const pitchShift = new Tone.PitchShift();
+// var bgMusic = new Tone.Player('aud/mus_thefirstfew_0.ogg').toDestination();
+// bgMusic.connect(pitchShift);
+// bgMusic.loop = true;
+
+//sound variables
+const mus = new Tone.ToneAudioBuffers({
+  urls: {
+    firstfew: "aud/mus_thefirstfew_0.ogg",
+    //interlude: "aud/mus_interlude.ogg", //TODO write this song lol
+  },
+  onload: () => {
+    console.log("music buffers loaded")
+  }
+});
+
+const sfx = new Tone.ToneAudioBuffers({
+  urls: {
+    wrong: "aud/snd_wrong.ogg",
+    correct: "aud/snd_correct.ogg",
+    tic: "aud/snd_tic.ogg",
+    blip: "aud/snd_blip.ogg",
+  },
+  onload: () => {
+    console.log("sfx buffers loaded")
+  }
+});
+
+let musPlayer;
+let sfxPlayer;
+var musVol = -5;
+var sfxVol = -5;
 
 //question variables
-var currentQInd = 0;
-var currentIntInd = 0;
-var currQuestion = "";
-var currAnsSet = "";
-var currAngSet = "";
-var currRepSet = "";
+var currentQInd;
+var currentIntInd;
+var currQuestion;
+var currAnsSet;
+var currAngSet;
+var currRepSet;
 var currCorrAns = [];
-var currBurgAns = "";
-var currCumAns = "";
+var currBurgAns;
+var currCumAns;
 var isCorrect = false;
 
 //score variables
@@ -39,33 +67,64 @@ const specialKeys = [ //add future keys to this
 //UI variables
 var eventType = "intro";
 var ticRate = 200;
-var buttonTimer;
+var buttonAnsTimer;
 var speedUp = false;
 
 $(function() {
-  $("#startButton").on("click", function() {
+  $("#startButton").on("click", async function() {
     console.log("start button pressed");
-    bgMusic.start();
+
+    await Tone.start();
+    musPlayer = new Tone.Player().toDestination();
+    musPlayer.buffer = mus.get("firstfew");
+    musPlayer.loop = true;
+    musPlayer.volume.value = musVol;
+    musPlayer.start();
+    console.log("Music started")
+
+    sfxPlayer = new Tone.Player().toDestination();
+    sfxPlayer.volume.value = sfxVol;
+    console.log("SFX player initialized")
+
     $("#startButton").hide();
-    initQuiz();
+
+    setTimeout(() => {
+      initQuiz();
+    }, 10)
   });
+
   $("#nextButton").on("click", function(){
-    clearTimeout(buttonTimer);
-    console.log("next button pressed")
-    nextEvent(); //todo: handle when it needs to confirm if no answer is selected, text is still scrolling, or if we are at an interlude
+    clearTimeout(buttonAnsTimer);
+    nextEvent(); 
   });
-  $("#musVolume").on("input", function() {
-    bgMusic.volume.value = parseFloat(this.value);
-    bgMusic.mute = (this.value <= -30.0) ? true : false;
+
+  $("#contButton").on("click", function(){
+    nextEvent();
   })
+
+  $("#musVolume").on("input", function() {
+    musPlayer.volume.value = parseFloat(this.value);
+    musPlayer.mute = (this.value <= -30.0) ? true : false;
+  });
+
+  $("#sfxVolume").on("input", function() {
+    sfxVol = parseFloat(this.value);
+    sfxPlayer.volume.value = sfxVol;
+    sfxPlayer.mute = (sfxVol <= -30.0) ? true : false;
+  });
 })
 
 function initQuiz() {
   console.log("Initializing quiz");
-  correctAnswers = 0;
-  currentQInd = 0;
+  //reset variables
+  correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0;
   $(".quizWelcome").hide();
   $("#quizContainer").show();
+  //reassign button function
+  $("#nextButton").off("click").on("click", function(){
+    clearTimeout(buttonAnsTimer);
+    nextEvent(); 
+  }).text("Next");
   resetSpecials();
   loadQuestion(currentQInd);
   eventType = "question"
@@ -75,9 +134,9 @@ function initQuiz() {
 
 function loadQuestion(currentQInd){
   console.log(`initializing question ${currentQInd+1}`);
-  $("#result").empty();
-  $("#nextButton").hide();
-  $("#quizContainer").empty();
+  $("#quizContainer, #result").show();
+  $("#quizContainer, #result").empty();
+  $("#nextButton, #contButton, #intContainer").hide();
   currQuestion = questions[currentQInd].question; //question
   currAnsSet = questions[currentQInd].answers;
   currAngSet = questions[currentQInd].anger;
@@ -85,7 +144,7 @@ function loadQuestion(currentQInd){
   currCorrAns = questions[currentQInd].correctAnswer;
   console.log(currQuestion)
   sus = questions[currentQInd].suspense //suspense value
-  ticRate = (sus) ? 1000 : 200;
+  ticRate = (sus) ? 800 : 200;
 
   currAnsSet.forEach((currAns,ansInd) => { //answer options and indices
     let currAng = currAngSet[ansInd] //anger values
@@ -93,45 +152,29 @@ function loadQuestion(currentQInd){
     console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
     let isCorrect = currCorrAns.includes(ansInd);
     
-    var buttonTimer = setTimeout(() => {
+    buttonAnsTimer = setTimeout(() => {
       generateAns(isCorrect, currAns, currAng, currRep);
-      new Audio('quiz-aud/snd_tic.ogg').play();
+      if (!sfxPlayer.mute) { //play tic if sfx is on
+        tic = new Tone.Player(sfx.get("tic")).toDestination();
+        tic.volume.value = sfxVol;
+        tic.start();
+        tic.onstop = () => tic.dispose();
+      }
     }, (speedUp ? ((ansInd + 1) * 50) : ((ansInd + 1) * ticRate))); //todo: make timeout 0 if skip option is true
   });
 
-  bgMusic.playbackRate = sus ? 0.90 : 1.0;
+  musPlayer.playbackRate = sus ? 0.90 : 1.0
 
   let currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
   let currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
   setSpecials(currentQInd,currSpecKeys);
 
-  $("#question").text(currQuestion)
-
-};
-
-function loadInterlude(currentIntInd) {
-  console.log("deep voice male");
-  $("#result").empty();
-  $("#quizContainer").empty();
-  $("#question").empty();
-  $("#nextButton").hide();
-
-  failing = (correctScore/currentQInd < 0.5) ? true : false;
-
-  selectedTexts(currentIntInd,failing,angStage).forEach((intTxt,txtInd) => {
-    var intTimer = setTimeout(() => {
-      generateIntTxt(intTxt);
-      new Audio('quiz-aud/snd_tic.ogg').play();
-    }, 500)
-  })
-
-  $("quizContainer").text("test for now hello me");
+  $("#question").html(`${(currentQInd + 1).toString()}. ${currQuestion}`).css({"color": "white"});
 };
 
 //save texts to be displayed in an array to be shown
-function selectedTexts(intInd, failing, angStage) {
-  const intSet = interludes[intInd];
-  console.log(intSet);
+function selectedTexts(currentIntInd, failing, angStage) {
+  const intSet = interludes[currentIntInd];
   return [
     failing ? intSet.restTxtFail : intSet.restTxtReg,
     giveBurger ? intSet.burgerTxt : null,
@@ -139,6 +182,33 @@ function selectedTexts(intInd, failing, angStage) {
     angStage >= 1 ? intSet.angryTxt : null,
     angStage >= 1 ? intSet.readyTxtAng : intSet.readyTxtReg
   ].filter(item => typeof item === 'string');
+};
+
+function loadInterlude(currentIntInd) {
+  $("#quizContainer, #intContainer, #question, #result").empty();
+  $("#quizContainer, #nextButton").hide();
+  $("#intContainer").show();
+  sfxPlayer.buffer = sfx.get("blip")
+
+  failing = (correctScore/currentQInd < 0.5) ? true : false;
+
+  let intTexts = selectedTexts(currentIntInd,failing,angStage)
+
+  setTimeout(() => {
+    console.log("playing")
+    $("#contButton").show();
+    sfxPlayer.start();
+  }, (intTexts.length) * 1000);
+
+  intTexts.forEach((intTxt,txtInd) => {
+    var intTimer = setTimeout(() => {
+      console.log("playing")
+      generateIntTxt(intTxt);
+      sfxPlayer.start();
+    }, txtInd * 1000);
+  })
+
+  $("quizContainer").text("if you see this text something is not working");
 };
 
 function checkGetSpecial(ind,spKeys){
@@ -191,38 +261,74 @@ function generateIntTxt(txt) {
 
   var t = $('<p />')
   .addClass("intTxt")
-  .text(txt);
+  .html(txt);
 
-  $("#quizContainer").append(t);
+  $("#intContainer").append(t);
+  $("#intContainer").append("<br>")
 };
 
+//handle answer choice
 function result(isCorrect,ang,rep) {
   angScore += ang;
   if (isCorrect) {
     correctScore++;
     console.log("pulsing green");
-    pulseBG("#3eff35");
-    new Audio('quiz-aud/snd_correct.ogg').play();
+    pulseBG("#007d00");
   } else {
     console.log("pulsing red");
-    pulseBG("#fa2323");
-    new Audio('quiz-aud/snd_wrong.ogg').play();
+    pulseBG("#7d0400");
   }
+  sfxPlayer.buffer = sfx.get(isCorrect ? "correct" : "wrong");
+  sfxPlayer.start();
+
   $("#result").text(rep)
-  console.log(angScore);
-  console.log(correctScore);
+  let ansClicks = 1;
+  $(".multChoice").off("click").on("click", function(){
+    ansClicks++;
+    switch (ansClicks) {
+      case 5:
+        $("#question").text("Hey, you already picked an answer. Move on to the next question.");
+        break;
+      case 15:
+        $("#question").text("...stop that.");
+        angScore += 5;
+        break;
+      case 30:
+        $("#question").text("Now you're really pushing my buttons... haha.");
+        angScore += 10;
+        break;
+      case 45:
+        $("#question").text("ok it's actually not funny. please stop, seriously");
+        angScore += 50;
+        break;
+      case 60:
+        $("#question").text("you're really fucking annoying, you know that?");
+        angScore += 70;
+        break;
+      case 75:
+        $("#question").text("JESUS CHRIST STOP").css({"color": "red"});
+        angScore += 250;
+        break;
+      case 100:
+        gameOver();
+        $("#question").text("OK, I don't know what you're trying to achieve here. DON'T DO IT AGAIN.");
+        break;
+    }
+  })
+  console.log(angScore, correctScore);
   checkAnger(angScore);
-  bgMusic.playbackRate = 1.0
+  console.log(`anger stage ${angStage}`)
+  musPlayer.playbackRate = 1.0
   $("#nextButton").show();
+
+  if (angStage === 3) {gameOver()};
 }
 
 function pulseBG(color) {
   const bg = $(".background")
-  bg.css("transition", "none")
-  bg.css("background-color", color);
+  bg.css({"transition": "none", "background-color": color})
   setTimeout(() => {
-    bg.css("transition", "background-color 2s ease")
-    bg.css("background-color", "black")
+    bg.css({"transition": "background-color 2s ease", "background-color": "black"})
   }, 5);
 }
 
@@ -253,19 +359,27 @@ function checkAnger(ang) {
       angStage = 3
       break;
   }
-  
 };
 
 function nextEvent() {
-  let e = questions[currentQInd].nextEvent //check nextEvent label
-  if (!e) {
-    //if no label, next event is assumed to be a question
-    currentQInd++;
+  currentQInd++;
+  let ne = questions[currentQInd].nextEvent //check nextEvent label
+  if (!ne) {
+    //if there's no label, next event is assumed to be a question
+    //interludes have no label, so next event is also assumed to be a question
     loadQuestion(currentQInd);
-  } else if (e === "interlude") {
-    loadInterlude();
+  } else if (ne === "interlude") {
+    loadInterlude(currentIntInd);
   }
+}
 
+function gameOver() {
+  $("#question").text("GAME OVER").css({"color": "red", "font-size": "76px"});
+  $("result").css({"color": "red"});
+  $("#nextButton").off("click").on("click", function(){
+    initQuiz()
+  }).text("START OVER");
+  musPlayer.playbackRate = 0.25;
 }
 //TEST CODE HERE IF U NEED
 
