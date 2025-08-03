@@ -25,6 +25,7 @@ const sfx = new Tone.ToneAudioBuffers({
     correct: "aud/snd_correct.ogg",
     tic: "aud/snd_tic.ogg",
     blip: "aud/snd_blip.ogg",
+    gameover: "aud/snd_gameover.ogg"
   },
   onload: () => {
     console.log("sfx buffers loaded")
@@ -55,14 +56,10 @@ var angStage = 0;
 var failing = false;
 
 //route variables
-var giveBurger = false;
-var saidCum = false;
-const specialKeys = [ //add future keys to this
-  {
-    'burgerAnswer': false, 
-    'cumAnswer': false
-  }
-];
+var burgerOn = false;
+var cumOn = false;
+//'-Ans' names of special answers in questions.js
+const specialKeys = ['burgerAns', 'cumAns'];
 
 //UI variables
 var eventType = "intro";
@@ -95,7 +92,7 @@ $(function() {
 
   $("#nextButton").on("click", function(){
     clearTimeout(buttonAnsTimer);
-    nextEvent(); 
+    nextEvent();
   });
 
   $("#contButton").on("click", function(){
@@ -118,14 +115,14 @@ function initQuiz() {
   console.log("Initializing quiz");
   //reset variables
   correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0;
+  resetSpecials(); //don't know why this is a function and the above is not. I guess they're not special.
   $(".quizWelcome").hide();
   $("#quizContainer").show();
   //reassign button function
   $("#nextButton").off("click").on("click", function(){
     clearTimeout(buttonAnsTimer);
-    nextEvent(); 
+    nextEvent();
   }).text("Next");
-  resetSpecials();
   loadQuestion(currentQInd);
   eventType = "question"
 }
@@ -142,67 +139,100 @@ function loadQuestion(currentQInd){
   currAngSet = questions[currentQInd].anger;
   currRepSet = questions[currentQInd].replies; 
   currCorrAns = questions[currentQInd].correctAnswer;
-  console.log(currQuestion)
   sus = questions[currentQInd].suspense //suspense value
   ticRate = (sus) ? 800 : 200;
+  sfxPlayer.buffer = sfx.get("tic"); //load tic to player
+
+  let specil = checkGetSpecial(currentQInd, specialKeys);
+  let specilKs = Object.keys(specil), specilIs = Object.values(specil);
 
   currAnsSet.forEach((currAns,ansInd) => { //answer options and indices
     let currAng = currAngSet[ansInd] //anger values
     let currRep = currRepSet[ansInd] //replies
-    console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
-    let isCorrect = currCorrAns.includes(ansInd);
-    
+    //console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
+    let isCorrect = currCorrAns.includes(ansInd), isSpecil = specilIs.includes(ansInd); //mark ans if correct/special
+    let specilK = specilKs.find(k => specil[k] === ansInd); //find matching special (can handle multiple specials in one question)
+
     buttonAnsTimer = setTimeout(() => {
-      generateAns(isCorrect, currAns, currAng, currRep);
-      if (!sfxPlayer.mute) { //play tic if sfx is on
-        tic = new Tone.Player(sfx.get("tic")).toDestination();
-        tic.volume.value = sfxVol;
-        tic.start();
-        tic.onstop = () => tic.dispose();
-      }
+      generateAns(isCorrect, currAns, currAng, currRep, specilK, isSpecil);
+      sfxPlayer.start(); //play tic
     }, (speedUp ? ((ansInd + 1) * 50) : ((ansInd + 1) * ticRate))); //todo: make timeout 0 if skip option is true
   });
 
   musPlayer.playbackRate = sus ? 0.90 : 1.0
 
-  let currSpecKeys = Object.keys(checkGetSpecial(currentQInd,specialKeys))
-  let currSpecAnsInd = Object.values(checkGetSpecial(currentQInd,specialKeys))
-  setSpecials(currentQInd,currSpecKeys);
-
   $("#question").html(`${(currentQInd + 1).toString()}. ${currQuestion}`).css({"color": "white"});
 };
 
 //save texts to be displayed in an array to be shown
-function selectedTexts(currentIntInd, failing, angStage) {
-  const intSet = interludes[currentIntInd];
-  return [
-    failing ? intSet.restTxtFail : intSet.restTxtReg,
-    giveBurger ? intSet.burgerTxt : null,
-    saidCum ? intSet.cumTxt : null,
-    angStage >= 1 ? intSet.angryTxt : null,
-    angStage >= 1 ? intSet.readyTxtAng : intSet.readyTxtReg
-  ].filter(item => typeof item === 'string');
+// function selectedTexts(currentIntInd, failing, angStage) {
+//   const intSet = interludes[currentIntInd];
+//   return [
+//     failing ? intSet.restTxtFail : intSet.restTxtReg,
+//     burgerOn ? intSet.burgerTxt : null,
+//     cumOn ? intSet.cumTxt : null,
+//     angStage >= 1 ? intSet.angryTxt : null,
+//     angStage >= 1 ? intSet.readyTxtAng : intSet.readyTxtReg
+//   ].filter(item => typeof item === 'string');
+// };
+
+//FININSH THIS AND MAKE IT BETTER
+function selectTexts(ind) {
+  console.log("serious brainfart moment")
+  let fail = failing, angry = (angStage > 0), burger = burgerOn, cum = cumOn; //update variables for state
+  let states = {fail, angry, burger, cum} //all possible selectors as simple boolean states (update as more are added)
+  const intSet = interludes[ind];
+
+  let restKey = Object.keys(intSet.restTxts).find(key => key !== 'reg' && states[key]) || 'reg';
+  let restTxt = intSet.restTxts[restKey]
+
+  let readyKey = Object.keys(intSet.readyTxts).find(key => key !== 'reg' && states[key]) || 'reg';
+  let readyTxt = intSet.readyTxts[readyKey]
+
+  let specialTxts = Object.keys(intSet.specialTxts)
+    .filter(key => states[key])
+    .map(key => interludes.specialTxts[key])
+
+  return [restTxt, specialTxts, readyTxt].flat().filter(Boolean);
 };
+
+// function selectInterlude(interlude, state) {
+//     // Find the first non-'reg' key in restTxts where the selector is true, else fallback to 'reg'
+//     let restKey = Object.keys(interlude.restTxts).find(key => key !== 'reg' && state[key]) || 'reg';
+//     let restTxt = interlude.restTxts[restKey];
+
+//     // Same logic for readyTxts
+//     let readyKey = Object.keys(interlude.readyTxts).find(key => key !== 'reg' && state[key]) || 'reg';
+//     let readyTxt = interlude.readyTxts[readyKey];
+
+//     // For specialTxts, include all matching keys (multiple allowed)
+//     let specialTxts = Object.keys(interlude.specialTxts)
+//         .filter(key => state[key])
+//         .map(key => interlude.specialTxts[key]);
+
+//     return { restTxt, readyTxt, specialTxts };
+// }
 
 function loadInterlude(currentIntInd) {
   $("#quizContainer, #intContainer, #question, #result").empty();
   $("#quizContainer, #nextButton").hide();
   $("#intContainer").show();
-  sfxPlayer.buffer = sfx.get("blip")
+  sfxPlayer.buffer = sfx.get("blip");
 
   failing = (correctScore/currentQInd < 0.5) ? true : false;
 
-  let intTexts = selectedTexts(currentIntInd,failing,angStage)
+  let intTxts = selectTexts(currentIntInd)
+  console.log(intTxts)
 
+  //show continue button last
   setTimeout(() => {
-    console.log("playing")
     $("#contButton").show();
     sfxPlayer.start();
-  }, (intTexts.length) * 1000);
+  }, (intTxts.length) * 1000);
 
-  intTexts.forEach((intTxt,txtInd) => {
+  //show intTxts sequentially
+  intTxts.forEach((intTxt,txtInd) => {
     var intTimer = setTimeout(() => {
-      console.log("playing")
       generateIntTxt(intTxt);
       sfxPlayer.start();
     }, txtInd * 1000);
@@ -211,51 +241,59 @@ function loadInterlude(currentIntInd) {
   $("quizContainer").text("if you see this text something is not working");
 };
 
+//
 function checkGetSpecial(ind,spKeys){
+  console.log("checking specials");
   return spKeys
-    .filter(spKey => questions[ind].hasOwnProperty(spKey))
+    .filter(spKey => questions[ind].hasOwnProperty(spKey)) //make a new array of only the present keys
     .reduce((result, spKey) => {
       result[spKey] = questions[ind][spKey];
+      console.log(result)
       return result;
     }, {});
 };
 
 function resetSpecials(){
-  specialKeys.forEach((key,ind) => {
-    specialKeys[ind] = false;
-    console.log(specialKeys)
-  });
+  burgerOn = false, cumOn = false;
   console.log("special keys reset")
 }
 
-function setSpecials(qInd,keys){ //add future routes to this. The rest should handle itself
-  switch (keys) {
-      case "burgerAnswer":
-        giveBurger = true;
-        currBurgAns = questions[currentQInd].burgerAnswer;
-      case "cumAnswer":
-        saidCum = true;
-        currCumAns = questions[currentQInd].cumAnswer;
-      default:
-        console.log(`question ${qInd+1} has no special events`);
-    }
-}
+//on button press, if button is special, activate key
+function setSpecials(key){ 
+  switch (key) {
+        case "burgerAns":
+          burgerOn = true;
+          console.log("BURGER ACTIVATED");
+          break;
+        case "cumAns":
+          cumOn = true;
+          console.log("CUM ACtiVATED");
+          break;
+        default:
+          console.log(`no special key`);
+          break;
+      }
+};
 
-function generateAns(isCorrect,ans,ang,rep){
-  console.log("generating answer button");
+function generateAns(isCorrect,ans,ang,rep,specil,isSpecil){
+  console.log(`${specil}, ${isSpecil}`)
 
   var button = $('<button />') 
     .addClass("multChoice")
     .text(ans)
-    .data({isCorrect,ang,rep})
+    .data({isCorrect,ang,rep,specil})
     .on("click", function(){
       let data = $(this).data();
       result(data.isCorrect,data.ang,data.rep);
+      if (isSpecil) {
+        setSpecials(specil);
+      }
     });
 
   $("#quizContainer").append(button);
 }
 
+//create <p> element with a given string. For interlude text
 function generateIntTxt(txt) {
   console.log("generating text");
 
@@ -264,7 +302,7 @@ function generateIntTxt(txt) {
   .html(txt);
 
   $("#intContainer").append(t);
-  $("#intContainer").append("<br>")
+  // $("#intContainer").append("<br>")
 };
 
 //handle answer choice
@@ -283,6 +321,7 @@ function result(isCorrect,ang,rep) {
 
   $("#result").text(rep)
   let ansClicks = 1;
+  //disable buttons upon click
   $(".multChoice").off("click").on("click", function(){
     ansClicks++;
     switch (ansClicks) {
@@ -361,16 +400,17 @@ function checkAnger(ang) {
   }
 };
 
+//if there's no nextEvent label, next event is assumed to be a question (interludes have no label)
 function nextEvent() {
-  currentQInd++;
   let ne = questions[currentQInd].nextEvent //check nextEvent label
   if (!ne) {
-    //if there's no label, next event is assumed to be a question
-    //interludes have no label, so next event is also assumed to be a question
-    loadQuestion(currentQInd);
+    currentQInd++;
+    console.log(`q index increased to ${currentQInd}`)
+    loadQuestion(currentQInd)
   } else if (ne === "interlude") {
-    loadInterlude(currentIntInd);
+    loadInterlude();
   }
+  console.log(`currecntQInd: ${currentQInd}`)
 }
 
 function gameOver() {
@@ -380,6 +420,14 @@ function gameOver() {
     initQuiz()
   }).text("START OVER");
   musPlayer.playbackRate = 0.25;
+
+  if (!sfxPlayer.mute) {
+        //must be a new player as question result sound also plays during gameOver
+        lose = new Tone.Player(sfx.get("gameover")).toDestination();
+        lose.volume.value = sfxVol;
+        lose.start();
+        lose.onstop = () => lose.dispose();
+      }
 }
 //TEST CODE HERE IF U NEED
 

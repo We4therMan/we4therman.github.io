@@ -83,6 +83,17 @@ th, td {
   max-width: 100%;
 }
 
+#intContainer {
+  font-family: "Lucida Console";
+  font-size: 36px;
+  color: white;
+  margin: 10px auto 10px;
+}
+
+.intTxt {
+  margin: 12px;
+}
+
 #question {
   font-family: "Lucida Console";
   font-size: 48px;

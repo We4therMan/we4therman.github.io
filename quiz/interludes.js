@@ -3,8 +3,7 @@
 /* dicts organized as
 {
     restTxts (tell player it's the interlude)
-    [for "fail" texts, there must be a "failReq" that triggers fail texts if not met]
-    TODO: maybe make the pass req a certain percentage and score/qindex
+    (for "fail" texts, there is be a "failing" variable that determines if the player is failing the quiz [score < %50])
 
     varyingTexts (extras depending on things player has done)
 
@@ -12,24 +11,83 @@
 }
 */
 
-var interludes = [
-    {   //1
-        "restTxtReg": "That was a tough question! You've done well so far... You should take a short rest.",
-        "restTxtFail": "That was a tough question!<br>You're... not doing so great with these, though.\
-        Take a breather, you want your brain sharp for these next ones!",
+/*
+Labels organized such that the default text shown is always 'reg'.
+This means restTxts and readyTxts should have a 'reg' defined. They can be blank strings.
+*/
 
-        "burgerTxt": "hey, smells pretty nice in here..",
-        "cumTxt": "...holy shit I can't believe you actually said that HAHAHAHA",
-        "angryTxt": "Also, I can't lie, some of your answers are making me wonder if you know me TOO well...",
+// var interludes = [
+//     {   //1
+//         "restTxtReg": ["That was a tough question! You've done well so far... You should take a short rest."\
+//         "<br>When you're ready, press the button that says 'ready.'"],
+//         "restTxtFail": "That was a tough question!<br>You're... not doing so great with these, though.\
+//         Take a breather, you want your brain sharp for these next ones! When you're ready, press the button that says 'ready.'",
+//         "testarray": ["first item", "second item", "third item", ["nested item 1", "nested item 2"]],
 
-        "readyTxtReg": "OK, let's see how you fare after these ones. They are much tougher.",
-        "readyTxtAng": "Well, whatever, here are the next questions."
-    },
+//         "burgerTxt": "hey, smells pretty nice in here..",
+//         "cumTxt": "...holy shit I can't believe you actually said that HAHAHAHA",
+//         "angryTxt": "Also, I can't lie, some of your answers are making me wonder if you know me TOO well...",
 
-    {   //2
-        "mainTxt": "Nice job there bucko"//joke about lacking a save progress function because I am not good at coding
-    }
-]
+//         "readyTxtReg": "OK, let's see how you fare after these ones. They are much tougher.",
+//         "readyTxtAng": "Well, whatever, here are the next questions."
+//     },
+
+//     {   //2
+//         "mainTxt": "Nice job there bucko"//joke about lacking a save progress function because I am not good at coding
+//     }
+// ]
 
 //TODO: find different method for detecting special answers like 'burger' and 'cum'
 // console.log(interludes[0].angryTxt)
+
+var interludes = [
+    {//1
+        restTxts: {
+            reg: ["That was a tough question! You've done well so far... You should take a short rest.",
+                "<br>When you're ready, press the button that says 'ready.'"],
+            fail: ["That was a tough question!<br>You're... not doing so great with these, though.",
+                "Take a breather, you want your brain sharp for these next ones!",
+                "When you're ready, press the button that says 'ready.'"],
+        },
+        
+        specialTxts: {
+            burger: "hey, smells pretty nice in here...",
+            cum: "...holy shit I can't believe you actually said that HAHAHAHA",
+            ang: "Also, I can't lie, some of your answers are making me wonder if you know me TOO well...",
+        },
+
+        readyTxts: {
+            reg: "OK, let's see how you fare after these ones. They are much tougher.",
+            ang: "Well, whatever, here are the next questions.",
+        },
+    },
+
+    {//2
+        restTxts: {
+            reg: "",
+        },
+
+        specialTxts: {
+            special: "",
+        },
+
+        readyTxts: {
+            reg: "",
+        },
+    },
+]
+/* Interlude item basic structure (copy paste for convenience)
+{//(interlude number)
+        restTxts: {
+            reg: "",
+        },
+
+        specialTxts: {
+            special: "",
+        },
+
+        readyTxts: {
+            reg: "",
+        },
+    },
+*/

@@ -31,7 +31,6 @@ $(document).on("keyup", function(e){
         }
 
     }
-
     
     if (e.code === "KeyI") {
         console.log("I up")
