@@ -106,7 +106,6 @@ var questions = [
         correctAnswer: [1,2],
         timeLim: 20.0,
         burgerAns: 1,
-        cumAns: 2,
     },
 
     {   //5

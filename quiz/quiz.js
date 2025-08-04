@@ -1,13 +1,3 @@
-//TODO maybe move audio setup to another js file? probably don't need em here
-// const correctSnd = new Audio('quiz-aud/snd_correct.ogg');
-// const wrongSnd = new Audio('aud/snd_wrong.ogg');
-// const tic = new Audio('aud/snd_tic.ogg')
-// const ambSnd = new Audio('snd/snd_ambivalent.ogg') //TODO make this sound
-// const pitchShift = new Tone.PitchShift();
-// var bgMusic = new Tone.Player('aud/mus_thefirstfew_0.ogg').toDestination();
-// bgMusic.connect(pitchShift);
-// bgMusic.loop = true;
-
 //sound variables
 const mus = new Tone.ToneAudioBuffers({
   urls: {
@@ -38,8 +28,16 @@ var musVol = -5;
 var sfxVol = -5;
 
 //question variables
+const questions = quiz.questions
+const interludes = quiz.interludes
 var currentQInd;
 var currentIntInd;
+
+const indOf = {
+  questions: () => currentQInd,
+  interludes: () => currentIntInd,
+}
+
 var currQuestion;
 var currAnsSet;
 var currAngSet;
@@ -62,15 +60,13 @@ var cumOn = false;
 const specialKeys = ['burgerAns', 'cumAns'];
 
 //UI variables
-var eventType = "intro";
+var ce = "intro"; //defines current event; MUST MATCH quiz-data ARRAY NAMES (i.e. 'questions' with an s)
 var ticRate = 200;
 var buttonAnsTimer;
 var speedUp = false;
 
 $(function() {
   $("#startButton").on("click", async function() {
-    console.log("start button pressed");
-
     await Tone.start();
     musPlayer = new Tone.Player().toDestination();
     musPlayer.buffer = mus.get("firstfew");
@@ -124,13 +120,13 @@ function initQuiz() {
     nextEvent();
   }).text("Next");
   loadQuestion(currentQInd);
-  eventType = "question"
 }
 
 //setTimeout(() => {}, 2000);
 
 function loadQuestion(currentQInd){
   console.log(`initializing question ${currentQInd+1}`);
+  ce = "questions"
   $("#quizContainer, #result").show();
   $("#quizContainer, #result").empty();
   $("#nextButton, #contButton, #intContainer").hide();
@@ -161,7 +157,9 @@ function loadQuestion(currentQInd){
 
   musPlayer.playbackRate = sus ? 0.90 : 1.0
 
-  $("#question").html(`${(currentQInd + 1).toString()}. ${currQuestion}`).css({"color": "white"});
+  $("#question")
+    .html(`${(currentQInd + 1).toString()}. ${currQuestion}`)
+    .css({"color": "white", "font-size": "48px"});
 };
 
 //save texts to be displayed in an array to be shown
@@ -178,7 +176,6 @@ function loadQuestion(currentQInd){
 
 //FININSH THIS AND MAKE IT BETTER
 function selectTexts(ind) {
-  console.log("serious brainfart moment")
   let fail = failing, angry = (angStage > 0), burger = burgerOn, cum = cumOn; //update variables for state
   let states = {fail, angry, burger, cum} //all possible selectors as simple boolean states (update as more are added)
   const intSet = interludes[ind];
@@ -191,7 +188,7 @@ function selectTexts(ind) {
 
   let specialTxts = Object.keys(intSet.specialTxts)
     .filter(key => states[key])
-    .map(key => interludes.specialTxts[key])
+    .map(key => intSet.specialTxts[key])
 
   return [restTxt, specialTxts, readyTxt].flat().filter(Boolean);
 };
@@ -213,7 +210,8 @@ function selectTexts(ind) {
 //     return { restTxt, readyTxt, specialTxts };
 // }
 
-function loadInterlude(currentIntInd) {
+function loadInterlude(ind) {
+  ce = "interludes"
   $("#quizContainer, #intContainer, #question, #result").empty();
   $("#quizContainer, #nextButton").hide();
   $("#intContainer").show();
@@ -221,8 +219,7 @@ function loadInterlude(currentIntInd) {
 
   failing = (correctScore/currentQInd < 0.5) ? true : false;
 
-  let intTxts = selectTexts(currentIntInd)
-  console.log(intTxts)
+  let intTxts = selectTexts(ind)
 
   //show continue button last
   setTimeout(() => {
@@ -243,12 +240,10 @@ function loadInterlude(currentIntInd) {
 
 //
 function checkGetSpecial(ind,spKeys){
-  console.log("checking specials");
   return spKeys
     .filter(spKey => questions[ind].hasOwnProperty(spKey)) //make a new array of only the present keys
     .reduce((result, spKey) => {
       result[spKey] = questions[ind][spKey];
-      console.log(result)
       return result;
     }, {});
 };
@@ -276,8 +271,6 @@ function setSpecials(key){
 };
 
 function generateAns(isCorrect,ans,ang,rep,specil,isSpecil){
-  console.log(`${specil}, ${isSpecil}`)
-
   var button = $('<button />') 
     .addClass("multChoice")
     .text(ans)
@@ -295,8 +288,6 @@ function generateAns(isCorrect,ans,ang,rep,specil,isSpecil){
 
 //create <p> element with a given string. For interlude text
 function generateIntTxt(txt) {
-  console.log("generating text");
-
   var t = $('<p />')
   .addClass("intTxt")
   .html(txt);
@@ -308,14 +299,8 @@ function generateIntTxt(txt) {
 //handle answer choice
 function result(isCorrect,ang,rep) {
   angScore += ang;
-  if (isCorrect) {
-    correctScore++;
-    console.log("pulsing green");
-    pulseBG("#007d00");
-  } else {
-    console.log("pulsing red");
-    pulseBG("#7d0400");
-  }
+  pulseBG(isCorrect ? "#007d00" : "#7d0400");
+  if (isCorrect) correctScore++;
   sfxPlayer.buffer = sfx.get(isCorrect ? "correct" : "wrong");
   sfxPlayer.start();
 
@@ -354,7 +339,7 @@ function result(isCorrect,ang,rep) {
         break;
     }
   })
-  console.log(angScore, correctScore);
+  //console.log(angScore, correctScore);
   checkAnger(angScore);
   console.log(`anger stage ${angStage}`)
   musPlayer.playbackRate = 1.0
@@ -374,43 +359,47 @@ function pulseBG(color) {
 function checkAnger(ang) {
   switch (true) {
     case ang < -100:
-      // console.log("happy stage2");
       angStage = -2
       break;
     case ang >= -100 && ang < -50:
-      // console.log("happy stage1");
       angStage = -1
       break;
     case ang >= -50 && ang <= 50:
-      // console.log("neutral (stage 0)");
       angStage = 0
       break;
     case ang > 50 && ang <= 100:
-      // console.log("angry stage 1");
       angStage = 1
       break;
     case ang > 100 && ang < 150:
-      // console.log("angry stage2");
       angStage = 2
       break;
     case ang >= 150:
-      // console.log("anger final");
       angStage = 3
       break;
   }
 };
 
 //if there's no nextEvent label, next event is assumed to be a question (interludes have no label)
+// function nextEvent() {
+//   let ne = questions[currentQInd].nextEvent //check nextEvent label
+//   console.log("NEXT EVENT DATA",currentQInd,currentIntInd,ne)
+//   if (!ne) {
+//     currentQInd++;
+//     loadQuestion(currentQInd)
+//   } else if (ne === "interlude") {
+//     loadInterlude(currentIntInd);
+//     currentIntInd++;
+//   }
+//   console.log("DATA IS NOW",currentQInd,currentIntInd)
+// }
+
 function nextEvent() {
-  let ne = questions[currentQInd].nextEvent //check nextEvent label
-  if (!ne) {
-    currentQInd++;
-    console.log(`q index increased to ${currentQInd}`)
-    loadQuestion(currentQInd)
-  } else if (ne === "interlude") {
-    loadInterlude();
-  }
-  console.log(`currecntQInd: ${currentQInd}`)
+  let evInd = indOf[ce]?.(); //select index of current event
+  let ne = quiz[ce][evInd].nextEvent //check if ce has nextEvent label and store it
+  console.log("NEXT EVENT DATA",ce,currentQInd,currentIntInd,ne)
+
+  if (!ne) return loadQuestion(++currentQInd); //if no label, update index and load next question
+  if (ne === "interlude") return loadInterlude(currentIntInd++); //if interlude, load interlude and update index
 }
 
 function gameOver() {
