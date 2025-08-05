@@ -2,7 +2,9 @@
 const mus = new Tone.ToneAudioBuffers({
   urls: {
     firstfew: "aud/mus_thefirstfew_0.ogg",
+    firstfew_w: "aud/mus_thefirstfew_w.ogg",
     //interlude: "aud/mus_interlude.ogg", //TODO write this song lol
+    jonas: "aud/mus_jonas.ogg",
   },
   onload: () => {
     console.log("music buffers loaded")
@@ -15,7 +17,8 @@ const sfx = new Tone.ToneAudioBuffers({
     correct: "aud/snd_correct.ogg",
     tic: "aud/snd_tic.ogg",
     blip: "aud/snd_blip.ogg",
-    gameover: "aud/snd_gameover.ogg"
+    gameover: "aud/snd_gameover.ogg",
+    jonas: "aud/snd_jonas.ogg"
   },
   onload: () => {
     console.log("sfx buffers loaded")
@@ -38,13 +41,6 @@ const indOf = {
   interludes: () => currentIntInd,
 }
 
-var currQuestion;
-var currAnsSet;
-var currAngSet;
-var currRepSet;
-var currCorrAns = [];
-var currBurgAns;
-var currCumAns;
 var isCorrect = false;
 
 //score variables
@@ -96,6 +92,7 @@ $(function() {
   })
 
   $("#musVolume").on("input", function() {
+    musVol = parseFloat(this.value);
     musPlayer.volume.value = parseFloat(this.value);
     musPlayer.mute = (this.value <= -30.0) ? true : false;
   });
@@ -130,13 +127,16 @@ function loadQuestion(currentQInd){
   $("#quizContainer, #result").show();
   $("#quizContainer, #result").empty();
   $("#nextButton, #contButton, #intContainer").hide();
-  currQuestion = questions[currentQInd].question; //question
-  currAnsSet = questions[currentQInd].answers;
-  currAngSet = questions[currentQInd].anger;
-  currRepSet = questions[currentQInd].replies; 
-  currCorrAns = questions[currentQInd].correctAnswer;
-  sus = questions[currentQInd].suspense //suspense value
-  ticRate = (sus) ? 800 : 200;
+  //load in question data
+  let qData = questions[currentQInd];
+  let currQuestion = qData.question;
+  let currAnsSet =   qData.answers;
+  let currAngSet =   qData.anger;
+  let currRepSet =   qData.replies; 
+  let currCorrAns =  qData.correctAnswer;
+  let sus =          qData.suspense
+  window[qData.callSpec]?.(); //call special event function if qData has one
+  ticRate = (sus) ? 800 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
 
   let specil = checkGetSpecial(currentQInd, specialKeys);
@@ -162,53 +162,25 @@ function loadQuestion(currentQInd){
     .css({"color": "white", "font-size": "48px"});
 };
 
-//save texts to be displayed in an array to be shown
-// function selectedTexts(currentIntInd, failing, angStage) {
-//   const intSet = interludes[currentIntInd];
-//   return [
-//     failing ? intSet.restTxtFail : intSet.restTxtReg,
-//     burgerOn ? intSet.burgerTxt : null,
-//     cumOn ? intSet.cumTxt : null,
-//     angStage >= 1 ? intSet.angryTxt : null,
-//     angStage >= 1 ? intSet.readyTxtAng : intSet.readyTxtReg
-//   ].filter(item => typeof item === 'string');
-// };
-
-//FININSH THIS AND MAKE IT BETTER
 function selectTexts(ind) {
   let fail = failing, angry = (angStage > 0), burger = burgerOn, cum = cumOn; //update variables for state
   let states = {fail, angry, burger, cum} //all possible selectors as simple boolean states (update as more are added)
   const intSet = interludes[ind];
 
-  let restKey = Object.keys(intSet.restTxts).find(key => key !== 'reg' && states[key]) || 'reg';
+  //selects only one matching restTxt
+  //it will select the first activated specialKey it finds, so priority order is set in the interlude object
+  let restKey = Object.keys(intSet.restTxts).find(key => key !== 'reg' && states[key]) || 'reg'; 
   let restTxt = intSet.restTxts[restKey]
-
+  //ditto for readyTxts
   let readyKey = Object.keys(intSet.readyTxts).find(key => key !== 'reg' && states[key]) || 'reg';
   let readyTxt = intSet.readyTxts[readyKey]
-
+  //select any activated specialTxts (can be multiple)
   let specialTxts = Object.keys(intSet.specialTxts)
     .filter(key => states[key])
     .map(key => intSet.specialTxts[key])
 
-  return [restTxt, specialTxts, readyTxt].flat().filter(Boolean);
+  return [restTxt, specialTxts, readyTxt].flat().filter(Boolean); //blank arrays/strings could be included, so filter them out
 };
-
-// function selectInterlude(interlude, state) {
-//     // Find the first non-'reg' key in restTxts where the selector is true, else fallback to 'reg'
-//     let restKey = Object.keys(interlude.restTxts).find(key => key !== 'reg' && state[key]) || 'reg';
-//     let restTxt = interlude.restTxts[restKey];
-
-//     // Same logic for readyTxts
-//     let readyKey = Object.keys(interlude.readyTxts).find(key => key !== 'reg' && state[key]) || 'reg';
-//     let readyTxt = interlude.readyTxts[readyKey];
-
-//     // For specialTxts, include all matching keys (multiple allowed)
-//     let specialTxts = Object.keys(interlude.specialTxts)
-//         .filter(key => state[key])
-//         .map(key => interlude.specialTxts[key]);
-
-//     return { restTxt, readyTxt, specialTxts };
-// }
 
 function loadInterlude(ind) {
   ce = "interludes"
@@ -234,8 +206,6 @@ function loadInterlude(ind) {
       sfxPlayer.start();
     }, txtInd * 1000);
   })
-
-  $("quizContainer").text("if you see this text something is not working");
 };
 
 //
@@ -273,7 +243,7 @@ function setSpecials(key){
 function generateAns(isCorrect,ans,ang,rep,specil,isSpecil){
   var button = $('<button />') 
     .addClass("multChoice")
-    .text(ans)
+    .html(ans)
     .data({isCorrect,ang,rep,specil})
     .on("click", function(){
       let data = $(this).data();
@@ -348,11 +318,11 @@ function result(isCorrect,ang,rep) {
   if (angStage === 3) {gameOver()};
 }
 
-function pulseBG(color) {
+function pulseBG(color,pulseLength = 2) {
   const bg = $(".background")
   bg.css({"transition": "none", "background-color": color})
   setTimeout(() => {
-    bg.css({"transition": "background-color 2s ease", "background-color": "black"})
+    bg.css({"transition": `background-color ${pulseLength}s ease`, "background-color": "black"})
   }, 5);
 }
 
@@ -379,20 +349,6 @@ function checkAnger(ang) {
   }
 };
 
-//if there's no nextEvent label, next event is assumed to be a question (interludes have no label)
-// function nextEvent() {
-//   let ne = questions[currentQInd].nextEvent //check nextEvent label
-//   console.log("NEXT EVENT DATA",currentQInd,currentIntInd,ne)
-//   if (!ne) {
-//     currentQInd++;
-//     loadQuestion(currentQInd)
-//   } else if (ne === "interlude") {
-//     loadInterlude(currentIntInd);
-//     currentIntInd++;
-//   }
-//   console.log("DATA IS NOW",currentQInd,currentIntInd)
-// }
-
 function nextEvent() {
   let evInd = indOf[ce]?.(); //select index of current event
   let ne = quiz[ce][evInd].nextEvent //check if ce has nextEvent label and store it
@@ -410,14 +366,19 @@ function gameOver() {
   }).text("START OVER");
   musPlayer.playbackRate = 0.25;
 
+  quickSFX("gameover");
+};
+
+//for sounds that play in quick succession and can't use an existing player well
+function quickSFX(buffer) {
   if (!sfxPlayer.mute) {
-        //must be a new player as question result sound also plays during gameOver
-        lose = new Tone.Player(sfx.get("gameover")).toDestination();
-        lose.volume.value = sfxVol;
-        lose.start();
-        lose.onstop = () => lose.dispose();
-      }
+    let sound = new Tone.Player(sfx.get(buffer)).toDestination();
+    sound.volume.value = sfxVol;
+    sound.start();
+    sound.onstop = () => sound.dispose();
+  }
 }
+
 //TEST CODE HERE IF U NEED
 
 console.log("Do NOT read the answers if you know how to read code. I don't like cheaters...")

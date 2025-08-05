@@ -1,5 +1,4 @@
-//route texts appear in **REVERSE PRIORITY ORDER** (first option is checked first, so lowest option that is 'True' remains)
-//maybe an option could allow some to appear together? complicated..
+//route texts appear in **PRIORITY ORDER**
 /* dicts organized as
 {
     restTxts (tell player it's the interlude)

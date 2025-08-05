@@ -1,3 +1,19 @@
+/* 
+ALL questions MUST have the following variables:
+    question: the prompt given to the player. Does not always have to be aquestion(like a challenge), but it should be labeled as such
+    answers: the player's options. TODO try a different kind of input?replies the dialogue that appears after an answer is picked
+    anger: the anger value of thequestion
+    correctAnswer: which answers add to the final score. MUST be an array. If none are correct the array can be empty, as such: []
+    timeLim: the player's time limit to answer thequestion If the timer runs out, it counts as an incorrect answer
+
+Some questions MAY also have
+    specAns: answers that trigger routes (e.g. burgerAns)
+    nextEvent: defines if next event is not a question (e.g. an interlude)
+    callSpec: calls a function for and event that changes the question drastically (i.e. more than a route, some text, or the buttons)
+*/
+
+/* IfnextEvent is none, code assumes it is equivalent to it being question */
+
 /* -----------------------------------QUESTIONS----------------------------------------------------------- */
 quiz = {
     questions: [
@@ -23,6 +39,7 @@ quiz = {
                 ],
                 correctAnswer: [0,1],
                 timeLim: 30.0,
+                callSpec: "jonas",
             },
 
             {   //2
@@ -143,7 +160,7 @@ quiz = {
                     "Geometry Dash",
                     "Overwatch",
                     "Minecraft",
-                    "Mario Kart 9"
+                    "Mario Kart 8"
                 ],
                 replies: [
                     "NO! I'm SO insulted goddamnit",
@@ -162,19 +179,20 @@ quiz = {
                 gdAns: [0],
             },
 
-            {   //6
-                question: "How far is Haiti from Louisville?",
+            {   //7
+                question: "What's the best level?",
                 answers: [
-                    "fuck",
-                    "a night of drinking",
-                    "drive by the Jack in the Box",
-                    "Mfuck her Stupid mouth"
+                    "Level MAX",
+                    "Level 30",
+                    "Level 1",
+                    "Leve l&nbsp;<br>&nbsp;of&nbsp;&nbsp; game"
                 ],
                 replies: [
-                    "we do silly things with food in thius coutnyrt",
-                    "translover",
-                    "bye.",
-                    "HAHAHAHA HOLY SHIT YOU'RE GROSS",
+                    "Ok buddy relax.",
+                    "No! Were you thinking about Minecraft levels? Actually, you're on the right track...\
+                     my old Minecraft streams have the correct answer.",
+                    "Nope, it means you're WEAK.",
+                    "Uhhhh... no",
                 ],
                 anger: [
                     5,
@@ -182,10 +200,28 @@ quiz = {
                     10,
                     5,
                 ],
-                correctAnswer: [1],
+                correctAnswer: [],
                 timeLim: 15.0,
+                call: "level7", //TODO: special functions for weird events outside the realm of buttons
             }
         ],
+
+//route texts appear in **PRIORITY ORDER**
+/* dicts organized as
+{
+    restTxts (tell player it's the interlude)
+    (for "fail" texts, there is be a "failing" variable that determines if the player is failing the quiz [score < %50])
+
+    varyingTexts (extras depending on things player has done)
+
+    readyTxts (tell player the next question will follow)
+}
+*/
+
+/*
+Labels organized such that the default text shown is always 'reg'.
+This means restTxts and readyTxts should have a 'reg' defined. They can be blank strings.
+*/
 /* ----------------------------------------------INTERLUDES----------------------------------------------------------------------------------- */
         interludes: [
             {//1
@@ -224,3 +260,19 @@ quiz = {
             },
         ]
     }
+
+/* Interlude item basic structure (copy paste for convenience)
+{//(interlude number)
+        restTxts: {
+            reg: "",
+        },
+
+        specialTxts: {
+            special: "",
+        },
+
+        readyTxts: {
+            reg: "",
+        },
+    },
+*/
