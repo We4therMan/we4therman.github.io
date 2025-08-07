@@ -7,7 +7,7 @@ const mus = new Tone.ToneAudioBuffers({
     jonas: "aud/mus_jonas.ogg",
   },
   onload: () => {
-    console.log("music buffers loaded")
+    console.log("Music buffers loaded")
   }
 });
 
@@ -18,7 +18,8 @@ const sfx = new Tone.ToneAudioBuffers({
     tic: "aud/snd_tic.ogg",
     blip: "aud/snd_blip.ogg",
     gameover: "aud/snd_gameover.ogg",
-    jonas: "aud/snd_jonas.ogg"
+    jonas: "aud/snd_jonas.ogg",
+    girl: "aud/snd_girl.ogg"
   },
   onload: () => {
     console.log("sfx buffers loaded")
@@ -48,18 +49,24 @@ var correctScore = 0;
 var angScore = 0;
 var angStage = 0;
 var failing = false;
+var playedAnswers = [];
 
 //route variables
 var burgerOn = false;
 var cumOn = false;
+var yairOn = false;
 //'-Ans' names of special answers in questions.js
-const specialKeys = ['burgerAns', 'cumAns'];
+const specialKeys = ['burgerAns', 'cumAns','yairAns'];
 
 //UI variables
-var ce = "intro"; //defines current event; MUST MATCH quiz-data ARRAY NAMES (i.e. 'questions' with an s)
-var ticRate = 200;
-var buttonAnsTimer;
-var speedUp = false;
+let ce = "intro"; //defines current event; MUST MATCH quiz-data ARRAY NAMES (i.e. 'questions' with an s)
+let ticRate = 200;
+let buttonAnsTimer;
+let btnTimeouts = [];
+let ansClicks = 0;
+let delay;
+let speedUp = false;
+let allAnswersLoaded = true;
 
 $(function() {
   $("#startButton").on("click", async function() {
@@ -122,37 +129,51 @@ function initQuiz() {
 //setTimeout(() => {}, 2000);
 
 function loadQuestion(currentQInd){
+  ansClicks = 0
+  allAnswersLoaded = false;
   console.log(`initializing question ${currentQInd+1}`);
   ce = "questions"
   $("#quizContainer, #result").show();
   $("#quizContainer, #result").empty();
   $("#nextButton, #contButton, #intContainer").hide();
   //load in question data
-  let qData = questions[currentQInd];
-  let currQuestion = qData.question;
-  let currAnsSet =   qData.answers;
-  let currAngSet =   qData.anger;
-  let currRepSet =   qData.replies; 
-  let currCorrAns =  qData.correctAnswer;
-  let sus =          qData.suspense
-  window[qData.callSpec]?.(); //call special event function if qData has one
+  let q = questions[currentQInd];
+  let currQuestion = qData(currentQInd)[0];
+  let currAnsSet =   qData(currentQInd)[1];
+  let currRepSet =   qData(currentQInd)[2];
+  let currAngSet =   qData(currentQInd)[3];
+  let currCorrAns =  qData(currentQInd)[4];
+  let sus =          qData(currentQInd)[5];
+  window[q.callSpec]?.(); //call special event function if qData has one
   ticRate = (sus) ? 800 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
 
   let specil = checkGetSpecial(currentQInd, specialKeys);
   let specilKs = Object.keys(specil), specilIs = Object.values(specil);
+  let answersGenerated = 0;
 
   currAnsSet.forEach((currAns,ansInd) => { //answer options and indices
     let currAng = currAngSet[ansInd] //anger values
     let currRep = currRepSet[ansInd] //replies
     //console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
-    let isCorrect = currCorrAns.includes(ansInd), isSpecil = specilIs.includes(ansInd); //mark ans if correct/special
-    let specilK = specilKs.find(k => specil[k] === ansInd); //find matching special (can handle multiple specials in one question)
+    let isCorrect = currCorrAns.includes(ansInd), isSpecil = specilIs.includes(ansInd); //check tags
+    let specilK = specilKs.find(k => specil[k] === ansInd); //find matching special key (can handle multiple specials in one question)
 
-    buttonAnsTimer = setTimeout(() => {
-      generateAns(isCorrect, currAns, currAng, currRep, specilK, isSpecil);
-      sfxPlayer.start(); //play tic
-    }, (speedUp ? ((ansInd + 1) * 50) : ((ansInd + 1) * ticRate))); //todo: make timeout 0 if skip option is true
+    if (ansClicks) {
+      delay = 0; //generate the rest of the buttons if one is clicked
+    } else if (speedUp) {
+      delay = (ansInd + 1) * 50; //fast version if speedup key is pressed down
+    } else {
+      delay = (ansInd + 1) * ticRate; //normal speed
+    }
+
+    let buttonAnsTimer = setTimeout(() => {
+      answersGenerated++;
+      if (answersGenerated === currAnsSet.length) allAnswersLoaded = true;
+      generateAns(ansInd, isCorrect, currAns, currAng, currRep, specilK, isSpecil);
+      if (!ansClicks) sfxPlayer.start(); //play tic
+    }, delay); //todo: make timeout 0 if skip option is true
+    btnTimeouts.push(buttonAnsTimer);
   });
 
   musPlayer.playbackRate = sus ? 0.90 : 1.0
@@ -161,6 +182,28 @@ function loadQuestion(currentQInd){
     .html(`${(currentQInd + 1).toString()}. ${currQuestion}`)
     .css({"color": "white", "font-size": "48px"});
 };
+
+function stopGenAns() {
+  console.log("killing generator")
+  btnTimeouts.forEach(clearTimeout);
+  btnTimeouts = [];
+
+  let currAnsSet = qData(currentQInd)[1];
+  let specil = checkGetSpecial(currentQInd, specialKeys);
+  let specilKs = Object.keys(specil), specilIs = Object.values(specil);
+
+  currAnsSet.forEach((currAns, ansInd) => {
+    //if the button already exists, skip to avoid duplicates
+    if ($(`#ans-${ansInd}`).length > 0) return;
+    let currRep = qData(currentQInd)[2];
+    let currAng = qData(currentQInd)[3];
+    let isCorrect = qData(currentQInd)[4].includes(ansInd);
+    let isSpecil = specilIs.includes(ansInd);
+    let specilK = specilKs.find(k => specil[k] === ansInd);
+    generateAns(ansInd, isCorrect, currAns, currAng, currRep, specilK, isSpecil);
+  });
+}
+
 
 function selectTexts(ind) {
   let fail = failing, angry = (angStage > 0), burger = burgerOn, cum = cumOn; //update variables for state
@@ -240,14 +283,16 @@ function setSpecials(key){
       }
 };
 
-function generateAns(isCorrect,ans,ang,rep,specil,isSpecil){
+function generateAns(bInd,isCorrect,ans,ang,rep,specil,isSpecil){
   var button = $('<button />') 
     .addClass("multChoice")
+    .attr("id",`ans-${bInd}`)
     .html(ans)
-    .data({isCorrect,ang,rep,specil})
+    .data({ans,isCorrect,ang,rep,specil})
     .on("click", function(){
       let data = $(this).data();
       result(data.isCorrect,data.ang,data.rep);
+      playedAnswers.push(ans);
       if (isSpecil) {
         setSpecials(specil);
       }
@@ -268,14 +313,15 @@ function generateIntTxt(txt) {
 
 //handle answer choice
 function result(isCorrect,ang,rep) {
+  ansClicks = 1;
+  if (!allAnswersLoaded) stopGenAns();
   angScore += ang;
   pulseBG(isCorrect ? "#007d00" : "#7d0400");
   if (isCorrect) correctScore++;
   sfxPlayer.buffer = sfx.get(isCorrect ? "correct" : "wrong");
   sfxPlayer.start();
 
-  $("#result").text(rep)
-  let ansClicks = 1;
+  $("#result").html(rep)
   //disable buttons upon click
   $(".multChoice").off("click").on("click", function(){
     ansClicks++;
@@ -315,7 +361,7 @@ function result(isCorrect,ang,rep) {
   musPlayer.playbackRate = 1.0
   $("#nextButton").show();
 
-  if (angStage === 3) {gameOver()};
+  if (angStage === 3) gameOver();
 }
 
 function pulseBG(color,pulseLength = 2) {
@@ -369,11 +415,24 @@ function gameOver() {
   quickSFX("gameover");
 };
 
-//for sounds that play in quick succession and can't use an existing player well
-function quickSFX(buffer) {
+
+function qData(qInd) {
+  let qData = questions[qInd];
+  let currQ = qData.question;
+  let currAnsSet =   qData.answers;
+  let currRepSet =   qData.replies; 
+  let currAngSet =   qData.anger;
+  let currCorrAns =  qData.correctAnswer;
+  let sus =          qData.suspense
+  return [currQ, currAnsSet, currRepSet, currAngSet, currCorrAns, sus]
+}
+
+//for sounds that play in quick succession and can't use an existing player
+function quickSFX(buffer,rate=1) {
   if (!sfxPlayer.mute) {
     let sound = new Tone.Player(sfx.get(buffer)).toDestination();
     sound.volume.value = sfxVol;
+    sound.playbackRate = rate
     sound.start();
     sound.onstop = () => sound.dispose();
   }
