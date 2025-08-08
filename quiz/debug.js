@@ -25,6 +25,7 @@ $(document).on("keyup", function(e){
         if (digitBuffer) {
             let debugQInd = parseInt(digitBuffer) - 1;
             console.log(`DEBUG question ${debugQInd + 1}`);
+            clearInterval(timeCounter);
             currentQInd = debugQInd;
             loadQuestion(debugQInd);
             digitBuffer = "";
@@ -40,6 +41,7 @@ $(document).on("keyup", function(e){
         if (digitBuffer) {
             let debugIInd = parseInt(digitBuffer) - 1;
             console.log(`DEBUG interlude ${debugIInd + 1}`);
+            clearInterval(timeCounter);
             currentQInd = debugIInd;
             loadInterlude(debugIInd);
             digitBuffer = "";

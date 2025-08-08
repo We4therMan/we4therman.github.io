@@ -1,5 +1,6 @@
-body {
-	margin-top:0px;
+html, body {
+  height: 100%;
+  overflow-y: auto;
 }
 
 h1 {
@@ -50,8 +51,7 @@ th, td {
 
 #nextButton {
   position: sticky;
-  left: 10px;
-  bottom: 10%;
+  margin: 10px;
   color: white;
   background-color: #880808;
   font-size: 56px;
@@ -75,14 +75,6 @@ th, td {
   text-align: center
 }
 
-#quizContainer {
-  margin: 10px 50px 10px;
-  display: flex;
-	justify-content: center;
-  align-items: center;
-  max-width: 100%;
-}
-
 #intContainer {
   font-family: "Lucida Console";
   font-size: 36px;
@@ -94,26 +86,54 @@ th, td {
   margin: 12px;
 }
 
+#questionContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 #question {
+  flex: 1 1 80%;
   font-family: "Lucida Console";
   font-size: 48px;
   color: white;
-  margin: 10px auto 10px;
+  margin: 25px auto;
+}
+
+#timerContainer {
+  flex-shrink: 0;
+  font-family: "Lucida Console";
+  font-size: 36px;
+  color: white;
+  border: 1px solid white;
+  margin: 20px 30px;
+  padding: 10px;
+  width: min-content;
+}
+
+#quizContainer {
+  margin: 10px 50px 10px;
+  display: flex;
+  flex-wrap: wrap;
+	justify-content: center;
+  align-items: center;
+  max-width: 100%;
+}
+
+/* answer buttons */
+.multChoice {
+  font-family: "Lucida Console";
+  max-width: 400px;
+  font-size: 24px;
+  padding: 20px;
+  margin: auto 15px;
 }
 
 #result {
   font-family: "Lucida Console";
   font-size: 48px;
   color: white;
-  margin: 10px auto 10px;
-}
-
-/* answer buttons */
-.multChoice {
-  font-family: "Lucida Console";
-  font-size: 24px;
-  padding: 20px;
-  margin: auto 15px;
+  margin: 25px auto;
 }
 
 .background {
@@ -136,7 +156,7 @@ th, td {
 }
 
 #sfxVolume {
-  position: absolute;
+  position: fixed;
   bottom: 35px;
   right: 15px;
   width: 200px;
@@ -148,7 +168,7 @@ th, td {
 }
 
 label[for="sfxVolume"] {
-  position: absolute;
+  position: fixed;
   bottom: 50px;
   right: 15px;
   color: white;
@@ -160,7 +180,7 @@ label[for="sfxVolume"] {
 }
 
 #musVolume {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   right: 15px;
   width: 200px;
@@ -172,7 +192,7 @@ label[for="sfxVolume"] {
 }
 
 label[for="musVolume"] {
-  position: absolute;
+  position: fixed;
   bottom: 15px;
   right: 15px;
   color: white;
@@ -184,7 +204,7 @@ label[for="musVolume"] {
 }
 
 #studioTag {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   padding-bottom: 5px;
 }

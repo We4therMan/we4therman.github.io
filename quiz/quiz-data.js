@@ -38,7 +38,7 @@ quiz = {
                     15
                 ],
                 correctAnswer: [0,1],
-                timeLim: 30.0,
+                timeLim: 13.0,
 
                 callSpec: "jonas",
             },
@@ -216,14 +216,14 @@ quiz = {
                 question: "What is the date of my very first stream?",
                 answers: [
                     "July 7, 2017",
-                    "January 6, 2019",
+                    "January 6, 2021",
                     "October 20, 2018",
                     "December 7, 2018"
                 ],
                 replies: [
                     "That's... not <em>exactly</em> the answer. That is the first time I streamed on my <em>old</em> channel. \
                     How in the world did you know that? Hmm.",
-                    "No but I did something BIG exactly 2 years later hehe",
+                    "Nope, I was busy ;) <br>",
                     "Happy 7 years! (Jesus Christ...)",
                     "A date which will live in infamy (and in your list of wrong answers)."
                 ],
@@ -253,7 +253,8 @@ quiz = {
                     "you're aptly confused, keep that mentality for the next question",
                     "please don't call me that.",
                     "...alright. I suppose you can just wait here until you're ready. To be honest, I don't know why I asked in the first place, \
-                    there's not a lot you can do to prepare for this question. Just please don't take so long.",
+                    there's not a lot you can do to prepare for the next question.<br><br>\
+                    I'll give you the second you wanted, but I won't tell you when it starts. You better be ready! If you miss, you lose.",
                 ],
                 anger: [
                     25,

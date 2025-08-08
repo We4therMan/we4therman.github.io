@@ -50,6 +50,8 @@ var angScore = 0;
 var angStage = 0;
 var failing = false;
 var playedAnswers = [];
+var timeOuts = 0;
+var easyMode = false;
 
 //route variables
 var burgerOn = false;
@@ -61,6 +63,7 @@ const specialKeys = ['burgerAns', 'cumAns','yairAns'];
 //UI variables
 let ce = "intro"; //defines current event; MUST MATCH quiz-data ARRAY NAMES (i.e. 'questions' with an s)
 let ticRate = 200;
+let timeCounter;
 let buttonAnsTimer;
 let btnTimeouts = [];
 let ansClicks = 0;
@@ -114,7 +117,7 @@ $(function() {
 function initQuiz() {
   console.log("Initializing quiz");
   //reset variables
-  correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0;
+  correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0, timeOuts = 0;
   resetSpecials(); //don't know why this is a function and the above is not. I guess they're not special.
   $(".quizWelcome").hide();
   $("#quizContainer").show();
@@ -138,12 +141,14 @@ function loadQuestion(currentQInd){
   $("#nextButton, #contButton, #intContainer").hide();
   //load in question data
   let q = questions[currentQInd];
-  let currQuestion = qData(currentQInd)[0];
-  let currAnsSet =   qData(currentQInd)[1];
-  let currRepSet =   qData(currentQInd)[2];
-  let currAngSet =   qData(currentQInd)[3];
-  let currCorrAns =  qData(currentQInd)[4];
-  let sus =          qData(currentQInd)[5];
+  let data = qData(currentQInd);
+  let currQuestion = data[0];
+  let currAnsSet =  data[1];
+  let currRepSet =   data[2];
+  let currAngSet =   data[3];
+  let currCorrAns =  data[4];
+  let sus =          data[5];
+  let timeLim =      (easyMode) ? (1.5 * data[6]) : data[6]; //time limit longer in easy mode
   window[q.callSpec]?.(); //call special event function if qData has one
   ticRate = (sus) ? 800 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
@@ -181,7 +186,33 @@ function loadQuestion(currentQInd){
   $("#question")
     .html(`${(currentQInd + 1).toString()}. ${currQuestion}`)
     .css({"color": "white", "font-size": "48px"});
+  genTimer(timeLim);
+  // $("#timerContainer").fadeIn(3000); //REMOVE THIS LINE WHEN YOU'RE DONE TESTING
 };
+
+//t should be in seconds
+function genTimer(t) {
+  console.log("GENERATING TIMER")
+  //clear old timer
+  let con = $("#timerContainer")
+  con.empty().hide(); //
+  //create timer element
+  let timer = $("<span />")
+    .addClass("timer")
+    .html(`${t.toFixed(2)}`)
+  //append to question element
+  con.append(timer)
+  //update timer every 0.1 s
+  timeCounter = setInterval(() => {
+    t -= 0.01
+    timer.html(`${t.toFixed(2)}`);
+    //reveal only at 10 seconds left
+    if (t < 10) con.fadeIn(3000);
+    if (t < 5) timer.css({"color": "red"});
+    if (t <= 0.001) timesUp();
+  }, 10)
+
+}
 
 function stopGenAns() {
   console.log("killing generator")
@@ -262,7 +293,7 @@ function checkGetSpecial(ind,spKeys){
 };
 
 function resetSpecials(){
-  burgerOn = false, cumOn = false;
+  burgerOn = false, cumOn = false, easyMode = false;
   console.log("special keys reset")
 }
 
@@ -315,6 +346,7 @@ function generateIntTxt(txt) {
 function result(isCorrect,ang,rep) {
   ansClicks = 1;
   if (!allAnswersLoaded) stopGenAns();
+  clearInterval(timeCounter);
   angScore += ang;
   pulseBG(isCorrect ? "#007d00" : "#7d0400");
   if (isCorrect) correctScore++;
@@ -423,8 +455,9 @@ function qData(qInd) {
   let currRepSet =   qData.replies; 
   let currAngSet =   qData.anger;
   let currCorrAns =  qData.correctAnswer;
-  let sus =          qData.suspense
-  return [currQ, currAnsSet, currRepSet, currAngSet, currCorrAns, sus]
+  let sus =          qData.suspense;
+  let timeLim =      qData.timeLim;
+  return [currQ, currAnsSet, currRepSet, currAngSet, currCorrAns, sus, timeLim]
 }
 
 //for sounds that play in quick succession and can't use an existing player

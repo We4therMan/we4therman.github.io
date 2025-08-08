@@ -1,6 +1,42 @@
 /* --------------------------------SPECIAL EVENTS------------------------------------------------ */
 //for safety these should check if their corresponding question is active (using currentQInd)
 
+// GENERAL GAME EVENTS (can happen at pretty much any question)
+
+function timesUp() {
+    $(".timer").html("TIME");
+    timeOuts++;
+    let r;
+    let ang = 5 * timeOuts;
+    switch(timeOuts) {
+        case 1:
+            r = "Time's up! You're gonna have to pick up the pace there..."
+            break;
+        case 2:
+            r = "Again? Man, did I make these too hard? Are the timers too short?"
+            break;
+        case 3:
+            easyMode = true;
+            r = "Alright, maybe the timers are a little fast. I prefer if you take your\
+            time with this quiz, so I'll make the timers a little longer. Just 4 U <3"
+            break;
+        case 4:
+            r = "OK, I'm starting to think you're just slow."
+            break;
+        case 5:
+            r = "Seriously??? Even with the long timers? I'm not sure what to do now."
+            break;
+        case 6:
+            ("#result").html("OK, I've had enough. YOU LOSE!")
+            gameOver();
+            return;
+    }
+    result(false,ang,r);
+    clearInterval(timeCounter);
+}
+
+//QUESTION SPECIFIC EVENTS
+
 function jonas() {
     console.log("jonas active")
     let typed = "";
@@ -22,7 +58,7 @@ function jonas() {
             weezer.volume.value = -Infinity
             weezer.onstop = () => {
                 quickSFX("gameover");
-                $("#question").text("Wow... you actually stayed long enough to hear the end of that.\
+                $("#question").html("Wow... you actually stayed long enough to hear the end of that.\
                      I don't know if I should congratulate you, pity you, or fear you...\
                      <br>Regardless, you might seriously benefit from touching grass.");
             }
@@ -34,6 +70,7 @@ function jonas() {
                 })
                 .off("click").on("click", function() {
                     angScore -= 50;
+                    clearInterval(timeCounter);
                     musPlayer.start(); //start music again in silence so it can fade in later
                     weezer.start(); //play weezer
                     weezer.volume.value = musVol;
@@ -73,10 +110,8 @@ function jan6() {
             "src": "img/jan6.jpg"
         })
     setTimeout(() => {
-        console.log('NOWWWWWWWW')
         $(".multChoice:contains('January')").on("click", function(){
-            console.log('REVELEA')
-            quickSFX('gameover', 0.8);
+            quickSFX('gameover', 0.6);
             $("#result").append(j6);
         });
     }, delay + 1)
@@ -89,7 +124,7 @@ function level7() {
         let lv7img = $('<img />')
             .attr({
                 "id": "lv7",
-                "title": "LEVEL 7",
+                "title": "LEVEL 7 (click to watch clip)",
                 "src": "img/level7.jpg"
             })
             .on("click", function(){
@@ -117,7 +152,9 @@ function level7() {
 }
 
 function q9 () {
-    console.log("QUESTION 9 ACTIVATED")
+    console.log("QUESTION 9 ACTIVATED") //TODO: make event for player actually choosing to wait
+    //give the player an actual second, but don't let them know when it's gonna start (random number)
+    //extra reward for actually clicking next during the one second?
 }
 
 function girl() {
@@ -129,7 +166,7 @@ function girl() {
             $(this).off("click");
             setTimeout(() => {
                 musPlayer.volume.rampTo(musVol,0.5)
-            }, 3000)
+            }, 3500)
         })
     }, delay + 1); //delay prevents this function from running before button appears and thus from getting reset without onClick
 }
