@@ -11,6 +11,7 @@ $(function() {
   
   $("#qLink").on("click", function() {
     $(this).html("It's under construction!");
+    $(this).attr("title","...why not go read something in the meantime? Maybe about some lore...")
   })
 
 })
