@@ -257,7 +257,7 @@ quiz = {
                     I'll give you the second you wanted, but I won't tell you when it starts. You better be ready! If you miss, you lose.",
                 ],
                 anger: [
-                    25,
+                    30,
                     0,
                     40,
                     0
@@ -354,7 +354,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                 restTxts: {
                     reg: ["That was a tough question! You've done well so far... You should take a short rest.",
                         "When you're ready, press the button that says 'ready.'"],
-                    fail: ["That was a tough question!<br>You're... not doing so great with these, though.",
+                    fail: ["That was a tough question!<br>You're... not doing so great with even the easy ones, though.",
                         "Take a breather, you want your brain sharp for these next ones!",
                         "When you're ready, press the button that says 'ready.'"],
                 },
@@ -362,7 +362,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                 specialTxts: {
                     burger: "hey, smells pretty nice in here...",
                     cum: "...holy shit I can't believe you actually said that HAHAHAHA",
-                    ang: "Also, I can't lie, some of your answers are making me wonder if you know me TOO well...",
+                    ang: "By the way, you gotta relax with some of your answers... I'll be honest, they're a bit insulting.",
                 },
                 //TODO: ready txts should appear after player clicks continue. Then automatically takes you to the next question
                 readyTxts: {

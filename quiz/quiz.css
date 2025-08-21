@@ -54,6 +54,8 @@ th, td {
   margin: 10px;
   color: white;
   background-color: #880808;
+  border-color: gray;
+  transition: border-color 3s ease-in;
   font-size: 56px;
   text-align: center;
   border: none;
@@ -123,6 +125,11 @@ th, td {
 /* answer buttons */
 .multChoice {
   font-family: "Lucida Console";
+  background-color: white;
+  border-color: gray;
+  transition: 
+    border-color 3s ease-in,
+    background-color 10s ease-in;
   max-width: 400px;
   font-size: 24px;
   padding: 20px;

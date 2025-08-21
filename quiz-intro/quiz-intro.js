@@ -4,6 +4,12 @@ $(function() {
     startQuiz()
     console.log("Quiz started.")
   })
+
+  $(document).on("keydown", (e) => {
+    if (e.code === "KeyK") {
+      toQuizPage();
+    }
+  })
 })
 
 function startQuiz() {
@@ -15,4 +21,5 @@ function toQuizPage() {
   $(location).attr("href", "../quiz/index.html")
 }
 
-setTimeout(toQuizPage, 5000)
+// setTimeout(toQuizPage, 5000)
+

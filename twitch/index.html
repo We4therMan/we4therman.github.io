@@ -12,15 +12,16 @@
   </head>
   <body>
     <div class="background"></div>
-    <br><br>
+    <div class="topCont">
+      <a class="blueBox" href="../index.html">Home</a>
+			<a class="blueBox" href="../gdpage/index.html">My Geometry Dash History</a>
+			<a class="blueBox" href="../gdlevels/index.html">GD Level Lists</a>
+      <a class="blueBox" href="../gdpage/index.html">My Geometry Dash History</a>
+      <button id="darkMode">Dark Mode</button>
+		</div>
+
     <h1 class="outline">Watch my streams from here!</h1>
     <h6>(for whatever reason...)</h6>
-
-    <button id="darkMode">
-      <span>Dark Mode</span>
-    </button>
-
-    <br><br>
 
     <div class="boxcontainer">
       <div class="box">
@@ -29,7 +30,7 @@
           <script type="text/javascript">
             new Twitch.Embed("twitch-embed", {
               width: 1000,
-              height: 390,
+              height: 500,
               channel: "we4therman",
               theme: "dark"
             });
@@ -38,7 +39,7 @@
     </div>
 
    <br><br>
-    <h1 class="outline">UNDER CONSTRUCTION SORRY IF THIS THING DOESN'T WORK</h1>
+    <h1 class="outline">CLIP PLAYER (UNDER CONSTRUCTION SORRY THIS THING VERY DOESN'T WORK)</h1>
     <div class="boxcontainer">
       <div class="box">
           <button id="next-clip">Play next clip</button>
@@ -49,29 +50,14 @@
               width="640"
               allowfullscreen>
             </iframe>
-            <!-- if you can see this text something is broken -->
           </div>
           <br>
           <a id="auth-text" href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=hybxycfqunpq57mgsvydiczvgfvuxo&redirect_uri=https://we4therman.github.io/twitch/index.html&scope=clips%3Aedit&force_verify=true">
           <!-- <a href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=hybxycfqunpq57mgsvydiczvgfvuxo&redirect_uri=localhost:8000/twitch/index.html&scope=clips%3Aedit&force_verify=true">  -->
             Click here to get authorization token (Twitch won't let you see the clips until you do)
           </a>
+          <h4>version 0.0.7</h4>
       </div>
     </div>
-    <h2>version 0.0.7</h2>
-
-    <br><br>
-
-    <div class="boxcontainer">
-      <div class="blueBox">
-        <p><a href="../index.html">Homepage</a>
-          <br><br>
-          <a href="../gdpage/index.html">My Geometry Dash History</a>
-          <br><br>
-          <a href="../gdlevels/index.html">GD Level Lists</a>
-        </p>
-      </div>
-    </div>
-
   </body>
 </html>

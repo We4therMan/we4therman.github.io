@@ -8,6 +8,10 @@ $(function() {
     console.log(count)
     easterEgg()
   })
+  
+  $("#qLink").on("click", function() {
+    $(this).html("It's under construction!");
+  })
 
 })
 
@@ -61,7 +65,7 @@ function easterEgg() {
         $(".background").css({"background": "none", "background-color": "black"});
         $(".outline, #welcome").text("WELCOME");
         setTimeout(() => {
-          window.location.href = "./quiz/index.html"
+          window.location.href = "./quiz-intro/index.html"
         }, 5000)
       }
     };

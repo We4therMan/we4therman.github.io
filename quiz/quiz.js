@@ -374,7 +374,7 @@ function result(isCorrect,ang,rep) {
         angScore += 50;
         break;
       case 60:
-        $("#question").text("you're really fucking annoying, you know that?");
+        $("#question").text("you're irritating, you know that?");
         angScore += 70;
         break;
       case 75:
@@ -389,8 +389,8 @@ function result(isCorrect,ang,rep) {
   })
   //console.log(angScore, correctScore);
   checkAnger(angScore);
-  console.log(`anger stage ${angStage}`)
-  musPlayer.playbackRate = 1.0
+  showAnger(angStage);
+  musPlayer.playbackRate = 1.0;
   $("#nextButton").show();
 
   if (angStage === 3) gameOver();
@@ -427,13 +427,32 @@ function checkAnger(ang) {
   }
 };
 
+function showAnger(stage) {
+  if (stage <= 0) {
+      $(".multChoice").attr("background-color", "white");
+      $(".multChoice").attr("border-color", "gray");
+      sfxPlayer.playbackRate = 1;
+  }
+
+  if (stage >= 1) {
+      $(".multChoice").attr("border-color", "#5c0000");
+      sfxPlayer.playbackRate = 0.8;
+  }
+
+  if (stage >= 2) {
+      $(".multChoice").attr("background-color", "#ffc4c1ff");
+      sfxPlayer.playbackRate = 0.6;
+      // TODO: make angry versions of songs and sfx
+  }
+}
+
 function nextEvent() {
   let evInd = indOf[ce]?.(); //select index of current event
   let ne = quiz[ce][evInd].nextEvent //check if ce has nextEvent label and store it
   console.log("NEXT EVENT DATA",ce,currentQInd,currentIntInd,ne)
 
   if (!ne) return loadQuestion(++currentQInd); //if no label, update index and load next question
-  if (ne === "interlude") return loadInterlude(currentIntInd++); //if interlude, load interlude and update index
+  else if (ne === "interlude") return loadInterlude(currentIntInd++); //if interlude, load interlude and update index
 }
 
 function gameOver() {
@@ -470,8 +489,6 @@ function quickSFX(buffer,rate=1) {
     sound.onstop = () => sound.dispose();
   }
 }
-
-//TEST CODE HERE IF U NEED
 
 console.log("Do NOT read the answers if you know how to read code. I don't like cheaters...")
 //The quiz! Do NOT read the answers if you know how to read code. I don't like cheaters...

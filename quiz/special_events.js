@@ -35,6 +35,8 @@ function timesUp() {
     clearInterval(timeCounter);
 }
 
+
+
 //QUESTION SPECIFIC EVENTS
 
 function jonas() {
@@ -135,11 +137,16 @@ function level7() {
             .html("7.")
             .attr({
                 "id": "seven",
-                "title": "hoho could this be the answer????"
+                "title": "hoho what about this level????"
             })
             .on("click", function(){
-                result(true,0,"");
-                $("#result").append(lv7img);
+                if (!ansClicks) {
+                    result(true,0,"");
+                    $("#result").append(lv7img);
+                } else {
+                    //disable if question has been answered
+                    ansClicks++;
+                }
             })
             .hover(
                 () => $("#seven").css("color", "gray"),
