@@ -117,7 +117,7 @@ $(function() {
 function initQuiz() {
   console.log("Initializing quiz");
   //reset variables
-  correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0, timeOuts = 0;
+  correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0, angStage = 0, timeOuts = 0;
   resetSpecials(); //don't know why this is a function and the above is not. I guess they're not special.
   $(".quizWelcome").hide();
   $("#quizContainer").show();
@@ -328,6 +328,9 @@ function generateAns(bInd,isCorrect,ans,ang,rep,specil,isSpecil){
         setSpecials(specil);
       }
     });
+
+  if (angStage > 0) button.addClass("angPulse");
+  if (angStage > 1) button.addClass("angShake");
 
   $("#quizContainer").append(button);
 }

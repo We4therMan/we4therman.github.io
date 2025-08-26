@@ -32,17 +32,21 @@
     <div id="quizContainer" style="display:none;"></div>
     <div id="intContainer" style="display:none;"></div>
     <div id="result"></div>
+
     <button id="nextButton" style="display:none;">Next</button>
     <button id="readyButton" style="display:none;">Ready</button>
     <button id="contButton" style="display:none;">Continue</button>
 
-    <label for="sfxVolume">Sound FX volume</label>
-    <input type="range" id="sfxVolume" min="-30" max="4" step="0.5" value="-5">
+    <footer>
+      <a id="studioTag">&copy; 2025 We4therMan Studios</a>
 
-    <label for="musVolume">Music volume</label>
-    <input type="range" id="musVolume" min="-30" max="4" step="0.5" value="-5">
-    <footer id="studioTag">
-      <a>&copy; 2025 We4therMan Studios</a>
+      <div class="settings">
+        <label for="sfxVolume">Sound FX volume</label>
+        <input type="range" id="sfxVolume" min="-30" max="4" step="0.5" value="-5">
+
+        <label for="musVolume">Music volume</label>
+        <input type="range" id="musVolume" min="-30" max="4" step="0.5" value="-5">
+      </div>
     </footer>
   </body>
 </html>
