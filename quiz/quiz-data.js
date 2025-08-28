@@ -18,7 +18,7 @@ Some questions MAY also have
 quiz = {
     questions: [
             {   //1
-                question: "What is my name?", //TODO add an easter egg that changes every option to "Jonas" and plays the Weezer song. Then restart the quiz with a twist...
+                question: "What is my name?",
                 answers: [
                     "We4therMan",
                     "we4therman",
@@ -78,19 +78,22 @@ quiz = {
                     "Clubbin",
                     "Aura",
                     "Apocalypse City",
-                    "Misty Mountains"
+                    "Misty Mountains",
+                    "Level? What game?"
                 ],
                 replies: [
                     "no but damn if you actually know this level then you're kinda OG (orinigal gangster)",
                     "nah but it might as well be tbh",
                     "How do you know this????? did you have to look it up? Please tell me... haha, just kidding. I know. Trust me.",
                     "Christ no that was way into it... get it together.",
+                    "Oh, sorry yeah, I forgot not everyone has seen my streams. Don't worry about that one."
                 ],
                 anger: [
                     -10,
                     0,
                     0,
                     40,
+                    0,
                 ],
                 correctAnswer: [2],
                 timeLim: 20.0,
@@ -105,7 +108,8 @@ quiz = {
                     "Lots of love and dedication",
                     "BUrger", //burger
                     "The answer that everyone knows is true but most people refuse to say...",
-                    "Follow a style you like"
+                    "Follow a style you like",
+                    "Rated?"
                 ],
                 replies: [
                     "LOL you wish...",
@@ -113,12 +117,14 @@ quiz = {
                         It's not the correct answer, but you might make use of this.",
                     "Even if you don't actually believe this, I appreciate that you chose it. Otherwise, you know exactly what I'm talking about.",
                     "Pff, no matter what you're not already established in the community so it doesn't matter.",
+                    "Oh, you don't play GD. Ok, forget it, ignore that question."
                 ],
                 anger: [
                     30,
                     0,
                     10,
                     10,
+                    0,
                 ],
                 correctAnswer: [1,2],
                 timeLim: 20.0,
@@ -167,7 +173,7 @@ quiz = {
                     "haha that's so gay",
                     "DoctorMoney???? You're fucking me.",
                     "No, but that's kind of a sick name. <em>DoctorMadness</em>",
-                    "Yup, it stands for my old last name. Just like my username though, I changed it :)",
+                    "Yup, it stands for my old last name. Just like my username, though, I changed it :)",
                     "No, but solid guess!",
                     "Maybe if I'd made my account when I was FIVE or something",
                     "No. I don't have one."
@@ -273,7 +279,7 @@ quiz = {
                     embarrass a guy across from you, in front of everyone, to her sickening enjoyment. She is\
                     now approaching you. What should you do?",
                 answers: [
-                    "IGNORE IGNORE IGNORE DON'T MAKE EYE CONTACT", //TODO use francis at walmart audio
+                    "IGNORE IGNORE IGNORE DON'T MAKE EYE CONTACT",
                     "A girl approaches you?",
                     "cum in her stupid eye",
                     "Be respectful to her and go help the guy"
@@ -302,7 +308,7 @@ quiz = {
             },
             //Interlude 1
 
-            {   //
+            {   //11
                 question: "What game is the reason I wanted to start streaming?",
                 answers: [
                     "Geometry Dash",
@@ -318,9 +324,9 @@ quiz = {
                     "As much as I like it, I honestly don't think this game is interesting enough to make an entire streaming channel about.",
                 ],
                 anger: [
-                    100,
+                    80,
                     0,
-                    10,
+                    5,
                     0,
                 ],
                 correctAnswer: [1],
@@ -329,7 +335,141 @@ quiz = {
                 gdAns: 0,
             },
 
-            
+            {   //12
+                question: "Who was the first mod in my Twitch channel?",
+                answers: [
+                    "error101_the_gamer",
+                    "SoulCantSpeech",
+                    "LiterallyLamas",
+                    "jjcoolz",
+                    "LeslieLDB",
+                    "Nightbot"
+                ],
+                replies: [
+                    "No, but that's such a good guess I kinda wish I could just count it as correct. Even I thought it was this!",
+                    "Nope, that took a little while!",
+                    "Nope, that took a good long while!",
+                    "The OG.",
+                    "Nah, solid guess.",
+                    "That would be sad. Having no one but lil' old Nightbot to keep you company. Man..."
+                ],
+                anger: [
+                    -5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5
+                ],
+                correctAnswer: [3],
+                timeLim: 20.0,
+            },
+
+            {   //13
+                question: "What is the first level I <em>verified</em> on stream?",
+                answers: [
+                    "Aura",
+                    "Misty Mountains",
+                    "Apocalypse City",
+                    "impossibru LEVEL 1000 XTREME DORAMI CH4LLENGE",
+                    "Verified?",
+                ],
+                replies: [
+                    "Yeah. Big moment.",
+                    "CHRIST NO NOT EVEN CLOSE",
+                    "Nope. I can see why you'd guess that but, tragically, I never finished it.",
+                    "PFFHAHA what?? That's too many characters. Also WHO WOULD NAME actually a lot of people would",
+                    "Oh... right, you don't play this game. Sorry."
+                ],
+                anger: [
+                    0,
+                    25,
+                    0,
+                    -5,
+                    0
+                ],
+                correctAnswer: [0],
+                timeLim: 15.0,
+            },
+
+            {   //14
+                question: "Who was my main inspiration to start streaming?",
+                answers: [
+                    "Dashie",
+                    "Ninja",
+                    "Etika",
+                    "xQc",
+                ],
+                replies: [
+                    "The GOAT? He didn't inspire me to <em>stream</em>, but he is an inspiration to me. Keep that in mind :)",
+                    "EW NO LMAO",
+                    "I didn't watch him enough. RIP GOAT.",
+                    "Boy did that not age well for me."
+                ],
+                anger: [
+                    0,
+                    15,
+                    -10,
+                    0
+                ],
+                correctAnswer: [3],
+                timeLim: 13.0,
+            },
+
+            {   //15
+                question: "Who was my main inspiration to start building levels in GD?",
+                answers: [
+                    "DanZmeN",
+                    "Serponge",
+                    "KrmaL",
+                    "JonathanGD",
+                    "GD?",
+                ],
+                replies: [
+                    "absolutely NOT. Oh my god",
+                    "Amazing creator but nope.",
+                    "Could you tell?",
+                    "Good guess, but he wasn't the main one.",
+                    "Ok, let's be clear because this may come up again and I don't wanna\
+                    have to explain it more. GD means 'Geometry Dash'. You got that?",
+                ],
+                anger: [
+                    25,
+                    0,
+                    0,
+                    0,
+                    5,
+                ],
+                correctAnswer: [2],
+                timeLim: 15.0,
+            },
+
+            { //16
+                question: "What happened here?<br>\
+                <img src='img/manslaughter.png' width='800'>",
+                answers: [
+                    "Enderman dodged the arrow, got angry, and killed you",
+                    "jjcooley died an ugly death",
+                    "You hit the chorus plant like a boss",
+                    "You unloaded your bow and decided to shoot in a safer place"
+                ],
+                replies: [
+                    "No, but this probably did happen in an alternate timeline.",
+                    "FUCK I'M SORRY I DIDN;T KNOW THE HITBOXES WERE SO BIG. LIKE AN ARROW IS SO TINY WHY DOES IT HAVE A 100000000\
+                    KM HITBOX AROUND IT SORRY JACKSON",
+                    "Despite my lifelong title of Da Sharpshoota, I did not.",
+                    "Are you calling me a pussy?",
+                ],
+                anger: [
+                    0,
+                    0,
+                    0,
+                    10
+                ],
+                correctAnswer: [0],
+                timeLim: 30.0,
+                suspense: true,
+            }
         ],
 
 //route texts appear in **PRIORITY ORDER**

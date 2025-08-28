@@ -1,4 +1,5 @@
 //sound variables
+//these const variables are what cause the two 'AudioContext not allowed to start' errors. The errors are benign.
 const mus = new Tone.ToneAudioBuffers({
   urls: {
     firstfew: "aud/mus_thefirstfew_0.ogg",
@@ -28,6 +29,7 @@ const sfx = new Tone.ToneAudioBuffers({
 
 let musPlayer;
 let sfxPlayer;
+let distortion;
 var musVol = -5;
 var sfxVol = -5;
 
@@ -74,6 +76,7 @@ let allAnswersLoaded = true;
 $(function() {
   $("#startButton").on("click", async function() {
     await Tone.start();
+    //initiate music player
     musPlayer = new Tone.Player().toDestination();
     musPlayer.buffer = mus.get("firstfew");
     musPlayer.loop = true;
@@ -81,11 +84,21 @@ $(function() {
     musPlayer.start();
     console.log("Music started")
 
+    //initiate sfx player
     sfxPlayer = new Tone.Player().toDestination();
     sfxPlayer.volume.value = sfxVol;
     console.log("SFX player initialized")
 
+    //initiate effect plugins
+    // distortion = new Tone.Distortion(0.2).toDestination();
+
     $("#startButton").hide();
+
+    //POWERFUL: the most frequent updater. Most useful for keeping angerstage updated at all times.
+    $(document).on('click', function() {
+      console.log("the page has been clicked on....... somewhere")
+      showAnger(angStage);
+    })
 
     setTimeout(() => {
       initQuiz();
@@ -98,6 +111,10 @@ $(function() {
   });
 
   $("#contButton").on("click", function(){
+    nextEvent();
+  })
+//TODO: make interludes end with ready, continue is for revealing the endInterlude text
+  $("#readyButton").on("click", function(){
     nextEvent();
   })
 
@@ -150,7 +167,7 @@ function loadQuestion(currentQInd){
   let sus =          data[5];
   let timeLim =      (easyMode) ? (1.5 * data[6]) : data[6]; //time limit longer in easy mode
   window[q.callSpec]?.(); //call special event function if qData has one
-  ticRate = (sus) ? 800 : 200; //slow tics for high suspense
+  ticRate = (sus) ? 1000 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
 
   let specil = checkGetSpecial(currentQInd, specialKeys);
@@ -192,7 +209,6 @@ function loadQuestion(currentQInd){
 
 //t should be in seconds
 function genTimer(t) {
-  console.log("GENERATING TIMER")
   //clear old timer
   let con = $("#timerContainer")
   con.empty().hide(); //
@@ -329,8 +345,8 @@ function generateAns(bInd,isCorrect,ans,ang,rep,specil,isSpecil){
       }
     });
 
-  if (angStage > 0) button.addClass("angPulse");
-  if (angStage > 1) button.addClass("angShake");
+  if (angStage > 0) {button.addClass("angPulse")}
+  if (angStage > 1) {button.addClass("angShake")}
 
   $("#quizContainer").append(button);
 }
@@ -438,13 +454,14 @@ function showAnger(stage) {
   }
 
   if (stage >= 1) {
-      $(".multChoice").attr("border-color", "#5c0000");
+      $(".multChoice").addClass("angPulse");
       sfxPlayer.playbackRate = 0.8;
   }
 
   if (stage >= 2) {
-      $(".multChoice").attr("background-color", "#ffc4c1ff");
+      $(".multChoice").addClass("angShake");
       sfxPlayer.playbackRate = 0.6;
+      musPlayer.connect(distortion)
       // TODO: make angry versions of songs and sfx
   }
 }
