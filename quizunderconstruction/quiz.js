@@ -461,7 +461,7 @@ function showAnger(stage) {
   if (stage >= 2) {
       $(".multChoice").addClass("angShake");
       sfxPlayer.playbackRate = 0.6;
-      musPlayer.connect(distortion)
+      // musPlayer.connect(distortion)
       // TODO: make angry versions of songs and sfx
   }
 }
