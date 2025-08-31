@@ -18,8 +18,8 @@ $(function() {
 
 const sfx = new Tone.ToneAudioBuffers({
   urls: {
-    wrong: "./quiz/aud/snd_wrong.ogg",
-    correct: "./quiz/aud/snd_correct.ogg",
+    wrong: "./quizunderconstruction/aud/snd_wrong.ogg",
+    correct: "./quizunderconstruction/aud/snd_correct.ogg",
   },
   onload: () => {
     console.log("sfx buffers loaded")
