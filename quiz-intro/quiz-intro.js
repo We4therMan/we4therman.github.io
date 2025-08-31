@@ -18,7 +18,7 @@ function startQuiz() {
 }
 
 function toQuizPage() {
-  $(location).attr("href", "../quiz/index.html")
+  $(location).attr("href", "../quizunderconstruction")
 }
 
 // setTimeout(toQuizPage, 5000)
