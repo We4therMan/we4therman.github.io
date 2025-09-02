@@ -35,8 +35,6 @@ function timesUp() {
     clearInterval(timeCounter);
 }
 
-
-
 //QUESTION SPECIFIC EVENTS
 
 function jonas() {

@@ -459,12 +459,28 @@ function showAnger(stage) {
   }
 
   if (stage >= 2) {
-      $(".multChoice").addClass("angShake");
+      // $(".multChoice").addClass("angShake");
       sfxPlayer.playbackRate = 0.6;
       // musPlayer.connect(distortion)
       // TODO: make angry versions of songs and sfx
   }
 }
+
+// function shake(element){
+//   const shakeAmt = Math.round(Math.random() * 5) - 1;
+//   const shakeAmt2 = Math.round(Math.random() * 5) - 1;
+//   $(element).animate({
+//     left: `+=${shakeAmt}px`,
+//     down: `+=${shakeAmt2}px`
+//   }, 1000, function() {
+//     $(element).animate({
+//       left: `-=${shakeAmt}px`,
+//       down: `-=${shakeAmt2}px`,
+//     }, 1000, function() {
+//       shake(element);
+//     });
+//   });
+// }
 
 function nextEvent() {
   let evInd = indOf[ce]?.(); //select index of current event

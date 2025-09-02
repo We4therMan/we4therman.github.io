@@ -1,10 +1,16 @@
+@font-face {
+  font-family: 'alagard';
+  src: url('alagard.ttf');
+}
+
 html, body {
   height: 100%;
   overflow-y: auto;
+  font-family: alagard; 
 }
 
 h1 {
-	font-family: roboto;
+	font-family: alagard;
 	font-style: normal;
 	color: white;
   text-align: center;
@@ -13,14 +19,14 @@ h1 {
 }
 
 h6, h4, h2, p, a {
-	font-family: roboto;
+	font-family: alagard;
 	font-style: normal;
 	color: white;
 	text-align: center;
 }
 
 th, td {
-  font-family: roboto;
+  font-family: alagard;
   font-style: normal;
   color: white;
   background-color: rgba(0,0,0,0.25);
@@ -35,7 +41,9 @@ th, td {
 
 #startButton {
   color: white;
+  font-family: alagard;
   background-color: #880808;
+  padding: 10px;
   font-size: 56px;
   text-align: center;
   border: none;
@@ -51,6 +59,7 @@ th, td {
 
 #nextButton {
   position: sticky;
+  font-family: alagard;
   margin: 10px 30px 50px;
   color: white;
   background-color: #880808;
@@ -63,6 +72,7 @@ th, td {
 
 #contButton {
   position: sticky;
+  font-family: alagard;
   left: 10px;
   bottom: 10%;
   color: white;
@@ -78,7 +88,7 @@ th, td {
 }
 
 #intContainer {
-  font-family: "Lucida Console";
+  font-family: alagard;
   font-size: 36px;
   color: white;
   margin: 10px auto 10px;
@@ -96,7 +106,7 @@ th, td {
 
 #question {
   flex: 1 1 80%;
-  font-family: "Lucida Console";
+  font-family: alagard;
   font-size: 48px;
   color: white;
   margin: 25px auto;
@@ -104,7 +114,7 @@ th, td {
 
 #timerContainer {
   flex-shrink: 0;
-  font-family: "Lucida Console";
+  font-family: 'Lucida Console';
   font-size: 36px;
   color: white;
   border: 1px solid white;
@@ -124,7 +134,7 @@ th, td {
 
 /* answer buttons */
 .multChoice {
-  font-family: "Lucida Console";
+  font-family: alagard;
   background-color: white;
   border: 3px solid;
   border-color: gray;
@@ -180,7 +190,7 @@ th, td {
 }
 
 #result {
-  font-family: "Lucida Console";
+  font-family: alagard;
   font-size: 48px;
   color: white;
   margin: 25px auto;
@@ -200,11 +210,6 @@ th, td {
   min-height:100%;
 }
 
-@font-face {
-    font-family: 'roboto';
-    src: url("../Roboto.ttf");
-}
-
 footer {
   display: flex;
   width: 100vw;
@@ -216,7 +221,7 @@ footer {
   margin: 5px 10px;
 }
 
-.settings{
+.settings {
   display: flex;
   flex-direction: column;
   margin-right: 25px;
@@ -233,7 +238,7 @@ footer {
 
 label[for="sfxVolume"] {
   color: white;
-  font-family: roboto;
+  font-family: alagard;
   font-size: 15px;
   margin-right: 10px;
   vertical-align: middle;
@@ -250,7 +255,7 @@ label[for="sfxVolume"] {
 
 label[for="musVolume"] {
   color: white;
-  font-family: roboto;
+  font-family: alagard;
   font-size: 15px;
   margin-right: 10px;
   vertical-align: middle;
