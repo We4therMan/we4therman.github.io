@@ -160,6 +160,17 @@ function q9 () {
     console.log("QUESTION 9 ACTIVATED") //TODO: make event for player actually choosing to wait
     //give the player an actual second, but don't let them know when it's gonna start (random number)
     //extra reward for actually clicking next during the one second?
+
+    setTimeout(() => {
+        $(".multChoice:contains('second')").on("click", function() {
+            clearInterval(timeCounter);
+            musPlayer.volume.rampTo(0,2);
+            setTimeout(() => {
+                $("#result").html("GOGOGOOGOGOGOGOGOGO THERE IT IS GOOOOOOOOOOOO")
+                genTimer(1.0);
+            }, (Math.random() * 30) + 10);
+        })
+    }, delay + 1);
 }
 
 function girl() {

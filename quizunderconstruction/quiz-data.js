@@ -1231,7 +1231,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                     fail: [
                         "That was a tough question!", 
                         "You're... not doing so great with even the easy ones, though.",
-                        "At least now you should have a sense for how this quiaz works.",
+                        "At least now you should have a sense for how this quiz works.",
                         "Take a breather, you want your brain sharp for these next ones!",
                         "When you're ready, press the button that says 'ready.'"
                     ],

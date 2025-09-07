@@ -59,7 +59,7 @@ var easyMode = false;
 var burgerOn = false;
 var cumOn = false;
 var yairOn = false;
-//'-Ans' names of special answers in questions.js
+//'-Ans' names of special answers in quiz-data.js
 const specialKeys = ['burgerAns', 'cumAns','yairAns'];
 
 //UI variables
@@ -211,7 +211,7 @@ function loadQuestion(currentQInd){
 function genTimer(t) {
   //clear old timer
   let con = $("#timerContainer")
-  con.empty().hide(); //
+  if (t > 10.0) con.empty().hide(); //
   //create timer element
   let timer = $("<span />")
     .addClass("timer")
