@@ -35,6 +35,32 @@ function timesUp() {
     clearInterval(timeCounter);
 }
 
+//ROUTE EVENTS
+
+//y-route requirements
+let yReqs = {
+    "name": false,
+    "vidDate": false,
+    "firstVid": false,
+
+};
+
+//todo: find a way to make this read the text from the right button without needing to add a delay for the button to be generated
+function yCheck() {
+    const answerClicked = $(".routeAns").html();
+    console.log(answerClicked);
+    $(".routeAns").on("click", function() {
+        console.log("checking matching answer");
+        switch (answerClicked) {
+            case "Yair92002":
+                yReqs.name = true;
+                quickSFX("y1");
+            break;
+        }
+    })
+
+}
+
 //QUESTION SPECIFIC EVENTS
 
 function jonas() {
@@ -82,7 +108,7 @@ function jonas() {
                     $("#nextButton")
                         .show()
                         .off("click").on("click", function() {
-                            weezer.dispose(); //next button becomes anti-Weezer gun
+                            weezer.dispose(); //anti-Weezer gun
                             musPlayer.volume.rampTo(musVol,1); //fade in music
 
                             //reset button behavior
@@ -162,21 +188,55 @@ function q9 () {
     //extra reward for actually clicking next during the one second?
 
     setTimeout(() => {
+        console.log("special loaded", ticRate)
         $(".multChoice:contains('second')").on("click", function() {
             clearInterval(timeCounter);
-            musPlayer.volume.rampTo(0,2);
+            musPlayer.volume.rampTo(musVol-40,2);
+            $("#nextButton").hide()
             setTimeout(() => {
                 $("#result").html("GOGOGOOGOGOGOGOGOGO THERE IT IS GOOOOOOOOOOOO")
-                genTimer(1.0);
-            }, (Math.random() * 30) + 10);
+                genTimer(1.0,1);
+                musPlayer.volume.value = musVol;
+                musPlayer.connect(distortion);
+                //show button, move randomly and assign disconnect function for this click
+                $("#nextButton")
+                    .show()
+                    .animate({ left: "100vh" }, Math.random()*1500)
+                    .off("click").on("click", function() {
+                        clearInterval(timeCounter);
+                        const timerState = $(".timer").html();
+                        let timeLeft;
+                        if (timerState != 'TIME') {
+                            timeLeft = parseFloat(timerState)
+                        } else {
+                            //player dies if they're too late
+                            $("#result").html("Oh, you thought you could continue? Nope! You took the risk and failed the challenge. Sorry!")
+                            musPlayer.disconnect(distortion);
+                            $("#nextButton").animate({ left: "0" }, 1000)
+                            gameOver();
+                            return;
+                        }
+                        musPlayer.disconnect(distortion);
+                        $("#result").html(`Wow, you got it in ${1-timeLeft} seconds, not bad! I guess you can proceed...`)
+                        //then reset button behavior
+                        $(this)
+                            .animate({ left: "0" }, 100)
+                            .off("click").on("click", function() {
+                                clearTimeout(buttonAnsTimer);
+                                nextEvent();
+                            });
+                    });
+            }, (Math.random() * 3000) + 5000);
         })
-    }, delay + 1);
+    }, ticRate * 4 + 1);
 }
 
 function girl() {
-    console.log('GIRL ACTIVATED')
+    console.log('GIRL ACTIVATED', ticRate)
     setTimeout(() => {
+        console.log("special loaded")
         $(".multChoice:contains('CONTACT')").on("click", function(){
+            console.log("playing girl")
             musPlayer.volume.rampTo(musVol-10,0.25)
             quickSFX('girl');
             $(this).off("click");
@@ -184,5 +244,5 @@ function girl() {
                 musPlayer.volume.rampTo(musVol,0.5)
             }, 3500)
         })
-    }, delay + 1); //delay prevents this function from running before button appears and thus from getting reset without onClick
+    }, ticRate + 1); //delay prevents this function from running before button appears and thus from getting reset without onClick
 }

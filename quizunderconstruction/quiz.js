@@ -20,7 +20,12 @@ const sfx = new Tone.ToneAudioBuffers({
     blip: "aud/snd_blip.ogg",
     gameover: "aud/snd_gameover.ogg",
     jonas: "aud/snd_jonas.ogg",
-    girl: "aud/snd_girl.ogg"
+    girl: "aud/snd_girl.ogg",
+    y1: "aud/snd_y1.ogg",
+    y2: "aud/snd_y2.ogg",
+    y3: "aud/snd_y3.ogg",
+    y4: "aud/snd_y4.ogg",
+    y5: "aud/snd_y5.ogg",
   },
   onload: () => {
     console.log("sfx buffers loaded")
@@ -90,13 +95,12 @@ $(function() {
     console.log("SFX player initialized")
 
     //initiate effect plugins
-    // distortion = new Tone.Distortion(0.2).toDestination();
+    distortion = new Tone.Distortion(0.5).toDestination();
 
     $("#startButton").hide();
 
     //POWERFUL: the most frequent updater. Most useful for keeping angerstage updated at all times.
     $(document).on('click', function() {
-      console.log("the page has been clicked on....... somewhere")
       showAnger(angStage);
     })
 
@@ -166,21 +170,27 @@ function loadQuestion(currentQInd){
   let currCorrAns =  data[4];
   let sus =          data[5];
   let timeLim =      (easyMode) ? (1.5 * data[6]) : data[6]; //time limit longer in easy mode
-  window[q.callSpec]?.(); //call special event function if qData has one
+  let currRouteAns = q.routeAns || []; //if there are no route answers, an empty array will be checked instead
+  console.log(q.routeAns, currRouteAns)
   ticRate = (sus) ? 1000 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
 
-  let specil = checkGetSpecial(currentQInd, specialKeys);
-  let specilKs = Object.keys(specil), specilIs = Object.values(specil);
+  window[q.callSpec]?.(); //call special event function if qData has one
+  
+
+  // let specil = checkGetSpecial(currentQInd, specialKeys);
+  // let specilKs = Object.keys(specil), specilIs = Object.values(specil);
   let answersGenerated = 0;
 
   currAnsSet.forEach((currAns,ansInd) => { //answer options and indices
     let currAng = currAngSet[ansInd] //anger values
     let currRep = currRepSet[ansInd] //replies
     //console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
-    let isCorrect = currCorrAns.includes(ansInd), isSpecil = specilIs.includes(ansInd); //check tags
-    let specilK = specilKs.find(k => specil[k] === ansInd); //find matching special key (can handle multiple specials in one question)
-
+    // let isCorrect = currCorrAns.includes(ansInd), isSpecil = specilIs.includes(ansInd); //check tags
+    // let specilK = specilKs.find(k => specil[k] === ansInd); //find matching special key (can handle multiple specials in one question)
+    let isCorrect = currCorrAns.includes(ansInd)
+    let isRoute = currRouteAns.includes(ansInd)
+    console.log(currRouteAns,ansInd,isRoute)
     if (ansClicks) {
       delay = 0; //generate the rest of the buttons if one is clicked
     } else if (speedUp) {
@@ -192,7 +202,9 @@ function loadQuestion(currentQInd){
     let buttonAnsTimer = setTimeout(() => {
       answersGenerated++;
       if (answersGenerated === currAnsSet.length) allAnswersLoaded = true;
-      generateAns(ansInd, isCorrect, currAns, currAng, currRep, specilK, isSpecil);
+      // generateAns(ansInd, isCorrect, currAns, currAng, currRep, specilK, isSpecil);
+      console.log(isRoute)
+      generateAns(ansInd, isCorrect, currAns, currAng, currRep, isRoute);
       if (!ansClicks) sfxPlayer.start(); //play tic
     }, delay); //todo: make timeout 0 if skip option is true
     btnTimeouts.push(buttonAnsTimer);
@@ -208,10 +220,10 @@ function loadQuestion(currentQInd){
 };
 
 //t should be in seconds
-function genTimer(t) {
+function genTimer(t,fadeTime = 3000) {
   //clear old timer
   let con = $("#timerContainer")
-  if (t > 10.0) con.empty().hide(); //
+  con.empty().hide();
   //create timer element
   let timer = $("<span />")
     .addClass("timer")
@@ -223,7 +235,7 @@ function genTimer(t) {
     t -= 0.01
     timer.html(`${t.toFixed(2)}`);
     //reveal only at 10 seconds left
-    if (t < 10) con.fadeIn(3000);
+    if (t < 10) con.fadeIn(fadeTime);
     if (t < 5) timer.css({"color": "red"});
     if (t <= 0.001) timesUp();
   }, 10)
@@ -330,19 +342,39 @@ function setSpecials(key){
       }
 };
 
-function generateAns(bInd,isCorrect,ans,ang,rep,specil,isSpecil){
+// function generateAns(bInd,isCorrect,ans,ang,rep,specil,isSpecil){
+//   var button = $('<button />') 
+//     .addClass("multChoice")
+//     .attr("id",`ans-${bInd}`)
+//     .html(ans)
+//     .data({ans,isCorrect,ang,rep,specil})
+//     .on("click", function(){
+//       let data = $(this).data();
+//       result(data.isCorrect,data.ang,data.rep);
+//       playedAnswers.push(ans);
+//       if (isSpecil) {
+//         setSpecials(specil);
+//       }
+//     });
+
+//   if (angStage > 0) {button.addClass("angPulse")}
+//   if (angStage > 1) {button.addClass("angShake")}
+
+//   $("#quizContainer").append(button);
+// }
+
+function generateAns(bInd,isCorrect,ans,ang,rep,isRoute){
+  //add both classes if route, otherwise only the regular answer class
+  const classes = isRoute ? 'multChoice routeAns' : 'multChoice';
   var button = $('<button />') 
-    .addClass("multChoice")
+    .addClass(classes)
     .attr("id",`ans-${bInd}`)
     .html(ans)
-    .data({ans,isCorrect,ang,rep,specil})
+    .data({ans,isCorrect,ang,rep})
     .on("click", function(){
       let data = $(this).data();
       result(data.isCorrect,data.ang,data.rep);
       playedAnswers.push(ans);
-      if (isSpecil) {
-        setSpecials(specil);
-      }
     });
 
   if (angStage > 0) {button.addClass("angPulse")}

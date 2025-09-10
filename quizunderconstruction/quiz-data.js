@@ -67,9 +67,6 @@ quiz = {
                 timeLim: 20.0,
 
                 gdAns: 2, //also instantly kills you so it probably doesn't matter
-
-                checkReopen: true,
-                hasReopened: false
             },
 
             {   //3
@@ -97,39 +94,33 @@ quiz = {
                 ],
                 correctAnswer: [2],
                 timeLim: 20.0,
-
-                checkReopen: true,
-                hasReopened: false
             },
 
             {   //4
                 question: "What is the secret to getting a GD level rated?",
                 answers: [
                     "Lots of love and dedication",
-                    "BUrger", //burger
+                    "ohho oFUck", //burger
                     "The answer that everyone knows is true but most people refuse to say...",
                     "Follow a style you like",
                     "Rated?"
                 ],
                 replies: [
                     "LOL you wish...",
-                    "Well, because this is practically as valid as the actual answer, I'll give you a bonus.\
-                        It's not the correct answer, but you might make use of this.",
+                    "Uhh, OK? HAHA",
                     "Even if you don't actually believe this, I appreciate that you chose it. Otherwise, you know exactly what I'm talking about.",
                     "Pff, no matter what you're not already established in the community so it doesn't matter.",
                     "Oh, you don't play GD. Ok, forget it, ignore that question."
                 ],
                 anger: [
                     30,
-                    0,
+                    -20,
                     10,
                     10,
                     0,
                 ],
                 correctAnswer: [1,2],
                 timeLim: 20.0,
-
-                burgerAns: 1,
             },
 
             {   //5
@@ -155,7 +146,8 @@ quiz = {
                 correctAnswer: [0],
                 timeLim: 15.0,
 
-                yairAns: 1,
+                routeAns: [1],
+                callSpec: "yCheck",
             },
 
             {   //6
@@ -929,7 +921,7 @@ quiz = {
                     1,
                 ],
                 correctAnswer: [2],
-                timeLim: 25.0,
+                timeLim: 30.0,
             },
 
             {
