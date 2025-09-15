@@ -224,7 +224,13 @@ footer {
 .settings {
   display: flex;
   flex-direction: column;
+  align-items: right;
   margin-right: 25px;
+}
+
+.sliders {
+  display: flex;
+  flex-direction: column;
 }
 
 #sfxVolume {
@@ -261,7 +267,17 @@ label[for="musVolume"] {
   vertical-align: middle;
 }
 
+#settingsButton {
+  height: 20px;
+  width: 20px;
+  margin-right: auto;
+  padding: 30px 0px;
+  border: 10px solid white ;
+  filter: invert();
+}
+
 #studioTag {
+  margin: 10px;
   padding: 5px;
   background-color: rgba(24, 24, 24, 0.5);
 }

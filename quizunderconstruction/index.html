@@ -34,9 +34,12 @@
     <div class="quizWelcome">
       <h1>WELCOME TO</h1>
       <p>the</p>
-      <p>We4therMan Quiz!</p>
+      <h1>We4therMan Quiz!</h1>
       <p>(UNDER CONSTRUCTION)</p>
-      <button id="startButton">START</button>
+      <div>
+        <h2 id="loading">Quiz assets loading.<br>One moment please...</h2>
+        <button id="startButton" hidden>START</button>
+      </div>
     </div>
 
     <div id="questionContainer">
@@ -52,15 +55,20 @@
     <button id="contButton" style="display:none;">Continue</button>
 
     <footer>
-      <a id="studioTag">&copy; 2025 We4therMan Studios</a>
+      <img id="settingsButton" src="img/gear.png">
 
+      <a id="studioTag" style="display:none;">&copy; 2025 We4therMan Studios</a>
+      
       <div class="settings">
-        <label for="sfxVolume">Sound FX volume</label>
-        <input type="range" id="sfxVolume" min="-30" max="4" step="0.5" value="-5">
+        <div class="sliders" style="display:none;">
+          <label for="sfxVolume">Sound FX volume</label>
+          <input type="range" id="sfxVolume" min="-30" max="4" step="0.5" value="-5">
 
-        <label for="musVolume">Music volume</label>
-        <input type="range" id="musVolume" min="-30" max="4" step="0.5" value="-5">
+          <label for="musVolume">Music volume</label>
+          <input type="range" id="musVolume" min="-30" max="4" step="0.5" value="-5">
+        </div>
       </div>
     </footer>
+    
   </body>
 </html>

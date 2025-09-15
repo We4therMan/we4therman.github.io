@@ -1,15 +1,15 @@
 /* 
-ALL questions MUST have the following variables:
-    question: the prompt given to the player. Does not always have to be aquestion(like a challenge), but it should be labeled as such
-    answers: the player's options. TODO try a different kind of input?replies the dialogue that appears after an answer is picked
-    anger: the anger value of thequestion
-    correctAnswer: which answers add to the final score. MUST be an array. If none are correct the array can be empty, as such: []
-    timeLim: the player's time limit to answer thequestion If the timer runs out, it counts as an incorrect answer
+ALL questions MUST have the following variables (they can be empty strings/arrays):
+    question (str): the prompt given to the player. Does not always have to be aquestion(like a challenge), but it should be labeled as such
+    answers (arr): the player's options. TODO try a different kind of input?replies the dialogue that appears after an answer is picked
+    anger (arr): the anger value of each answer
+    correctAnswer (arr): which answers add to the final score. MUST be an array. If none are correct: []
+    timeLim (float): the player's time limit to answer thequestion If the timer runs out, it counts as an incorrect answer
 
 Some questions MAY also have
-    specAns: answers that trigger routes (e.g. burgerAns)
-    nextEvent: defines if next event is not a question (e.g. an interlude)
-    callSpec: calls a function for and event that changes the question drastically (i.e. more than a route, some text, or the buttons)
+    routeAns (arr): answers that trigger routes (e.g. yRoute)
+    nextEvent (str): defines if next event is not a question (e.g. an interlude)
+    callSpec (str): name for special event function to call
 */
 
 /* IfnextEvent is none, code assumes it is equivalent to it being question */
@@ -147,7 +147,7 @@ quiz = {
                 timeLim: 15.0,
 
                 routeAns: [1],
-                callSpec: "yCheck",
+                callSpec: "routeCheck",
             },
 
             {   //6
@@ -234,8 +234,8 @@ quiz = {
                 correctAnswer: [2],
                 timeLim: 15.0,
 
-                yairAns: 0,
-                callSpec: "jan6"
+                routeAns: [0],
+                callSpec: ["jan6", "routeCheck"]
             },
 
             {
@@ -645,6 +645,9 @@ quiz = {
                 anger: [0,0,0,0],
                 correctAnswer: [1],
                 timeLim: 13.0,
+
+                routeAns: [3],
+                callSpec: "routeCheck",
             },
 
             {
@@ -1176,26 +1179,28 @@ quiz = {
             },
 
             {
-                question: "fuck I could have sworn it aws here",
+                question: "OK, let's try this again: what's my name?",
                 answers: [
-                    "cum in his amish beard",
-                    "stupid cunt",
-                    "haha you",
-                    "y08yiojre father and your"
+                    "We4therMan",
+                    "We4therMan",
+                    "I know you better than you think.",
                 ],
                 replies: [
-                    "FAAAAAAAAAAAAAHAHAHAHA",
-                    "hey that;s nmeant",
-                    "what'dya you think",
-                    "stay out of trouble there ."
+                    "Good",
+                    "Good",
+                    "",
                 ],
-                anger: [0,0,0,0],
-                correctAnswer: [1],
+                anger: [0,0,0],
+                correctAnswer: [0,1],
                 timeLim: 5.0,
+                suspense: true,
+
+                routeAns: [2],
+                callSpec: "routeCheck"
             }
         ],
 
-//route texts appear in **PRIORITY ORDER**
+//special texts appear in **PRIORITY ORDER**
 /* dicts organized as
 {
     restTxts (tell player it's the interlude)
@@ -1205,6 +1210,8 @@ quiz = {
 
     readyTxts (tell player the next question will follow)
 }
+
+Each are objects. They may contain arrays of strings, or lone strings.
 */
 
 /*
@@ -1230,7 +1237,6 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                 },
                 
                 specialTxts: {
-                    burger: "hey, smells pretty nice in here...",
                     cum: "...holy shit I can't believe you actually said that HAHAHAHA",
                     ang: "By the way, you gotta relax with some of your answers... I'll be honest, they're a bit insulting.",
                 },

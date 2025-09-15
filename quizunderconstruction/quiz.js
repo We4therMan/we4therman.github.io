@@ -9,6 +9,9 @@ const mus = new Tone.ToneAudioBuffers({
   },
   onload: () => {
     console.log("Music buffers loaded")
+    //start button appears after audio is loaded (prevents buffer errors)
+    $("#startButton").show()
+    $("#loading").hide()
   }
 });
 
@@ -133,6 +136,10 @@ $(function() {
     sfxPlayer.volume.value = sfxVol;
     sfxPlayer.mute = (sfxVol <= -30.0) ? true : false;
   });
+
+  $("#settingsButton").on("click", function() {
+    $(".sliders, #studioTag").toggle(500);
+  });
 })
 
 function initQuiz() {
@@ -161,36 +168,32 @@ function loadQuestion(currentQInd){
   $("#quizContainer, #result").empty();
   $("#nextButton, #contButton, #intContainer").hide();
   //load in question data
-  let q = questions[currentQInd];
-  let data = qData(currentQInd);
-  let currQuestion = data[0];
-  let currAnsSet =  data[1];
-  let currRepSet =   data[2];
-  let currAngSet =   data[3];
-  let currCorrAns =  data[4];
-  let sus =          data[5];
-  let timeLim =      (easyMode) ? (1.5 * data[6]) : data[6]; //time limit longer in easy mode
+  const q = questions[currentQInd];
+  let {
+    question: currQuestion,
+    answers: currAnsSet,
+    replies: currRepSet,
+    anger: currAngSet,
+    correctAnswer: currCorrAns,
+    suspense: sus,
+    timeLim: timeLimRaw
+  } = q;
+  let timeLim = (easyMode) ? (1.5 * timeLimRaw) : timeLimRaw; //time limit longer in easy mode
   let currRouteAns = q.routeAns || []; //if there are no route answers, an empty array will be checked instead
   console.log(q.routeAns, currRouteAns)
   ticRate = (sus) ? 1000 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
 
-  window[q.callSpec]?.(); //call special event function if qData has one
-  
+  runCallSpec(q.callSpec); //call special event function if qData has one
 
-  // let specil = checkGetSpecial(currentQInd, specialKeys);
-  // let specilKs = Object.keys(specil), specilIs = Object.values(specil);
   let answersGenerated = 0;
 
   currAnsSet.forEach((currAns,ansInd) => { //answer options and indices
     let currAng = currAngSet[ansInd] //anger values
     let currRep = currRepSet[ansInd] //replies
-    //console.log(`loadquestion curr ans "${currAns}" curr ang ${currAng} curr reply "${currRep}" correct answer indeces ${currCorrAns}`);
-    // let isCorrect = currCorrAns.includes(ansInd), isSpecil = specilIs.includes(ansInd); //check tags
-    // let specilK = specilKs.find(k => specil[k] === ansInd); //find matching special key (can handle multiple specials in one question)
     let isCorrect = currCorrAns.includes(ansInd)
     let isRoute = currRouteAns.includes(ansInd)
-    console.log(currRouteAns,ansInd,isRoute)
+    console.log("route ans, ind, is route?",currRouteAns,ansInd,isRoute)
     if (ansClicks) {
       delay = 0; //generate the rest of the buttons if one is clicked
     } else if (speedUp) {
@@ -203,7 +206,6 @@ function loadQuestion(currentQInd){
       answersGenerated++;
       if (answersGenerated === currAnsSet.length) allAnswersLoaded = true;
       // generateAns(ansInd, isCorrect, currAns, currAng, currRep, specilK, isSpecil);
-      console.log(isRoute)
       generateAns(ansInd, isCorrect, currAns, currAng, currRep, isRoute);
       if (!ansClicks) sfxPlayer.start(); //play tic
     }, delay); //todo: make timeout 0 if skip option is true
@@ -342,27 +344,6 @@ function setSpecials(key){
       }
 };
 
-// function generateAns(bInd,isCorrect,ans,ang,rep,specil,isSpecil){
-//   var button = $('<button />') 
-//     .addClass("multChoice")
-//     .attr("id",`ans-${bInd}`)
-//     .html(ans)
-//     .data({ans,isCorrect,ang,rep,specil})
-//     .on("click", function(){
-//       let data = $(this).data();
-//       result(data.isCorrect,data.ang,data.rep);
-//       playedAnswers.push(ans);
-//       if (isSpecil) {
-//         setSpecials(specil);
-//       }
-//     });
-
-//   if (angStage > 0) {button.addClass("angPulse")}
-//   if (angStage > 1) {button.addClass("angShake")}
-
-//   $("#quizContainer").append(button);
-// }
-
 function generateAns(bInd,isCorrect,ans,ang,rep,isRoute){
   //add both classes if route, otherwise only the regular answer class
   const classes = isRoute ? 'multChoice routeAns' : 'multChoice';
@@ -401,8 +382,9 @@ function result(isCorrect,ang,rep) {
   angScore += ang;
   pulseBG(isCorrect ? "#007d00" : "#7d0400");
   if (isCorrect) correctScore++;
-  sfxPlayer.buffer = sfx.get(isCorrect ? "correct" : "wrong");
-  sfxPlayer.start();
+  quickSFX(isCorrect ? "correct" : "wrong")
+  // sfxPlayer.buffer = sfx.get(isCorrect ? "correct" : "wrong");
+  // sfxPlayer.start();
 
   $("#result").html(rep)
   //disable buttons upon click
@@ -535,18 +517,6 @@ function gameOver() {
 };
 
 
-function qData(qInd) {
-  let qData = questions[qInd];
-  let currQ = qData.question;
-  let currAnsSet =   qData.answers;
-  let currRepSet =   qData.replies; 
-  let currAngSet =   qData.anger;
-  let currCorrAns =  qData.correctAnswer;
-  let sus =          qData.suspense;
-  let timeLim =      qData.timeLim;
-  return [currQ, currAnsSet, currRepSet, currAngSet, currCorrAns, sus, timeLim]
-}
-
 //for sounds that play in quick succession and can't use an existing player
 function quickSFX(buffer,rate=1) {
   if (!sfxPlayer.mute) {
@@ -555,6 +525,26 @@ function quickSFX(buffer,rate=1) {
     sound.playbackRate = rate
     sound.start();
     sound.onstop = () => sound.dispose();
+  }
+}
+
+//made for questions with multiple 'callSpec' function names
+function runCallSpec(spec) {
+  if (!spec) return;
+
+  const functions = Array.isArray(spec) ? spec : [spec];
+
+  for (const fnName of functions) {
+    const fn = window[fnName];
+    if (typeof fn === 'function') {
+      try {
+        fn();
+      } catch (err) {
+        console.error(`Error calling function "${fnName}: `, err);
+      }
+    } else {
+      console.warn(`Function "${fnName}" not found on window.`);
+    } 
   }
 }
 

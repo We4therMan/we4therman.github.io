@@ -40,25 +40,76 @@ function timesUp() {
 //y-route requirements
 let yReqs = {
     "name": false,
-    "vidDate": false,
+    "firstStream": false,
     "firstVid": false,
-
 };
 
-//todo: find a way to make this read the text from the right button without needing to add a delay for the button to be generated
-function yCheck() {
-    const answerClicked = $(".routeAns").html();
-    console.log(answerClicked);
-    $(".routeAns").on("click", function() {
-        console.log("checking matching answer");
-        switch (answerClicked) {
-            case "Yair92002":
-                yReqs.name = true;
-                quickSFX("y1");
-            break;
-        }
-    })
+const routeMatchers = [
+    {
+        keyword: "Yair92002",
+        handler: () => {
+            yReqs.name = true;
+            quickSFX("y1");
+        },
+    },
 
+    {
+        keyword: "July",
+        handler: () => {
+            yReqs.firstStream = true;
+            quickSFX("y2");
+        },
+    },
+
+    {
+        keyword: "volcano",
+        handler: () => {
+            yReqs.firstVid = true;
+            quickSFX("y3");
+        },
+    },
+
+    {
+        keyword: "think",
+        handler: () => {
+            //check if all requirements (keys) are true
+            routeAccess = Object.values(yReqs).every(k => k);
+            if (routeAccess) {
+                sfxPlayer.mute = true;
+                musPlayer.volume.rampTo(-Infinity,3)
+                sfxPlayer.mute = false;
+                quickSFX("y5",0.7);
+                $("#questionContainer, #quizContainer").hide()
+                $("#result").html("I see. It seems that you do.<br><br>Well then. I want to test how much you TRULY know me...")
+                //TODO: initialize yRoute from here
+            } else {
+                result(false, 10, "Then do better.")
+            }
+        },
+    },
+];
+
+function routeAnsHandler(event) {
+    const target = $(event.target);
+    if (target.hasClass("routeAns")) {
+        const answerClicked = target.html().trim().toLowerCase();
+        const match = routeMatchers.find(route =>
+            answerClicked.includes(route.keyword.toLowerCase())
+        );
+        console.log("answer matched: ", match);
+        match.handler();
+        $(document).off("click.routeAnsHandler");
+    //deactivate if other answer is given
+    } else if (target.is(".multChoice:not(.routeAns)")) {
+        $(document).off("click.routeAnsHandler");
+        return;
+    };
+}
+
+//todo: find a way to make this read the text from the right button without needing to add a delay for the button to be generated
+function routeCheck() {
+    $(document).off("click.routeAnsHandler");
+    $(document).on("click.routeAnsHandler", routeAnsHandler);
 }
 
 //QUESTION SPECIFIC EVENTS
