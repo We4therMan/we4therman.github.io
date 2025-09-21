@@ -80,7 +80,7 @@ function easterEgg() {
       }
       $(document).on("keydown", function(e){
       if (e.code === "KeyQ") {
-        new Audio('./quiz/aud/snd_wrong.ogg').play();
+        new Audio('./quizunderconstruction/aud/snd_wrong.ogg').play();
         $("#easterEgg").html("You were too late!!!!!!!!!!")
         $("#easterEgg").css({"font-size": 76})
         setTimeout(() => {
