@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>We4therman's Website - Quiz Progress</title>
+		<link rel="stylesheet" href="../style.css">
+        <link rel="stylesheet" href="../quizprogress/progress.css">
+		<link rel="shortcut icon" href="../img/pfp.png" type="image/x-icon">
+		<script src="../quizunderconstruction/tone.js"></script>
+		<script src="../jquery-3.4.1.min.js"></script>
+		<script src="app.js"></script>
+
+		<meta name="description" content="Check out how far along progress towards my quiz game is going!">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="keywords" content="we4therman">
+
+		<meta property="og:url" content="https://we4therman.com/quizprogress">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="We4therman's Website">
+		<meta property="og:description" content="Check out how far along progress towards my quiz game is going!">
+		<meta property="og:image" content="https://we4therman.com/img/pfp.png">
+		
+		<meta name="twitter:card" content="summary_large_image">
+		<meta property="twitter:domain" content="we4therman.com">
+		<meta property="twitter:url" content="https://we4therman.com/quizprogress">
+		<meta name="twitter:title" content="We4therman's Website">
+		<meta name="twitter:description" content="Check out how far along progress towards my quiz game is going!">
+		<meta name="twitter:image" content="https://we4therman.com/img/pfp.png">
+
+		<meta name="darkreader-lock">
+	</head>
+
+	<body>
+        <div class="background"></div>
+        <div class="topCont">
+      		<a class="blueBox" href="..">Home</a>
+			<a class="blueBox" href="../gdhist">My Geometry Dash History</a>
+			<a class="blueBox" href="../gdlevels">GD Level Lists</a>
+      		<a class="blueBox" href="../twitch">Twitch Player</a>
+			<a class="blueBox" id="qLink" href="javascript:void(0)"><b>QUIZ GAME</b></a>
+			<button id="darkMode">Dark Mode</button>
+		</div>
+
+        <h1 class="outline">THE WE4THERMAN QUIZ</h1>
+        <h2>Development progress</h2>
+
+        <p class="bigger">
+            The development stages are more or less listed in the order in which I'm working on them; i.e., generally
+            I focus on writing and finishing questions before working on music, etc.
+            <br>
+            Progress estimates relating to the demo are colored <span class="d">green</span>.
+        </p>
+        <table>
+            <tr>
+                <th>Development stage</th>
+                <th style="width: 250px;">Estimated progress (super accurate!!1!)</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td>Draft of main game and gimmicks</td>
+                <td><span class="d">>95%</span></td>
+                <td>
+                    By this, I mean mostly a mental draft. I've got a pretty good idea by now of how the quiz is 
+                    gonna work. I may add an idea or two along the way, but the main stuff is pretty much finalized.
+                </td>
+            </tr>
+            <tr>
+                <td>Main game structure (code)</td>
+                <td><span class="d">80%</span></td>
+                <td>
+                    This is what controls things like how questions are displayed, how the game keeps track of your score,
+                    and how it's displayed when you finish the quiz, among other stuff.
+                    It is almost done, apart from some final revisions and checking that it works the way I want it to.
+                    Testing some of this requires writing more questions
+                </td>
+            </tr>
+            <tr>
+                <td>Special events (code)</td>
+                <td>Full game: 20%<br><span class="d">Demo: 60%</span></td>
+                <td>
+                    Some questions have what I'm calling "special events": stuff like an image displaying, or
+                    a random variable, for more complex questions. There's some progress on this, but most
+                    special event questions are not finished. This won't affect the demo release as much, since it won't have as many questions.
+                </td>
+            </tr>
+            <tr>
+                <td>Questions</td>
+                <td>Main game: 40%<br><span class="d">Demo: >95%</span></td>
+                <td>
+                    The main game will have quite a few more questions than the demo. I've got about 50 written so far (some are bonus questions).
+                    For the demo, I will pick a few out of those, and probably won't have to write additional ones (unless
+                    I get a great idea).
+                </td>
+            </tr>
+            <tr>
+                <td>Music and sound effects</td>
+                <td>Full game: 20%<br><span class="d">Demo: 60%</span></td>
+                <td>
+                    So far, I've made one placeholder song to test sound in the quiz, but it needs a lot of work. The quiz will have
+                    different sections that I think will need a different vibe, so I think making a few different background
+                    pieces is in order (have I mentioned that I mainly wanted to make this game as an excuse to write music?).
+                    This issue is mainly for the full game, since the demo will be short and won't need a lot of different music.
+                    Sound effects are a bit more complete, but I might revise them to fit the quiz vibe better.
+                    <span class="d">
+                        Stay tuned for music production streams on
+                        <a href="https://twitch.tv/we4therman" class="d" target="_blank">my Twitch</a>
+                        soon!
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Polishing and playtesting</td>
+                <td><span class="d">0%</span></td>
+                <td>I have to finish the game first, haha.</td>
+            </tr>
+        </table>
+        <p class="bigger">I aim to have a good demo done by the end of this year, but as of now I really don't have a good time estimate.</p>
+        <p id="lastUpdated">(if you can see this text, something broke [sad face])</p>
+    </body>

@@ -1,0 +1,36 @@
+@font-face {
+  font-family: 'alagard';
+  src: url('../quizunderconstruction/alagard.ttf');
+}
+
+table {
+    max-width: 90%;
+    margin: auto;
+    font-size: 30px;
+    border-width: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+h1, h2, p, a, button {
+    font-family: alagard;
+
+}
+
+tr, td, th {
+    font-family: alagard;
+    border: 3px inset white;
+}
+
+.bigger {
+    margin: 10px auto;
+    width: 80%;
+    border: 3px inset white;
+    padding: 10px;
+    font-size: 30px;
+    text-align: center;
+    background-color: rgba(46, 0, 0, 0.5);
+}
+
+.d {
+    color: rgb(28, 233, 165);
+}

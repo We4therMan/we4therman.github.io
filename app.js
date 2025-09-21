@@ -10,8 +10,12 @@ $(function() {
   })
   
   $("#qLink").on("click", function() {
-    $(this).html("It's under construction!");
-    $(this).attr("title","...why not go read something in the meantime? Maybe about some lore...")
+    $(this)
+      .html("It's under construction! <br> Click to check out the progress page.")
+      .attr("title","...or maybe go read something in the meantime. Perhaps some lore would be nice...")
+      .on("click", function() {
+        $(this).attr("href", "quizprogress")
+      })
   })
 
 })
