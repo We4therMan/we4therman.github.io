@@ -7,6 +7,29 @@ var showText = function (target, message, index, interval) {
   }
 }
 
+// A defferent approach?
+
+var text = $('.typewriter').text();
+
+var length = text.length;
+var timeOut;
+var character = 0;
+
+
+(function typeWriter() { 
+    timeOut = setTimeout(function() {
+        character++;
+        var type = text.substring(0, character);
+        $('.typewriter').text(type);
+        typeWriter();
+        
+        if (character == length) {
+            clearTimeout(timeOut);
+        }
+        
+    }, 200);
+}());
+
 //impossible quiz-y type thing
 //https://codepen.io/Emilyrb/pen/MbdRmP
 

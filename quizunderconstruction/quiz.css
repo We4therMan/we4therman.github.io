@@ -50,11 +50,8 @@ th, td {
 }
 
 #startButton:hover {
-  color: white;
   background-color: #EE4B2B;
-  font-size: 56px;
-  text-align: center;
-  border: none;
+  font-size: 64px;
 }
 
 #nextButton {
@@ -70,6 +67,11 @@ th, td {
   text-align: center;
 }
 
+#nextButton:hover {
+  background-color: #EE4B2B;
+  font-size: 57px;
+}
+
 #contButton {
   position: sticky;
   font-family: alagard;
@@ -77,11 +79,29 @@ th, td {
   bottom: 10%;
   color: white;
   background-color: #880808;
+  border: 5px outset;
+  border-color: gray;
   font-size: 56px;
   text-align: center;
-  border: none;
 }
 
+#readyButton {
+  position: sticky;
+  font-family: alagard;
+  left: 10px;
+  bottom: 10%;
+  color: white;
+  background-color: #880808;
+  border: 5px outset;
+  border-color: gray;
+  font-size: 56px;
+  text-align: center;
+}
+
+#readyButton:hover {
+  background-color: #EE4B2B;
+  font-size: 57px;
+}
 .quiz-intro {
   position: relative;
   text-align: center
@@ -135,16 +155,21 @@ th, td {
 /* answer buttons */
 .multChoice {
   font-family: alagard;
-  background-color: white;
+  background-color: rgb(255, 255, 255)(0, 0, 0);
+  position: relative;
   border: 3px solid;
   border-color: gray;
   transition: 
-    border-color 3s ease-in,
-    background-color 10s ease-in;
+    border-color 3s ease-in;
   max-width: 400px;
   font-size: 24px;
   padding: 20px;
   margin: auto 15px;
+}
+
+.multChoice:hover {
+    background-color: rgba(255, 255, 255, 0.75);
+    font-size: 25px;
 }
 
 /* Pulse for angry objects */
@@ -271,9 +296,15 @@ label[for="musVolume"] {
   height: 20px;
   width: 20px;
   margin-right: auto;
-  padding: 30px 0px;
-  border: 10px solid white ;
+  margin-bottom: 25px;
+  padding: 10px;
+  border: 1px solid black;
   filter: invert();
+}
+
+#settingsButton:hover {
+  filter: invert(0%);
+  background-color: rgba(240, 248, 255, 0.25);
 }
 
 #studioTag {

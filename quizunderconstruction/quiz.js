@@ -76,6 +76,7 @@ let ticRate = 200;
 let timeCounter;
 let buttonAnsTimer;
 let btnTimeouts = [];
+let shakeIntervals = {};
 let ansClicks = 0;
 let delay;
 let speedUp = false;
@@ -117,12 +118,12 @@ $(function() {
     nextEvent();
   });
 
-  $("#contButton").on("click", function(){
-    nextEvent();
-  })
+  // $("#contButton").on("click", function(){
+  //   nextEvent();
+  // })
 //TODO: make interludes end with ready, continue is for revealing the endInterlude text
   $("#readyButton").on("click", function(){
-    nextEvent();
+    console.log("uhh do something?")
   })
 
   $("#musVolume").on("input", function() {
@@ -212,7 +213,7 @@ function loadQuestion(currentQInd){
     btnTimeouts.push(buttonAnsTimer);
   });
 
-  musPlayer.playbackRate = sus ? 0.90 : 1.0
+  musPlayer.playbackRate = (sus) ? 0.90 : 1.0;
 
   $("#question")
     .html(`${(currentQInd + 1).toString()}. ${currQuestion}`)
@@ -225,7 +226,7 @@ function loadQuestion(currentQInd){
 function genTimer(t,fadeTime = 3000) {
   //clear old timer
   let con = $("#timerContainer")
-  con.empty().hide();
+  con.empty().finish().hide();
   //create timer element
   let timer = $("<span />")
     .addClass("timer")
@@ -248,27 +249,36 @@ function stopGenAns() {
   console.log("killing generator")
   btnTimeouts.forEach(clearTimeout);
   btnTimeouts = [];
-
-  let currAnsSet = qData(currentQInd)[1];
-  let specil = checkGetSpecial(currentQInd, specialKeys);
-  let specilKs = Object.keys(specil), specilIs = Object.values(specil);
+    
+  const q = questions[currentQInd];
+  let currAnsSet = q["answers"]
+  // let specil = checkGetSpecial(currentQInd, specialKeys);
+  // let specilKs = Object.keys(specil), specilIs = Object.values(specil);
 
   currAnsSet.forEach((currAns, ansInd) => {
     //if the button already exists, skip to avoid duplicates
     if ($(`#ans-${ansInd}`).length > 0) return;
-    let currRep = qData(currentQInd)[2];
-    let currAng = qData(currentQInd)[3];
-    let isCorrect = qData(currentQInd)[4].includes(ansInd);
-    let isSpecil = specilIs.includes(ansInd);
-    let specilK = specilKs.find(k => specil[k] === ansInd);
-    generateAns(ansInd, isCorrect, currAns, currAng, currRep, specilK, isSpecil);
+    let {
+      replies: currRep,
+      anger: currAng,
+      correctAnswer: currCorrAns,
+    } = q
+    let currRouteAns = q.routeAns || [];
+    let isCorrect = currCorrAns.includes(ansInd)
+    let isRoute = currRouteAns.includes(ansInd)
+    // let currRep = qData(currentQInd)[2];
+    // let currAng = qData(currentQInd)[3];
+    // let isCorrect = qData(currentQInd)[4].includes(ansInd);
+    // let isSpecil = specilIs.includes(ansInd);
+    // let specilK = specilKs.find(k => specil[k] === ansInd);
+    generateAns(ansInd, isCorrect, currAns, currAng, currRep, isRoute);
   });
 }
 
 
 function selectTexts(ind) {
-  let fail = failing, angry = (angStage > 0), burger = burgerOn, cum = cumOn; //update variables for state
-  let states = {fail, angry, burger, cum} //all possible selectors as simple boolean states (update as more are added)
+  let fail = failing, angry = (angStage > 0), cum = cumOn; //update variables for state
+  let states = {fail, angry, cum} //all possible selectors as simple boolean states (update as more are added)
   const intSet = interludes[ind];
 
   //selects only one matching restTxt
@@ -276,6 +286,7 @@ function selectTexts(ind) {
   let restKey = Object.keys(intSet.restTxts).find(key => key !== 'reg' && states[key]) || 'reg'; 
   let restTxt = intSet.restTxts[restKey]
   //ditto for readyTxts
+  //TODO: fix cum route text not getting selected
   let readyKey = Object.keys(intSet.readyTxts).find(key => key !== 'reg' && states[key]) || 'reg';
   let readyTxt = intSet.readyTxts[readyKey]
   //select any activated specialTxts (can be multiple)
@@ -283,7 +294,7 @@ function selectTexts(ind) {
     .filter(key => states[key])
     .map(key => intSet.specialTxts[key])
 
-  return [restTxt, specialTxts, readyTxt].flat().filter(Boolean); //blank arrays/strings could be included, so filter them out
+  return [restTxt, specialTxts, readyTxt]
 };
 
 function loadInterlude(ind) {
@@ -295,20 +306,38 @@ function loadInterlude(ind) {
 
   failing = (correctScore/currentQInd < 0.5) ? true : false;
 
-  let intTxts = selectTexts(ind)
+  let intTxts = selectTexts(ind).slice(0,2).flat().filter(Boolean); //blank arrays/strings could be included, so filter them out
+  let nextTxts = [(selectTexts(ind)[2])].flat().filter(Boolean); //ensure it's an array even if one one array is extracted
+
+  console.log(intTxts);
+  console.log(nextTxts);
 
   //show continue button last
   setTimeout(() => {
-    $("#contButton").show();
+    $("#readyButton")
+      .show()
+      .on("click", function() {
+        $("#intContainer").empty();
+        //show nextTxts sequentially upon click
+        nextTxts.forEach((nextTxt,iNextTxt) => {
+          var contTimer = setTimeout(() => {
+            generateIntTxt(nextTxt);
+            sfxPlayer.start();
+          }, iNextTxt * 1000);
+        })
+        $(this).off("click").hide();
+        $("#nextButton").show();
+      })
+      
     sfxPlayer.start();
   }, (intTxts.length) * 1000);
 
   //show intTxts sequentially
-  intTxts.forEach((intTxt,txtInd) => {
+  intTxts.forEach((intTxt,iIntTxt) => {
     var intTimer = setTimeout(() => {
       generateIntTxt(intTxt);
       sfxPlayer.start();
-    }, txtInd * 1000);
+    }, iIntTxt * 1000);
   })
 };
 
@@ -344,7 +373,7 @@ function setSpecials(key){
       }
 };
 
-function generateAns(bInd,isCorrect,ans,ang,rep,isRoute){
+function generateAns(bInd,isCorrect,ans,ang,rep,isRoute) {
   //add both classes if route, otherwise only the regular answer class
   const classes = isRoute ? 'multChoice routeAns' : 'multChoice';
   var button = $('<button />') 
@@ -358,11 +387,12 @@ function generateAns(bInd,isCorrect,ans,ang,rep,isRoute){
       playedAnswers.push(ans);
     });
 
-  if (angStage > 0) {button.addClass("angPulse")}
-  if (angStage > 1) {button.addClass("angShake")}
+  if (angStage > 0) button.addClass("angPulse");
+  if (angStage > 1) startShake(bInd);
 
   $("#quizContainer").append(button);
-}
+};
+
 
 //create <p> element with a given string. For interlude text
 function generateIntTxt(txt) {
@@ -468,7 +498,6 @@ function showAnger(stage) {
   }
 
   if (stage >= 1) {
-      $(".multChoice").addClass("angPulse");
       sfxPlayer.playbackRate = 0.8;
   }
 
@@ -480,21 +509,6 @@ function showAnger(stage) {
   }
 }
 
-// function shake(element){
-//   const shakeAmt = Math.round(Math.random() * 5) - 1;
-//   const shakeAmt2 = Math.round(Math.random() * 5) - 1;
-//   $(element).animate({
-//     left: `+=${shakeAmt}px`,
-//     down: `+=${shakeAmt2}px`
-//   }, 1000, function() {
-//     $(element).animate({
-//       left: `-=${shakeAmt}px`,
-//       down: `-=${shakeAmt2}px`,
-//     }, 1000, function() {
-//       shake(element);
-//     });
-//   });
-// }
 
 function nextEvent() {
   let evInd = indOf[ce]?.(); //select index of current event
@@ -526,6 +540,23 @@ function quickSFX(buffer,rate=1) {
     sound.start();
     sound.onstop = () => sound.dispose();
   }
+}
+
+function startShake(bInd) {
+  let shakeDirAttr = "left";
+  const ID = `#ans-${bInd}`;
+  const shakeInterval = 1000 * (Math.random() * 6 + 2)
+  shakeIntervals[bInd] = setInterval(function() {
+    if (!$(ID).length || angStage < 2) {
+      clearInterval(shakeIntervals[bInd]);
+      delete shakeIntervals[bInd];
+      return;
+    }
+    shakeDirAttr = (shakeDirAttr === "left") ? "top" : "left";
+    $(ID).animate({ [shakeDirAttr]: "+=3px" }, 10, function() {
+      $(this).animate({ [shakeDirAttr]: "-=3px" }, 10);
+    });
+  }, shakeInterval);
 }
 
 //made for questions with multiple 'callSpec' function names

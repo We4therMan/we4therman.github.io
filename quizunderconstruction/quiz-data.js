@@ -1276,7 +1276,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                     reg: "You just answered questions about my streams. This part will test how much you REALLY know me.\
                     This'll be fun... for me, haha.",
                     ang: "Well, here's the next questions. I'm not particularly excited to see how you answer\
-                     these but oh well. Just go"
+                     these but oh well. Just go."
                 },
             },
         ]
