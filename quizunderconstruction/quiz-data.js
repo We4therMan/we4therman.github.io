@@ -14,7 +14,7 @@ Some questions MAY also have
 
 /* IfnextEvent is none, code assumes it is equivalent to it being question */
 
-/* -----------------------------------QUESTIONS----------------------------------------------------------- */
+/* ------------------------------------------------------QUESTIONS----------------------------------------------------------- */
 quiz = {
     questions: [
             {   //1
@@ -1218,7 +1218,7 @@ Each are objects. They may contain arrays of strings, or lone strings.
 Labels organized such that the default text shown is always 'reg'.
 This means restTxts and readyTxts should have a 'reg' defined. They can be blank strings.
 */
-/* ----------------------------------------------INTERLUDES---------------------------------------------------------------------- */
+/* -----------------------------------------------------INTERLUDES-------------------------------------------------------------- */
         interludes: [
             {//1
                 restTxts: {
@@ -1279,8 +1279,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                      these but oh well. Just go."
                 },
             },
-        ]
-    }
+        ],
 
 /* Interlude item basic structure (copy paste for convenience)
 {//(interlude number)
@@ -1297,3 +1296,59 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
         },
     },
 */
+
+/* --------------------------------------------------=ENDINGS=---------------------------------------------------------------- */
+//In the code, endings are treated as special kinds of interludes (and share some functions)
+        endings: 
+            {
+                main: {
+                    intro: [
+                        "Congratulations! You've finished the quiz.",
+                        "Go ahead and pat yourself on the back, that was a lot of questions!",
+                    ],
+                    score: [
+                        `How many questions exactly? Well, you gave ANSWERS_GIVEN answers`,
+                        `and SCORE were correct.`,
+                        `That's a score of SCORE_PERCENT%`,
+                    ],
+                    feedback: {
+                        S: [
+                            "Perfect score! You get an S. 'S' stands for 'special', because you're a special little cupcake!",
+                            "But did you answer ALL the questions...?"
+                        ],
+                        A: "You get an A! You did great, but will you try to reach the top...?",
+                        B: "You get a B. Not bad, but you could get a better score. Will you try again?",
+                        C: "That's a C. Not great. Maybe this isn't your day. Do you want to try again?",
+                        D: "That's a D. Not good. Maybe some of the questions were a bit unfair. Surely if you tried again it will go better, right?",
+                        F: "That's an F. You failed. Are you happy with yourself?",
+                        SuperF: "For that you get a Super F. You Super Failed the quiz. How did you even let this happen?\
+                        Do you even care about people around you?"
+                    }
+                },
+
+                y: {
+                    intro: [
+                        "Congratulations, you've reached a secret ending of the quiz!",
+                        "You know, I secretly hoped this would get some more people interested in my black MIDIs,\
+                        but I realize making this a <em>secret</em> is kinda... counterintuitive."
+                    ],
+                    score: [
+                        `On this run, you gave ANSWERS_GIVEN answers.`,
+                        `and SCORE were correct.`,
+                        `That's a score of SCORE_PERCENT%`,
+                        //TODO: add route answers given score
+                    ],
+                    //Feedback for routes should apply to route answers
+                    feedback: {
+                        S: "A perfect score? You're either me, or you studied for this. Why would you do either of those?",
+                        A: "Pretty good! You know my alter ego well.",
+                        B: "Not bad.",
+                        C: "Can't blame you, some of these are pretty obscure.",
+                        D: "Could have been worse, I guess",
+                        F: "I mean... it's not like this is going on your job application or something",
+                        SuperF: "Really? Nothing?"
+                    }
+                },
+            }
+    }
+

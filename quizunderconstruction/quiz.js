@@ -44,12 +44,14 @@ var sfxVol = -5;
 //question variables
 const questions = quiz.questions
 const interludes = quiz.interludes
+const endings = quiz.endings
 var currentQInd;
 var currentIntInd;
 
 const indOf = {
   questions: () => currentQInd,
   interludes: () => currentIntInd,
+  endings: () => currentEnd,
 }
 
 var isCorrect = false;
@@ -529,6 +531,56 @@ function gameOver() {
 
   quickSFX("gameover");
 };
+
+function endQuiz(ending) {
+  ce = "endings"
+  $("#quizContainer, #intContainer, #question, #result").empty();
+  $("#quizContainer, #nextButton, #readyButton").hide();
+  $("#intContainer").show();
+  sfxPlayer.buffer = sfx.get("blip");
+  const answersGiven = playedAnswers.length
+  const scorecent = (100 * (correctScore / answersGiven)).toFixed(1)
+
+  //todo: add route handler (probably needs a new variable up top)
+
+  const introTxt = endings[ending]['intro'];
+  const scoreTxt = endings[ending]['score'];
+  const feedbackTxt = endings[ending]['feedback'][letterGrade(scorecent)];
+
+  scoreTxt[0] = scoreTxt[0].replace("ANSWERS_GIVEN", answersGiven);
+  scoreTxt[1] = scoreTxt[1].replace("SCORE", correctScore);
+  scoreTxt[2] = scoreTxt[2].replace("SCORE_PERCENT", scorecent);
+
+  const endingTxt = [introTxt,scoreTxt,feedbackTxt].flat().filter(Boolean);
+
+  endingTxt.forEach((txt,i) => {
+    setTimeout(() => {
+      generateIntTxt(txt);
+      sfxPlayer.start();
+    }, 2000 * i);
+  });
+
+  $("#nextButton").off("click").on("click", function(){
+    initQuiz();
+  }).text("REPLAY");
+
+  setTimeout(() => {
+    $("#nextButton").show();
+    sfxPlayer.start();
+  }, 2000 * endingTxt.length)
+
+}
+
+function letterGrade(score) {
+  if (score < 0 || score > 100) throw new Error("Score percent was not 0-100... somehow.");
+  if (score === 100) return "S";
+  if (score >= 85)   return "A";
+  if (score >= 70)   return "B";
+  if (score >= 60)   return "C";
+  if (score >= 50)   return "D";
+  if (score >= 5)    return "F";
+  return "SuperF";
+}
 
 
 //for sounds that play in quick succession and can't use an existing player
