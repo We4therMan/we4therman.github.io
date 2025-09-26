@@ -6,7 +6,7 @@
 table {
     max-width: 90%;
     margin: auto;
-    font-size: 30px;
+    font-size: 28px;
     border-width: 5px;
     background-color: rgba(0, 0, 0, 0.5);
 }
@@ -26,7 +26,7 @@ tr, td, th {
     width: 80%;
     border: 3px inset white;
     padding: 10px;
-    font-size: 30px;
+    font-size: 28px;
     text-align: center;
     background-color: rgba(46, 0, 0, 0.5);
 }

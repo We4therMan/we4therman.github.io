@@ -76,11 +76,14 @@ const routeMatchers = [
             routeAccess = Object.values(yReqs).every(k => k);
             if (routeAccess) {
                 sfxPlayer.mute = true;
-                musPlayer.volume.rampTo(-Infinity,3)
                 sfxPlayer.mute = false;
+                musPlayer.volume.rampTo(-Infinity,0.1)
                 quickSFX("y5",0.7);
-                $("#questionContainer, #quizContainer").hide()
+                $("#questionContainer, #quizContainer").hide();
                 $("#result").html("I see. It seems that you do.<br><br>Well then. I want to test how much you TRULY know me...")
+                $("#nextButton").off("click").on("click", function(){
+                    initRoute('y');
+                }).html("VENTURE FORTH");
                 //TODO: initialize yRoute from here
             } else {
                 result(false, 10, "Then do better.")
@@ -106,10 +109,28 @@ function routeAnsHandler(event) {
     };
 }
 
-//todo: find a way to make this read the text from the right button without needing to add a delay for the button to be generated
 function routeCheck() {
     $(document).off("click.routeAnsHandler");
     $(document).on("click.routeAnsHandler", routeAnsHandler);
+}
+
+//'route' arg is the route name from quiz-data, e.g. 'y'
+function initRoute(route) {
+    r = quiz.routes[route]
+    questions = r.questions;
+    currentQInd = 0;
+    questionPrefix = route
+    $("#result").html(r.intro);
+
+    //upon route load, click loads first question and resets behavior
+    $("#nextButton").off("click").on("click", function(){
+        $("#questionContainer, #quizContainer").show();
+        loadQuestion(currentQInd)
+        $(this).off("click").on("click", function(){
+            clearTimeout(buttonAnsTimer);
+            nextEvent();
+        })
+    }).text("Next");
 }
 
 //QUESTION SPECIFIC EVENTS
@@ -142,7 +163,6 @@ function jonas() {
             $(".multChoice")
                 .text("Jonas")
                 .on("mouseenter", function(){
-                    console.log("HOVERED")
                     quickSFX("jonas");
                 })
                 .off("click").on("click", function() {

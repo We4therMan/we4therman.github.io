@@ -42,7 +42,7 @@ var musVol = -5;
 var sfxVol = -5;
 
 //question variables
-const questions = quiz.questions
+var questions = quiz.questions
 const interludes = quiz.interludes
 const endings = quiz.endings
 var currentQInd;
@@ -71,6 +71,7 @@ var cumOn = false;
 var yairOn = false;
 //'-Ans' names of special answers in quiz-data.js
 const specialKeys = ['burgerAns', 'cumAns','yairAns'];
+let questionPrefix = ""
 
 //UI variables
 let ce = "intro"; //defines current event; MUST MATCH quiz-data ARRAY NAMES (i.e. 'questions' with an s)
@@ -181,6 +182,7 @@ function loadQuestion(currentQInd){
     suspense: sus,
     timeLim: timeLimRaw
   } = q;
+  console.log(`${currQuestion} HWY IS IT NOT P????`)
   let timeLim = (easyMode) ? (1.5 * timeLimRaw) : timeLimRaw; //time limit longer in easy mode
   let currRouteAns = q.routeAns || []; //if there are no route answers, an empty array will be checked instead
   console.log(q.routeAns, currRouteAns)
@@ -218,7 +220,7 @@ function loadQuestion(currentQInd){
   musPlayer.playbackRate = (sus) ? 0.90 : 1.0;
 
   $("#question")
-    .html(`${(currentQInd + 1).toString()}. ${currQuestion}`)
+    .html(`${questionPrefix}${(currentQInd + 1).toString()}. ${currQuestion}`)
     .css({"color": "white", "font-size": "48px"});
   genTimer(timeLim);
   // $("#timerContainer").fadeIn(3000); //REMOVE THIS LINE WHEN YOU'RE DONE TESTING
@@ -579,7 +581,7 @@ function letterGrade(score) {
   if (score >= 60)   return "C";
   if (score >= 50)   return "D";
   if (score >= 5)    return "F";
-  return "SuperF";
+  return "Super F";
 }
 
 

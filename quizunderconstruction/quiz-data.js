@@ -1186,17 +1186,18 @@ quiz = {
                     "I know you better than you think.",
                 ],
                 replies: [
-                    "Good",
-                    "Good",
+                    "Good.",
+                    "Good.",
                     "",
                 ],
                 anger: [0,0,0],
                 correctAnswer: [0,1],
-                timeLim: 5.0,
+                timeLim: 15.0,
                 suspense: true,
 
                 routeAns: [2],
-                callSpec: "routeCheck"
+                callSpec: "routeCheck",
+                nextEvent: "interlude"
             }
         ],
 
@@ -1218,7 +1219,48 @@ Each are objects. They may contain arrays of strings, or lone strings.
 Labels organized such that the default text shown is always 'reg'.
 This means restTxts and readyTxts should have a 'reg' defined. They can be blank strings.
 */
-/* -----------------------------------------------------INTERLUDES-------------------------------------------------------------- */
+/* ------------------------------------------------------------ROUTES-------------------------------------------------------------- */
+
+        routes: {
+                y: {
+                    intro: "Good job finding these questions. They're about an alternate me. Good luck!",
+                    questions: [
+                        {//y1
+                            question: "When did I make my first YouTube channel?",
+                            answers: [
+                                "April 4, 2010",
+                                "March 11, 2011",
+                                "April 9, 2012",
+                                "December 21, 2012"
+                            ],
+                            replies: [
+                                "Nope, but something else happened that day. Keep that in mind!",
+                                "No, but I did upload something there about an event in Japan that day.",
+                                "Yes! I was 9 and definitely had no business making an account... oops.",
+                                "No, the world ended that day, remember? Everyone died."
+                            ],
+                            anger: [0,0,0,0],
+                            correctAnswer: [2],
+                            timeLim: 20.0,
+                        },
+
+                        {
+                            question: "mind if i take screenshots?",
+                            answers: [
+                                "she was 13???????????????????"
+                            ],
+                            replies: [
+                                "you've just been skeeted"
+                            ],
+                            anger: [13],
+                            correctAnswer: [0],
+                            timeLim: 13.0,
+                        }
+                    ]
+                },
+            },
+
+/* -----------------------------------------------------------INTERLUDES----------------------------------------------------------- */
         interludes: [
             {//1
                 restTxts: {
@@ -1273,8 +1315,13 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                 },
 
                 readyTxts: {
-                    reg: "You just answered questions about my streams. This part will test how much you REALLY know me.\
-                    This'll be fun... for me, haha.",
+                    reg: [
+                        "You just answered questions about me and my streams.",
+                        "These next questions are also about me, but outside my streams.",
+                        "Depending on how you think of me as a person, this might be a more enjoyable part of the quiz.",
+                        "If you don't know me... then just try your best! Remember, the goal is to get to know each other :D",
+                        "Onward!"
+                ],
                     ang: "Well, here's the next questions. I'm not particularly excited to see how you answer\
                      these but oh well. Just go."
                 },
