@@ -1,17 +1,30 @@
+// cookie helper functions
+function setCookie(name, value, days = 365) {
+  const d = new Date();
+  d.setTime(d.getTime() + (days*24*60*60*1000));
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+  return null;
+}
+
 //sound variables
 //these const variables are what cause the two 'AudioContext not allowed to start' errors. The errors are benign.
 const mus = new Tone.ToneAudioBuffers({
   urls: {
+    intro: "aud/mus_intro.ogg",
+    tutorial: "aud/mus_tutorial.ogg",
     firstfew: "aud/mus_thefirstfew_0.ogg",
     firstfew_w: "aud/mus_thefirstfew_w.ogg",
     //interlude: "aud/mus_interlude.ogg", //TODO write this song lol
     jonas: "aud/mus_jonas.ogg",
   },
   onload: () => {
-    console.log("Music buffers loaded")
-    //start button appears after audio is loaded (prevents buffer errors)
-    $("#startButton").show()
-    $("#loading").hide()
+    console.log("Music buffers loaded");
   }
 });
 
@@ -31,15 +44,18 @@ const sfx = new Tone.ToneAudioBuffers({
     y5: "aud/snd_y5.ogg",
   },
   onload: () => {
-    console.log("sfx buffers loaded")
+    console.log("sfx buffers loaded");
+        //start button appears after audio is loaded (prevents buffer errors)
+    $("#startButton").show();
+    $("#loading").hide();
   }
 });
 
 let musPlayer;
 let sfxPlayer;
 let distortion;
-var musVol = -5;
-var sfxVol = -5;
+var musVol = parseFloat(getCookie("musVol")) || -5;
+var sfxVol = parseFloat(getCookie("sfxVol")) || -5;
 
 //question variables
 var questions = quiz.questions
@@ -51,6 +67,7 @@ var currentIntInd;
 const indOf = {
   questions: () => currentQInd,
   interludes: () => currentIntInd,
+  routes: () => [questionPrefix,'questions',currentQInd],
   endings: () => currentEnd,
 }
 
@@ -66,11 +83,13 @@ var timeOuts = 0;
 var easyMode = false;
 
 //route variables
+//old key code to be deleted as I have a better system nowm (need to test first)
 var burgerOn = false;
 var cumOn = false;
 var yairOn = false;
 //'-Ans' names of special answers in quiz-data.js
-const specialKeys = ['burgerAns', 'cumAns','yairAns'];
+// const specialKeys = ['burgerAns', 'cumAns','yairAns'];
+//tracks which route player is on
 let questionPrefix = ""
 
 //UI variables
@@ -91,10 +110,11 @@ $(function() {
     //initiate music player
     musPlayer = new Tone.Player().toDestination();
     musPlayer.buffer = mus.get("firstfew");
+    //change this to false for intro, maybe initQuiz should activate looper when looping music actually starts playing
     musPlayer.loop = true;
     musPlayer.volume.value = musVol;
     musPlayer.start();
-    console.log("Music started")
+    console.log("Music player initialized")
 
     //initiate sfx player
     sfxPlayer = new Tone.Player().toDestination();
@@ -105,6 +125,7 @@ $(function() {
     distortion = new Tone.Distortion(0.5).toDestination();
 
     $("#startButton").hide();
+    $("#settingsButton").show()
 
     //POWERFUL: the most frequent updater. Most useful for keeping angerstage updated at all times.
     $(document).on('click', function() {
@@ -131,15 +152,17 @@ $(function() {
 
   $("#musVolume").on("input", function() {
     musVol = parseFloat(this.value);
+    setCookie("musVol", musVol);
     musPlayer.volume.value = parseFloat(this.value);
     musPlayer.mute = (this.value <= -30.0) ? true : false;
-  });
+  }).attr("value",musVol);
 
   $("#sfxVolume").on("input", function() {
     sfxVol = parseFloat(this.value);
+    setCookie("sfxVol", sfxVol);
     sfxPlayer.volume.value = sfxVol;
     sfxPlayer.mute = (sfxVol <= -30.0) ? true : false;
-  });
+  }).attr("value",sfxVol);
 
   $("#settingsButton").on("click", function() {
     $(".sliders, #studioTag").toggle(500);
@@ -150,7 +173,7 @@ function initQuiz() {
   console.log("Initializing quiz");
   //reset variables
   correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0, angStage = 0, timeOuts = 0;
-  resetSpecials(); //don't know why this is a function and the above is not. I guess they're not special.
+  resetScoreboard();
   $(".quizWelcome").hide();
   $("#quizContainer").show();
   //reassign button function
@@ -161,13 +184,25 @@ function initQuiz() {
   loadQuestion(currentQInd);
 }
 
+function resetScoreboard() {
+  questionPrefix = '';
+  answersGiven = [];
+  correctAnswers = 0;
+  currentQInd = 0;
+  currentIntInd = 0;
+  angScore = 0;
+  angStage = 0;
+  timeOuts = 0;
+  return
+} 
+
 //setTimeout(() => {}, 2000);
 
 function loadQuestion(currentQInd){
   ansClicks = 0
   allAnswersLoaded = false;
   console.log(`initializing question ${currentQInd+1}`);
-  ce = "questions"
+  ce = (questionPrefix) ? "routes" : "questions"
   $("#quizContainer, #result").show();
   $("#quizContainer, #result").empty();
   $("#nextButton, #contButton, #intContainer").hide();
@@ -182,10 +217,9 @@ function loadQuestion(currentQInd){
     suspense: sus,
     timeLim: timeLimRaw
   } = q;
-  console.log(`${currQuestion} HWY IS IT NOT P????`)
   let timeLim = (easyMode) ? (1.5 * timeLimRaw) : timeLimRaw; //time limit longer in easy mode
   let currRouteAns = q.routeAns || []; //if there are no route answers, an empty array will be checked instead
-  console.log(q.routeAns, currRouteAns)
+  // console.log(q.routeAns, currRouteAns)
   ticRate = (sus) ? 1000 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
 
@@ -198,7 +232,7 @@ function loadQuestion(currentQInd){
     let currRep = currRepSet[ansInd] //replies
     let isCorrect = currCorrAns.includes(ansInd)
     let isRoute = currRouteAns.includes(ansInd)
-    console.log("route ans, ind, is route?",currRouteAns,ansInd,isRoute)
+    // console.log("route ans, ind, is route?",currRouteAns,ansInd,isRoute)
     if (ansClicks) {
       delay = 0; //generate the rest of the buttons if one is clicked
     } else if (speedUp) {
@@ -355,11 +389,6 @@ function checkGetSpecial(ind,spKeys){
     }, {});
 };
 
-function resetSpecials(){
-  burgerOn = false, cumOn = false, easyMode = false;
-  console.log("special keys reset")
-}
-
 //on button press, if button is special, activate key
 function setSpecials(key){ 
   switch (key) {
@@ -405,7 +434,6 @@ function generateIntTxt(txt) {
   .html(txt);
 
   $("#intContainer").append(t);
-  // $("#intContainer").append("<br>")
 };
 
 //handle answer choice
@@ -450,7 +478,8 @@ function result(isCorrect,ang,rep) {
         break;
       case 100:
         gameOver();
-        $("#question").html("OK, I don't know what you're trying to achieve here. I'm making you start over. DON'T DO IT AGAIN.<br><br>GAME OVER");
+        $("#question").html("OK, I don't know what you're trying to achieve here. \
+          I'm making you start over. DON'T DO IT AGAIN.<br><br>GAME OVER");
         break;
     }
   })
@@ -506,7 +535,6 @@ function showAnger(stage) {
   }
 
   if (stage >= 2) {
-      // $(".multChoice").addClass("angShake");
       sfxPlayer.playbackRate = 0.6;
       // musPlayer.connect(distortion)
       // TODO: make angry versions of songs and sfx
@@ -516,11 +544,20 @@ function showAnger(stage) {
 
 function nextEvent() {
   let evInd = indOf[ce]?.(); //select index of current event
-  let ne = quiz[ce][evInd].nextEvent //check if ce has nextEvent label and store it
-  console.log("NEXT EVENT DATA",ce,currentQInd,currentIntInd,ne)
+  //sometsimes it's quiz.questions[1].nextEvent
+  //i want quiz.routes.y[1].nextEvent
+  // let ne = quiz[ce][evInd].nextEvent //check if ce has nextEvent label and store it
+  let ne = Array.isArray(evInd)
+    ? quiz[ce][evInd[0]]?.[evInd[1]]?.[evInd[2]]?.nextEvent
+    : quiz[ce][evInd]?.nextEvent;
+  console.log("NEXT EVENT DATA",ce,evInd,ne);
 
-  if (!ne) return loadQuestion(++currentQInd); //if no label, update index and load next question
-  else if (ne === "interlude") return loadInterlude(currentIntInd++); //if interlude, load interlude and update index
+  //if no label, load next question (updates q index)
+  if (!ne) return loadQuestion(++currentQInd); 
+  //if interlude, load interlude and update index
+  else if (ne === "interlude") return loadInterlude(currentIntInd++); 
+  //ending is always main ending unless we are in a route
+  else if (ne === "ending") return endQuiz((questionPrefix) ? questionPrefix : "main");
 }
 
 function gameOver() {
@@ -534,6 +571,7 @@ function gameOver() {
   quickSFX("gameover");
 };
 
+//use question prefix to choose ending
 function endQuiz(ending) {
   ce = "endings"
   $("#quizContainer, #intContainer, #question, #result").empty();
@@ -545,9 +583,9 @@ function endQuiz(ending) {
 
   //todo: add route handler (probably needs a new variable up top)
 
-  const introTxt = endings[ending]['intro'];
-  const scoreTxt = endings[ending]['score'];
-  const feedbackTxt = endings[ending]['feedback'][letterGrade(scorecent)];
+  var introTxt = endings[ending]['intro'];
+  var scoreTxt = endings[ending]['score'];
+  var feedbackTxt = endings[ending]['feedback'][letterGrade(scorecent)];
 
   scoreTxt[0] = scoreTxt[0].replace("ANSWERS_GIVEN", answersGiven);
   scoreTxt[1] = scoreTxt[1].replace("SCORE", correctScore);
@@ -575,7 +613,7 @@ function endQuiz(ending) {
 
 function letterGrade(score) {
   if (score < 0 || score > 100) throw new Error("Score percent was not 0-100... somehow.");
-  if (score === 100) return "S";
+  if (score == 100.) return "S";
   if (score >= 85)   return "A";
   if (score >= 70)   return "B";
   if (score >= 60)   return "C";
@@ -584,8 +622,40 @@ function letterGrade(score) {
   return "Super F";
 }
 
+///music player handler
+//note: a lot of problems with time sync. Might need more timeouts or async/????
+function switchMusic(toPlay,fadeOut=0,fadeIn=0,loopAud=true,onStop = () => {}) {
+    /**
+   * Switches audio file that 'musPlayer' is playing.
+   *
+   * @param {String} toPlay - audio filename to play (format 'mus_{title}').
+   * @param {Number} fadeOut - fade-out time of current audio in seconds. Defaults to 0 (music cuts out).
+   * @param {Number} fadeIn - fade-in time of new audio in seconds. Defaults to 0 (music cuts in).
+   * @param {Boolean} loopAud - whether to loop new audio. Defaults to true.
+   * @param {Callback} onStop - onstop callback for player if non-looping audio ends (defaults to an empty function).
+   */
+  //mp shorthand for readability
+  const mp = musPlayer;
 
-//for sounds that play in quick succession and can't use an existing player
+  const audioStartTimeout = setTimeout(() => {
+    mp.buffer = mus.get(toPlay);
+    mp.start();
+    console.log("I am the delay");
+    mp.onstop = onStop;
+  }, fadeOut * 1000 + 120);
+  //TODO: find a way to fix onStop running on timeout instead of when new audio ends?
+
+  mp.fadeOut = fadeOut;
+  mp.fadeIn = fadeIn;
+  mp.loop = loopAud;
+
+  mp.onstop = () => {audioStartTimeout};
+  setTimeout(() => {
+      mp.stop();
+  }, 5);
+}
+
+//for sounds that play in quick succession witohut using an existing player
 function quickSFX(buffer,rate=1) {
   if (!sfxPlayer.mute) {
     let sound = new Tone.Player(sfx.get(buffer)).toDestination();
@@ -601,6 +671,7 @@ function startShake(bInd) {
   const ID = `#ans-${bInd}`;
   const shakeInterval = 1000 * (Math.random() * 6 + 2)
   shakeIntervals[bInd] = setInterval(function() {
+    //if anger stage drops, stop shaking
     if (!$(ID).length || angStage < 2) {
       clearInterval(shakeIntervals[bInd]);
       delete shakeIntervals[bInd];
@@ -635,3 +706,4 @@ function runCallSpec(spec) {
 
 console.log("Do NOT read the answers if you know how to read code. I don't like cheaters...")
 //The quiz! Do NOT read the answers if you know how to read code. I don't like cheaters...
+

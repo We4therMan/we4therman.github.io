@@ -1,5 +1,4 @@
-/* --------------------------------SPECIAL EVENTS------------------------------------------------ */
-//for safety these should check if their corresponding question is active (using currentQInd)
+/* -----------------------------------------------------------SPECIAL EVENTS------------------------------------------------ */
 
 // GENERAL GAME EVENTS (can happen at pretty much any question)
 
@@ -31,11 +30,11 @@ function timesUp() {
             gameOver();
             return;
     }
-    result(false,ang,r);
+    result(isCorrect=false,ang,r);
     clearInterval(timeCounter);
 }
 
-//ROUTE EVENTS
+/*----------------------------------------------------ROUTE EVENTS--------------------------------------------------------*/
 
 //y-route requirements
 let yReqs = {
@@ -44,7 +43,13 @@ let yReqs = {
     "firstVid": false,
 };
 
+let cReqs = {
+    "eye": false,
+    "sword": false,
+}
+
 const routeMatchers = [
+    //yroute
     {
         keyword: "Yair92002",
         handler: () => {
@@ -90,6 +95,43 @@ const routeMatchers = [
             }
         },
     },
+    //croute
+    {
+        keyword: "eye",
+        handler: () => {
+            cReqs.eye = true;
+            quickSFX("blip");
+        },
+    },
+
+    {
+        keyword: "jizzer",
+        handler: () => {
+            cReqs.sword = true;
+            quickSFX("blip");
+        },
+    },
+
+    {
+        keyword: "FREAK",
+        handler: () => {
+            //check if all requirements (keys) are true
+            routeAccess = Object.values(cReqs).every(k => k);
+            if (routeAccess) {
+                sfxPlayer.mute = true;
+                sfxPlayer.mute = false;
+                musPlayer.volume.rampTo(-Infinity,0.1)
+                quickSFX("y4",0.7);
+                $("#questionContainer, #quizContainer").hide();
+                $("#result").html("I see. It seems that you are indeed a FREAK.<br><br>Well then. I want to see more...")
+                $("#nextButton").off("click").on("click", function(){
+                    initRoute('c');
+                }).html("yea click me BITCH");
+            } else {
+                result(false, 10, "I don't believe you.")
+            }
+        },
+    },
 ];
 
 function routeAnsHandler(event) {
@@ -110,13 +152,15 @@ function routeAnsHandler(event) {
 }
 
 function routeCheck() {
+    console.log("route check activated")
     $(document).off("click.routeAnsHandler");
     $(document).on("click.routeAnsHandler", routeAnsHandler);
 }
 
 //'route' arg is the route name from quiz-data, e.g. 'y'
 function initRoute(route) {
-    r = quiz.routes[route]
+    r = quiz.routes[route];
+    ce = "routes";
     questions = r.questions;
     currentQInd = 0;
     questionPrefix = route
@@ -133,7 +177,8 @@ function initRoute(route) {
     }).text("Next");
 }
 
-//QUESTION SPECIFIC EVENTS
+/* -----------------------------------------------------QUESTION SPECIFIC EVENTS------------------------------------------------ */
+//for safety these should check if their corresponding question is active (using currentQInd)
 
 function jonas() {
     console.log("jonas active")
@@ -141,7 +186,8 @@ function jonas() {
     let target = "jonas";
 
     $(document).on("keydown", function(e) {
-        if (currentQInd != 0) return; //function should not work if we're not on question 1
+        //don't run if we're not on question 1 or if it has been answered
+        if (currentQInd != 0 || ansClicks) return; 
 
         console.log(typed)
         typed += e.key.toLowerCase();
@@ -297,7 +343,7 @@ function q9 () {
                                 nextEvent();
                             });
                     });
-            }, (Math.random() * 3000) + 5000);
+            }, (Math.random() * 3000) + 8000);
         })
     }, ticRate * 4 + 1);
 }

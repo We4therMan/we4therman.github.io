@@ -14,8 +14,57 @@ Some questions MAY also have
 
 /* IfnextEvent is none, code assumes it is equivalent to it being question */
 
-/* ------------------------------------------------------QUESTIONS----------------------------------------------------------- */
 quiz = {
+    intro: {
+        introTxt: [
+            "Welcome to...",
+            "The We4therMan Quiz!",
+        ],
+
+        tutorialTxt: [
+            "These questions will test your knowledge about yours truly.", 
+            //fade in a dumb pixelated portrait of me with a mark tree sound
+            "But my hope is that through your answers I will also learn more about you!",
+            "Before we start, we should get some things out of the way real quick.",
+            "First of all, this game contains some BAD WORDS.", //gasp
+            "I do not recommend playing this if you are easily offended or around someone who is.",
+            "On a similar note, some questions and answers are a bit SUGGESTIVE.",
+            "I do not recommend playing this if you are easily offended or around someone who is.",
+            "But don't worry, none of the NSFW nature of this game is visual!",
+            "You should be A-OK to stream this game if you plan to. (Trust me, I know the Twitch TOS).",
+            "Now, as to how to play the game.",
+            "Have you ever taken a quiz before?",
+            "It's very simple! You'll read a question, and you'll try to choose the right answer.",
+            "Take your time (but not too much) to think about the answers. Some are tricky!",
+            "Every once in a while you'll get a break. Go ahead and use this time to rest up and get ready for the next questions!",
+            "Once you've finished the quiz, you'll be able to see how you did.",
+            "Unlike a math quiz at school, you can retake this quiz as many times as you want, and I won't be mad at you!",
+            "Well, not for retaking the quiz, that is.",
+            "If you didn't do well, you could retake it to try to improve your score.",
+            "You may also find something interesting if you try the quiz more than once.",
+            "Or you could do it to learn the correct answers and try to get the maximum score!",
+            "OK, enough talking. Let's get started with the quiz. Good luck!"
+        ],
+
+        //determined via cookies
+        firstTimeTxt: [
+            "Oh, sorry, one last thing!",
+            "This game uses cookies on your browser to track some of your score stats.",
+            "It's nothing major - the game will just keep a couple of variables saved locally on your computer.",
+            "That means if you play on a different device or browser, you might have a different experience than before.",
+            "Do you accept that this is happening?",
+            //add yes/no/uh options. If player chooses no, they cannot play the game
+            //choosing 'uh' is like yes. It's what we call "implied consent" in the Geometry Dash community
+            "Great! Now we're all set.",
+            "By the way, you won't be able to see this part of the tutorial again, even if you don't skip it next time.",
+            "...because it's going to self destruct.",
+            "The only way to recover it is by deleting your cookies.",
+            "But you shouldn't do that. That's what uncool people would do (and it would make me very sad).",
+            "Alright. On to the quiz!"
+            //tictictic explosion
+        ],
+    },
+/* ------------------------------------------------------QUESTIONS----------------------------------------------------------- */
     questions: [
             {   //1
                 question: "What is my name?",
@@ -291,11 +340,12 @@ quiz = {
                 correctAnswer: [0,1,2,3],
                 timeLim: 40.0,
 
-                cumAns: 2,
+                routeAns: [2],
 
                 suspense: true, //variable for louder ticks, drum roll, extra wait for tension
                 fixedOrder: true,
-                callSpec: 'girl',
+
+                callSpec: ['girl','routeCheck'],
                 nextEvent: "interlude"
             },
             //Interlude 1
@@ -774,7 +824,9 @@ quiz = {
                     5,
                 ],
                 correctAnswer: [3],
+                routeAns: [2],
                 timeLim: 18.0,
+                callSpec: "routeCheck"
             },
 
             {
@@ -1197,7 +1249,46 @@ quiz = {
 
                 routeAns: [2],
                 callSpec: "routeCheck",
-                nextEvent: "interlude"
+                // nextEvent: "interlude"
+            },
+
+            {
+                question: "so wassup",
+                answers: [
+                    "We4therMan",
+                    "I can outdo your FREAK."
+                ],
+                replies: [
+                    "Good.",
+                    "",
+                ],
+                anger: [0,0],
+                correctAnswer: [0],
+                timeLim: 15.0,
+                suspense: true,
+
+                routeAns: [1],
+                callSpec: "routeCheck",
+            },
+
+            {
+                question: "this question marks the end of the test quiz. Answer properly.",
+                answers: [
+                    "This is the correct answer.",
+                    "This is the wrong answer.",
+                    "This is an <u>ambivalent</u> answer."
+                ],
+                replies: [
+                    "You haev given the right answer.",
+                    "You have given the wrong answer (but I still love u <3)",
+                    "You gave an ambivalent answer. I think something weird should happen when you do lololololo"
+                ],
+                anger : [0,0,0],
+                correctAnswer: [0],
+                timeLim: 20.0,
+
+                ambAnswer: [2],
+                nextEvent: "ending"
             }
         ],
 
@@ -1258,6 +1349,31 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                         }
                     ]
                 },
+
+                c: {
+                    intro: "You disgust me. Show me more.",
+                    questions: [
+                        {
+                            question: "What's the gayest thing you've done?",
+                            answers: [
+                                "Cum in her stupid eye",
+                                "Fuck some women in the puss hole",
+                                "Cum in your amish beard",
+                                " her Hot sweaty ass (move out of town)"
+                            ],
+                            replies: [
+                                "bleach your hair after",
+                                "atta boy lou",
+                                "alright that's pretty gay",
+                                "rose petals falling beside you"
+                            ],
+                            anger: [0,0,0,0],
+                            correctAnswer: [2],
+                            timeLim: 20.0,
+                            nextEvent: "ending"
+                        }
+                    ]
+                }
             },
 
 /* -----------------------------------------------------------INTERLUDES----------------------------------------------------------- */
@@ -1355,18 +1471,20 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                     ],
                     score: [
                         `How many questions exactly? Well, you gave ANSWERS_GIVEN answers`,
-                        `and SCORE were correct.`,
+                        `and you answered SCORE correctly.`,
                         `That's a score of SCORE_PERCENT%`,
                     ],
                     feedback: {
                         S: [
                             "Perfect score! You get an S. 'S' stands for 'special', because you're a special little cupcake!",
-                            "But did you answer ALL the questions...?"
+                            "...",
+                            "But did you answer ALL the questions?"
                         ],
                         A: "You get an A! You did great, but will you try to reach the top...?",
                         B: "You get a B. Not bad, but you could get a better score. Will you try again?",
                         C: "That's a C. Not great. Maybe this isn't your day. Do you want to try again?",
-                        D: "That's a D. Not good. Maybe some of the questions were a bit unfair. Surely if you tried again it will go better, right?",
+                        D: "That's a D. Not good. Maybe some of the questions were a bit unfair. \
+                        Surely if you tried again it will go better, right? Give it a shot!",
                         F: "That's an F. You failed. Are you happy with yourself?",
                         SuperF: "For that you get a Super F. You Super Failed the quiz. How did you even let this happen?\
                         Do you even care about people around you?"
@@ -1381,7 +1499,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                     ],
                     score: [
                         `On this run, you gave ANSWERS_GIVEN answers.`,
-                        `and SCORE were correct.`,
+                        `and you answered SCORE correctly.`,
                         `That's a score of SCORE_PERCENT%`,
                         //TODO: add route answers given score
                     ],
@@ -1394,6 +1512,29 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                         D: "Could have been worse, I guess",
                         F: "I mean... it's not like this is going on your job application or something",
                         SuperF: "Really? Nothing?"
+                    }
+                },
+
+                c: {
+                    intro: [
+                        "Congratulations, you've reached a DISGUSTING ending of the quiz!",
+                        "I enjoyed this thoroughly. You're as gross as I am"
+                    ],
+                    score: [
+                        `On this run, you gave ANSWERS_GIVEN answers.`,
+                        `and you answered SCORE correctly.`,
+                        `That's a score of SCORE_PERCENT%`,
+                        //TODO: add route answers given score
+                    ],
+                    //Feedback for routes should apply to route answers
+                    feedback: {
+                        S: "A perfect score? You might be a bigger FREAK than me.",
+                        A: "Pretty good! You've got a good FREAK going.",
+                        B: "Not bad.",
+                        C: "You might not be cut out for this",
+                        D: "Could have been worse, I guess",
+                        F: "I mean... some of these aren't even that bad.",
+                        SuperF: "You might just be a boring asshole."
                     }
                 },
             }
