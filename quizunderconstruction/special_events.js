@@ -30,7 +30,7 @@ function timesUp() {
             gameOver();
             return;
     }
-    result(isCorrect=false,ang,r);
+    result("wrong",ang,r);
     clearInterval(timeCounter);
 }
 
@@ -91,7 +91,7 @@ const routeMatchers = [
                 }).html("VENTURE FORTH");
                 //TODO: initialize yRoute from here
             } else {
-                result(false, 10, "Then do better.")
+                result("wrong", 10, "Then do better.")
             }
         },
     },
@@ -128,7 +128,7 @@ const routeMatchers = [
                     initRoute('c');
                 }).html("yea click me BITCH");
             } else {
-                result(false, 10, "I don't believe you.")
+                result("wrong", 10, "I don't believe you.")
             }
         },
     },
@@ -282,7 +282,7 @@ function level7() {
             })
             .on("click", function(){
                 if (!ansClicks) {
-                    result(true,0,"");
+                    result("correct",0,"");
                     $("#result").append(lv7img);
                 } else {
                     //disable if question has been answered

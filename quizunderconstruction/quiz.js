@@ -32,6 +32,7 @@ const sfx = new Tone.ToneAudioBuffers({
   urls: {
     wrong: "aud/snd_wrong.ogg",
     correct: "aud/snd_correct.ogg",
+    ambivalent: "aud/snd_ambivalent.ogg",
     tic: "aud/snd_tic.ogg",
     blip: "aud/snd_blip.ogg",
     gameover: "aud/snd_gameover.ogg",
@@ -71,7 +72,9 @@ const indOf = {
   endings: () => currentEnd,
 }
 
-var isCorrect = false;
+//intro variables
+introPlayed = getCookie("introPlayed");
+firstTime = getCookie("firstTime");
 
 //score variables
 var correctScore = 0;
@@ -109,16 +112,18 @@ $(function() {
     await Tone.start();
     //initiate music player
     musPlayer = new Tone.Player().toDestination();
-    musPlayer.buffer = mus.get("firstfew");
+    musPlayer.buffer = mus.get("intro");
     //change this to false for intro, maybe initQuiz should activate looper when looping music actually starts playing
-    musPlayer.loop = true;
+    musPlayer.loop = false;
     musPlayer.volume.value = musVol;
+    musPlayer.mute = (musVol <= -30.0) ? true : false;
     musPlayer.start();
     console.log("Music player initialized")
 
     //initiate sfx player
     sfxPlayer = new Tone.Player().toDestination();
     sfxPlayer.volume.value = sfxVol;
+    sfxPlayer.mute = (sfxVol <= -30.0) ? true : false;
     console.log("SFX player initialized")
 
     //initiate effect plugins
@@ -133,7 +138,8 @@ $(function() {
     })
 
     setTimeout(() => {
-      initQuiz();
+      playIntro();
+      // initQuiz(); //replace with playIntro() once that's done
     }, 10)
   });
 
@@ -142,19 +148,11 @@ $(function() {
     nextEvent();
   });
 
-  // $("#contButton").on("click", function(){
-  //   nextEvent();
-  // })
-//TODO: make interludes end with ready, continue is for revealing the endInterlude text
-  $("#readyButton").on("click", function(){
-    console.log("uhh do something?")
-  })
-
   $("#musVolume").on("input", function() {
     musVol = parseFloat(this.value);
     setCookie("musVol", musVol);
-    musPlayer.volume.value = parseFloat(this.value);
-    musPlayer.mute = (this.value <= -30.0) ? true : false;
+    musPlayer.volume.value = musVol;
+    musPlayer.mute = (musVol <= -30.0) ? true : false;
   }).attr("value",musVol);
 
   $("#sfxVolume").on("input", function() {
@@ -169,8 +167,59 @@ $(function() {
   });
 })
 
+function playIntro() {
+  $(".quizWelcome").hide();
+  $("#intContainer").show();
+  $("#skipButton").show()
+  const {
+    introTxt,
+    tutorialTxt,
+    firstTimeTxt,
+  } = quiz.intro;
+
+  var fanfare;
+  //play intro fanfare and play intro animation
+  introTxt.forEach((text,ind) => {
+    fanfare = setTimeout(() => {
+      p = $("<p />")
+        .html(text)
+        .attr({
+          "id": `intro${ind}`,
+          "class": "introTxt"
+        })
+        .css({"opacity": 0, "font-size": "48px"});
+      $("#intContainer").append(p)
+      $(`#intro${ind}`)
+        .animate({fontSize: "64px", opacity: 1.00}, 12000);
+      if (ind == 2) $("#skipButton").text("Start")
+    }, 13000 * ind);
+  });
+
+  $("#skipButton").on("click", function() {
+    clearTimeout(fanfare);
+    $("#intContainer").empty();
+    switchMusic("tutorial");
+    $(this).hide();
+    //at this point, do not play tutorial if replaying same session, and don't play firsttimetxt if has played before
+    let tutInd = 0
+    $("#intContainer").html(tutorialTxt[tutInd]);
+    $("#nextButton").show().off("click").on("click", function(){
+      tutInd++;
+      $("#intContainer").html(tutorialTxt[tutInd]);
+      if (tutInd == tutorialTxt.length-1) {
+        $("#nextButton").off("click").on("click",function(){
+          initQuiz();
+        }).html("YES OK START PLEASE..")
+      }
+    });
+  });
+}
+
+  
+
 function initQuiz() {
   console.log("Initializing quiz");
+  switchMusic("firstfew",1);
   //reset variables
   correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0, angStage = 0, timeOuts = 0;
   resetScoreboard();
@@ -205,7 +254,7 @@ function loadQuestion(currentQInd){
   ce = (questionPrefix) ? "routes" : "questions"
   $("#quizContainer, #result").show();
   $("#quizContainer, #result").empty();
-  $("#nextButton, #contButton, #intContainer").hide();
+  $("#nextButton, #skipButton, #intContainer").hide();
   //load in question data
   const q = questions[currentQInd];
   let {
@@ -220,6 +269,7 @@ function loadQuestion(currentQInd){
   let timeLim = (easyMode) ? (1.5 * timeLimRaw) : timeLimRaw; //time limit longer in easy mode
   let currRouteAns = q.routeAns || []; //if there are no route answers, an empty array will be checked instead
   // console.log(q.routeAns, currRouteAns)
+  let currAmbAns = q.ambAnswer || [];
   ticRate = (sus) ? 1000 : 200; //slow tics for high suspense
   sfxPlayer.buffer = sfx.get("tic"); //load tic to player
 
@@ -228,10 +278,12 @@ function loadQuestion(currentQInd){
   let answersGenerated = 0;
 
   currAnsSet.forEach((currAns,ansInd) => { //answer options and indices
-    let currAng = currAngSet[ansInd] //anger values
-    let currRep = currRepSet[ansInd] //replies
-    let isCorrect = currCorrAns.includes(ansInd)
-    let isRoute = currRouteAns.includes(ansInd)
+    let currAng = currAngSet[ansInd]; //anger values
+    let currRep = currRepSet[ansInd]; //replies
+    // let isCorrect = currCorrAns.includes(ansInd);
+    let correctness = (currCorrAns.includes(ansInd)) ? "correct" : "wrong";
+    if (currAmbAns.includes(ansInd)) correctness = "ambivalent";
+    let isRoute = currRouteAns.includes(ansInd);
     // console.log("route ans, ind, is route?",currRouteAns,ansInd,isRoute)
     if (ansClicks) {
       delay = 0; //generate the rest of the buttons if one is clicked
@@ -245,7 +297,7 @@ function loadQuestion(currentQInd){
       answersGenerated++;
       if (answersGenerated === currAnsSet.length) allAnswersLoaded = true;
       // generateAns(ansInd, isCorrect, currAns, currAng, currRep, specilK, isSpecil);
-      generateAns(ansInd, isCorrect, currAns, currAng, currRep, isRoute);
+      generateAns(ansInd, correctness, currAns, currAng, currRep, isRoute);
       if (!ansClicks) sfxPlayer.start(); //play tic
     }, delay); //todo: make timeout 0 if skip option is true
     btnTimeouts.push(buttonAnsTimer);
@@ -302,14 +354,16 @@ function stopGenAns() {
       correctAnswer: currCorrAns,
     } = q
     let currRouteAns = q.routeAns || [];
-    let isCorrect = currCorrAns.includes(ansInd)
+    let currAmbAns = q.ambAnswer || [];
+    let correctness = (currCorrAns.includes(ansInd)) ? "correct" : "wrong";
+    if (currAmbAns.includes(ansInd)) correctness = "ambivalent";
     let isRoute = currRouteAns.includes(ansInd)
     // let currRep = qData(currentQInd)[2];
     // let currAng = qData(currentQInd)[3];
     // let isCorrect = qData(currentQInd)[4].includes(ansInd);
     // let isSpecil = specilIs.includes(ansInd);
     // let specilK = specilKs.find(k => specil[k] === ansInd);
-    generateAns(ansInd, isCorrect, currAns, currAng, currRep, isRoute);
+    generateAns(ansInd, correctness, currAns, currAng, currRep, isRoute);
   });
 }
 
@@ -406,17 +460,17 @@ function setSpecials(key){
       }
 };
 
-function generateAns(bInd,isCorrect,ans,ang,rep,isRoute) {
+function generateAns(bInd,correctness,ans,ang,rep,isRoute) {
   //add both classes if route, otherwise only the regular answer class
   const classes = isRoute ? 'multChoice routeAns' : 'multChoice';
   var button = $('<button />') 
     .addClass(classes)
     .attr("id",`ans-${bInd}`)
     .html(ans)
-    .data({ans,isCorrect,ang,rep})
+    .data({ans,correctness,ang,rep})
     .on("click", function(){
       let data = $(this).data();
-      result(data.isCorrect,data.ang,data.rep);
+      result(correctness,data.ang,data.rep);
       playedAnswers.push(ans);
     });
 
@@ -437,14 +491,25 @@ function generateIntTxt(txt) {
 };
 
 //handle answer choice
-function result(isCorrect,ang,rep) {
+function result(correctness,ang,rep) {
   ansClicks = 1;
   if (!allAnswersLoaded) stopGenAns();
   clearInterval(timeCounter);
   angScore += ang;
-  pulseBG(isCorrect ? "#007d00" : "#7d0400");
-  if (isCorrect) correctScore++;
-  quickSFX(isCorrect ? "correct" : "wrong")
+
+  quickSFX(correctness);
+  if (correctness == "correct") {
+    pulseBG("#007d00");
+    correctScore++;
+  } else if (correctness == "wrong") {
+    pulseBG("#7d0400");
+  } else if (correctness == "ambivalent") {
+    pulseBG("#9e7400ff");
+  }
+
+  // pulseBG(isCorrect ? "#007d00" : "#7d0400");
+  // if (isCorrect) correctScore++;
+  // quickSFX(isCorrect ? "correct" : "wrong")
   // sfxPlayer.buffer = sfx.get(isCorrect ? "correct" : "wrong");
   // sfxPlayer.start();
 
@@ -592,6 +657,7 @@ function endQuiz(ending) {
   scoreTxt[2] = scoreTxt[2].replace("SCORE_PERCENT", scorecent);
 
   const endingTxt = [introTxt,scoreTxt,feedbackTxt].flat().filter(Boolean);
+  console.log(endingTxt,feedbackTxt);
 
   endingTxt.forEach((txt,i) => {
     setTimeout(() => {
@@ -623,7 +689,7 @@ function letterGrade(score) {
 }
 
 ///music player handler
-//note: a lot of problems with time sync. Might need more timeouts or async/????
+//note: works as of now but has a lot of problems with time sync. Might need more timeouts or async/????
 function switchMusic(toPlay,fadeOut=0,fadeIn=0,loopAud=true,onStop = () => {}) {
     /**
    * Switches audio file that 'musPlayer' is playing.

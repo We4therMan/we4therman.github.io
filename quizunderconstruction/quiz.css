@@ -72,17 +72,23 @@ th, td {
   font-size: 57px;
 }
 
-#contButton {
-  position: sticky;
+#skipButton {
+  position: absolute;
   font-family: alagard;
+  opacity: 0.25;
   left: 10px;
-  bottom: 10%;
+  bottom: 100px;
   color: white;
   background-color: #880808;
   border: 5px outset;
   border-color: gray;
   font-size: 56px;
   text-align: center;
+}
+
+#skipButton:hover {
+  background-color: #EE4B2B;
+  font-size: 57px;
 }
 
 #readyButton {

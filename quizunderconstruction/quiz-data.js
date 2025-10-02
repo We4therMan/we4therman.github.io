@@ -1,27 +1,17 @@
-/* 
-ALL questions MUST have the following variables (they can be empty strings/arrays):
-    question (str): the prompt given to the player. Does not always have to be aquestion(like a challenge), but it should be labeled as such
-    answers (arr): the player's options. TODO try a different kind of input?replies the dialogue that appears after an answer is picked
-    anger (arr): the anger value of each answer
-    correctAnswer (arr): which answers add to the final score. MUST be an array. If none are correct: []
-    timeLim (float): the player's time limit to answer thequestion If the timer runs out, it counts as an incorrect answer
-
-Some questions MAY also have
-    routeAns (arr): answers that trigger routes (e.g. yRoute)
-    nextEvent (str): defines if next event is not a question (e.g. an interlude)
-    callSpec (str): name for special event function to call
-*/
-
-/* IfnextEvent is none, code assumes it is equivalent to it being question */
-
 quiz = {
     intro: {
         introTxt: [
             "Welcome to...",
             "The We4therMan Quiz!",
+            "",
+            "Uhh... you should click the button now.",
+            "",
+            "",
+            "please"
         ],
 
         tutorialTxt: [
+            "Welcome!",
             "These questions will test your knowledge about yours truly.", 
             //fade in a dumb pixelated portrait of me with a mark tree sound
             "But my hope is that through your answers I will also learn more about you!",
@@ -36,7 +26,8 @@ quiz = {
             "Have you ever taken a quiz before?",
             "It's very simple! You'll read a question, and you'll try to choose the right answer.",
             "Take your time (but not too much) to think about the answers. Some are tricky!",
-            "Every once in a while you'll get a break. Go ahead and use this time to rest up and get ready for the next questions!",
+            "Every once in a while you'll get a break. Go ahead and use this time to rest \
+            up and get ready for the next questions!",
             "Once you've finished the quiz, you'll be able to see how you did.",
             "Unlike a math quiz at school, you can retake this quiz as many times as you want, and I won't be mad at you!",
             "Well, not for retaking the quiz, that is.",
@@ -49,7 +40,7 @@ quiz = {
         //determined via cookies
         firstTimeTxt: [
             "Oh, sorry, one last thing!",
-            "This game uses cookies on your browser to track some of your score stats.",
+            "This game uses cookies on your browser to save your high scores and game settings.",
             "It's nothing major - the game will just keep a couple of variables saved locally on your computer.",
             "That means if you play on a different device or browser, you might have a different experience than before.",
             "Do you accept that this is happening?",
@@ -60,11 +51,34 @@ quiz = {
             "...because it's going to self destruct.",
             "The only way to recover it is by deleting your cookies.",
             "But you shouldn't do that. That's what uncool people would do (and it would make me very sad).",
+            "Also, I BEG you not to play this game in Safari. Safari SUCKS.",
+            "The cookies for this site are set to last one year, and refresh every time you interact with the game.",
+            "However, Safari enforces a 7-day limit on cookies, so you'll have to slog \
+            through this text again if you play on Safari and don't do so for a week.",
+            "Also, since I didn't test this on Safari much, chances are some things may not display correctly anyways...",
+            "so save yourself the pain and just don't, please :)",
             "Alright. On to the quiz!"
             //tictictic explosion
         ],
     },
 /* ------------------------------------------------------QUESTIONS----------------------------------------------------------- */
+
+/* 
+ALL questions MUST have the following variables (they can be empty strings/arrays):
+    question (str): the prompt given to the player. Does not always have to be aquestion(like a challenge), but it should be labeled as such
+    answers (arr): the player's options. TODO try a different kind of input?replies the dialogue that appears after an answer is picked
+    anger (arr): the anger value of each answer
+    correctAnswer (arr): which answers add to the final score. MUST be an array. If none are correct: []
+    timeLim (float): the player's time limit to answer thequestion If the timer runs out, it counts as an incorrect answer
+
+Some questions MAY also have
+    routeAns (arr): answers that trigger routes (e.g. yRoute)
+    nextEvent (str): defines if next event is not a question (e.g. an interlude)
+    callSpec (str): name for special event function to call
+*/
+
+/* If nextEvent is none, code assumes it is equivalent to it being question */
+
     questions: [
             {   //1
                 question: "What is my name?",
