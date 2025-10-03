@@ -12,6 +12,15 @@ function getCookie(name) {
   return null;
 }
 
+function deleteCookie(name, path = '/', domain = '') {
+  let expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC";
+  let cookieString = `${name}=; ${expires}; path=${path}`;
+  if (domain) {
+    cookieString += `; domain=${domain}`;
+  }
+  document.cookie = cookieString;
+}
+
 //sound variables
 //these const variables are what cause the two 'AudioContext not allowed to start' errors. The errors are benign.
 const mus = new Tone.ToneAudioBuffers({
@@ -74,7 +83,7 @@ const indOf = {
 
 //intro variables
 introPlayed = getCookie("introPlayed");
-firstTime = getCookie("firstTime");
+playedBefore = getCookie("playedBefore");
 
 //score variables
 var correctScore = 0;
@@ -168,19 +177,20 @@ $(function() {
 })
 
 function playIntro() {
-  $(".quizWelcome").hide();
+  $(".quizWelcome, #quizContainer").hide();
+  $("#nextButton").hide();
   $("#intContainer").show();
   $("#skipButton").show()
-  const {
+  var {
     introTxt,
     tutorialTxt,
     firstTimeTxt,
   } = quiz.intro;
 
-  var fanfare;
+  var fanfareTimeouts = [];
   //play intro fanfare and play intro animation
   introTxt.forEach((text,ind) => {
-    fanfare = setTimeout(() => {
+    const fTimeoutID = setTimeout(() => {
       p = $("<p />")
         .html(text)
         .attr({
@@ -193,23 +203,41 @@ function playIntro() {
         .animate({fontSize: "64px", opacity: 1.00}, 12000);
       if (ind == 2) $("#skipButton").text("Start")
     }, 13000 * ind);
+    fanfareTimeouts.push(fTimeoutID);
   });
 
   $("#skipButton").on("click", function() {
-    clearTimeout(fanfare);
+    fanfareTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    fanfareTimeouts = []; // Optional: clear array
     $("#intContainer").empty();
     switchMusic("tutorial");
-    $(this).hide();
+
+    $("#skipButton").off("click").on("click", function() {
+      setCookie("playedBefore",true)
+      initQuiz()
+    }).show();
     //at this point, do not play tutorial if replaying same session, and don't play firsttimetxt if has played before
+    if (!playedBefore) {
+      tutorialTxt = tutorialTxt.concat(firstTimeTxt);
+      $(this).hide();
+    }
     let tutInd = 0
     $("#intContainer").html(tutorialTxt[tutInd]);
     $("#nextButton").show().off("click").on("click", function(){
       tutInd++;
+      if ($("#intContainer:contains('experience')").length > 0) {
+        $("#quizContainer").show();
+        questions = quiz.intro.questions;
+        loadQuestion(0);
+      }
       $("#intContainer").html(tutorialTxt[tutInd]);
+      
       if (tutInd == tutorialTxt.length-1) {
         $("#nextButton").off("click").on("click",function(){
+          //playedBefore cookie is updated each time tutorial is finished (should also each time tutorial is skipped)
+          setCookie("playedBefore",true)
           initQuiz();
-        }).html("YES OK START PLEASE..")
+        }).html("YES OK START PLEASE.")
       }
     });
   });
@@ -219,6 +247,7 @@ function playIntro() {
 
 function initQuiz() {
   console.log("Initializing quiz");
+  questions = quiz.questions
   switchMusic("firstfew",1);
   //reset variables
   correctAnswers = 0, currentQInd = 0, currentIntInd = 0, angScore = 0, angStage = 0, timeOuts = 0;
@@ -309,7 +338,6 @@ function loadQuestion(currentQInd){
     .html(`${questionPrefix}${(currentQInd + 1).toString()}. ${currQuestion}`)
     .css({"color": "white", "font-size": "48px"});
   genTimer(timeLim);
-  // $("#timerContainer").fadeIn(3000); //REMOVE THIS LINE WHEN YOU'RE DONE TESTING
 };
 
 //t should be in seconds
@@ -629,7 +657,8 @@ function gameOver() {
   $("#question").text("GAME OVER").css({"color": "red", "font-size": "76px"});
   $("result").css({"color": "red"});
   $("#nextButton").off("click").on("click", function(){
-    initQuiz()
+    if (playedBefore) initQuiz();
+    else playIntro();
   }).text("START OVER");
   musPlayer.playbackRate = 0.25;
 
@@ -656,7 +685,7 @@ function endQuiz(ending) {
   scoreTxt[1] = scoreTxt[1].replace("SCORE", correctScore);
   scoreTxt[2] = scoreTxt[2].replace("SCORE_PERCENT", scorecent);
 
-  const endingTxt = [introTxt,scoreTxt,feedbackTxt].flat().filter(Boolean);
+  const endingTxt = [introTxt,scoreTxt,letterGrade(scorecent),feedbackTxt].flat().filter(Boolean);
   console.log(endingTxt,feedbackTxt);
 
   endingTxt.forEach((txt,i) => {
@@ -689,8 +718,8 @@ function letterGrade(score) {
 }
 
 ///music player handler
-//note: works as of now but has a lot of problems with time sync. Might need more timeouts or async/????
-function switchMusic(toPlay,fadeOut=0,fadeIn=0,loopAud=true,onStop = () => {}) {
+//I think i fixed it I'm pretty sure........ yay
+function switchMusic(toPlay,fadeOut=0,fadeIn=0,loopAud=true,newPlayerCallback = () => {}) {
     /**
    * Switches audio file that 'musPlayer' is playing.
    *
@@ -703,25 +732,24 @@ function switchMusic(toPlay,fadeOut=0,fadeIn=0,loopAud=true,onStop = () => {}) {
   //mp shorthand for readability
   const mp = musPlayer;
 
-  const audioStartTimeout = setTimeout(() => {
+  mp.volume.rampTo(-Infinity,fadeOut) ;
+
+  mp.onstop = () => {
     mp.buffer = mus.get(toPlay);
+    mp.fadeIn = fadeIn;
+    mp.loop = loopAud;
+    musPlayer.volume.value = musVol
+    mp.onstop = newPlayerCallback;
     mp.start();
-    console.log("I am the delay");
-    mp.onstop = onStop;
-  }, fadeOut * 1000 + 120);
-  //TODO: find a way to fix onStop running on timeout instead of when new audio ends?
+    console.log("new music started");
+  };
 
-  mp.fadeOut = fadeOut;
-  mp.fadeIn = fadeIn;
-  mp.loop = loopAud;
-
-  mp.onstop = () => {audioStartTimeout};
   setTimeout(() => {
       mp.stop();
-  }, 5);
+  }, fadeOut * 1000);
 }
 
-//for sounds that play in quick succession witohut using an existing player
+//for sounds that play in quick succession without using an existing player
 function quickSFX(buffer,rate=1) {
   if (!sfxPlayer.mute) {
     let sound = new Tone.Player(sfx.get(buffer)).toDestination();

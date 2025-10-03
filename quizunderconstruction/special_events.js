@@ -82,7 +82,7 @@ const routeMatchers = [
             if (routeAccess) {
                 sfxPlayer.mute = true;
                 sfxPlayer.mute = false;
-                musPlayer.volume.rampTo(-Infinity,0.1)
+                musPlayer.volume.rampTo(-Infinity,0.5)
                 quickSFX("y5",0.7);
                 $("#questionContainer, #quizContainer").hide();
                 $("#result").html("I see. It seems that you do.<br><br>Well then. I want to test how much you TRULY know me...")
@@ -120,7 +120,7 @@ const routeMatchers = [
             if (routeAccess) {
                 sfxPlayer.mute = true;
                 sfxPlayer.mute = false;
-                musPlayer.volume.rampTo(-Infinity,0.1)
+                musPlayer.volume.rampTo(-Infinity,0.5)
                 quickSFX("y4",0.7);
                 $("#questionContainer, #quizContainer").hide();
                 $("#result").html("I see. It seems that you are indeed a FREAK.<br><br>Well then. I want to see more...")
@@ -179,6 +179,34 @@ function initRoute(route) {
 
 /* -----------------------------------------------------QUESTION SPECIFIC EVENTS------------------------------------------------ */
 //for safety these should check if their corresponding question is active (using currentQInd)
+
+function cookieConsent() {
+    console.log("COOKIE COSETN ACTIVATED")
+    //change answer behavior a bit
+    $(document).on("click.cookieConsent", function() {
+        console.log("still checnking......", currentQInd, ansClicks)
+        if (ansClicks) $(this).off("click.cookieConsent");
+        $(".multChoice:contains('Yes'), .multChoice:contains('uhhhhh')").on("click", function() {
+            console.log("REASSIGNING BUTTON ACTION TO THE YES")
+            $("#nextButton").off("click").on("click", function() {
+                $("#quizContainer, #intContainer, #question, #result").empty();
+                $("#quizContainer, #nextButton").hide();
+                //todo: reset behavior to go back to normal sequence (honestly bruh use a different button or something for this.. like
+                // half of your problems are stemming from that and the code is gonna SUCK )
+                tutInd++;
+                $("#intContainer").html(tutorialTxt[tutInd]);
+            })
+        })
+        //THIS IS SUPER BROKEN LOLLLLLLLLL
+        $(".multChoice:contains('No')").on("click", function() {
+            $("#nextButton").off("click").on("click", function() {
+                console.log("REASSIGNING BUTTON ACTION TO THE NO")
+                $("#quizContainer, #intContainer, #question").empty();
+            })
+        })
+    })
+}
+
 
 function jonas() {
     console.log("jonas active")

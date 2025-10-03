@@ -60,6 +60,27 @@ quiz = {
             "Alright. On to the quiz!"
             //tictictic explosion
         ],
+
+        questions: [
+            {
+                question: "Do you accept that this is happening?",
+                answers: [
+                    "Yes",
+                    "No",
+                    "uhhhhh",
+                ],
+                replies: [
+                    "Cool!",
+                    "Then you can't play the game.",
+                    `I'll just take that as a yes. I believe they call it "implied consent" in the Geometry Dash community.`
+                ],
+                anger: [0,1e9,0],
+                correctAnswer: [0,2],
+                timeLim: 60.0,
+
+                callSpec: 'cookieConsent'
+            }
+        ]
     },
 /* ------------------------------------------------------QUESTIONS----------------------------------------------------------- */
 
@@ -1500,7 +1521,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                         D: "That's a D. Not good. Maybe some of the questions were a bit unfair. \
                         Surely if you tried again it will go better, right? Give it a shot!",
                         F: "That's an F. You failed. Are you happy with yourself?",
-                        SuperF: "For that you get a Super F. You Super Failed the quiz. How did you even let this happen?\
+                        "Super F": "For that you get a Super F. You Super Failed the quiz. How did you even let this happen?\
                         Do you even care about people around you?"
                     }
                 },
@@ -1525,7 +1546,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                         C: "Can't blame you, some of these are pretty obscure.",
                         D: "Could have been worse, I guess",
                         F: "I mean... it's not like this is going on your job application or something",
-                        SuperF: "Really? Nothing?"
+                        "Super F": "Really? Nothing?"
                     }
                 },
 
@@ -1548,7 +1569,7 @@ This means restTxts and readyTxts should have a 'reg' defined. They can be blank
                         C: "You might not be cut out for this",
                         D: "Could have been worse, I guess",
                         F: "I mean... some of these aren't even that bad.",
-                        SuperF: "You might just be a boring asshole."
+                        "Super F": "You might just be a boring asshole."
                     }
                 },
             }
